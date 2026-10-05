@@ -1,0 +1,107 @@
+{
+  "plugin": "toolsenabled-data",
+  "version": "0.8.0",
+  "sourceCommit": "169d127a312e2d464de2c3faf824d5807e17ffda",
+  "files": [
+    {
+      "path": ".claude-plugin/icon.png",
+      "bytes": 24871,
+      "sha256": "7cc8d76e849b255fe15547c87ba3e9692c512bb0f019a156d347b3aa1ba3e8d7"
+    },
+    {
+      "path": ".claude-plugin/marketplace.json",
+      "bytes": 473,
+      "sha256": "e5988feac0c5b73d7fa85f8f456ec75764396f628c86b17653edbc44fced9f9c"
+    },
+    {
+      "path": ".claude-plugin/plugin.json",
+      "bytes": 914,
+      "sha256": "5528cb5a6803d3f85222f4b3bf330e2c55954d91009b3f32427aa0be2456776f"
+    },
+    {
+      "path": ".mcp.json",
+      "bytes": 154,
+      "sha256": "fc23b1fcaeb1ca4ecb114a42690bb423c9a669352681ab4e1b51a31d8e7d24db"
+    },
+    {
+      "path": "LICENSE",
+      "bytes": 1072,
+      "sha256": "e36d99bd9074ba3fb9261e75f04c99db8fd64736de5faf49bed7b15e0dea9602"
+    },
+    {
+      "path": "PRIVACY.md",
+      "bytes": 1113,
+      "sha256": "4b90d6f9af86656694a722e64530644153d129e724f6333ba2211fd6751892c6"
+    },
+    {
+      "path": "README.md",
+      "bytes": 7244,
+      "sha256": "e49db20611a86247f63f5ab99656d87437494b815b3ebc2a6010b8b2af8d004b"
+    },
+    {
+      "path": "THIRD-PARTY-LICENSES.txt",
+      "bytes": 457640,
+      "sha256": "c153f3008487de302118fb4f75f86230d0a8aaacb41a9217fc3f81e90380057c"
+    },
+    {
+      "path": "commands/export.md",
+      "bytes": 885,
+      "sha256": "9354380120a47eac933fa5f8534c3b7058e6024b4a8ecac4372af4e04097415a"
+    },
+    {
+      "path": "commands/setup.md",
+      "bytes": 529,
+      "sha256": "1b37aa2f1eb9bd1b2ba09e160773911c3f18bca33087d0c40cdea9656b1ef4bb"
+    },
+    {
+      "path": "commands/sources.md",
+      "bytes": 660,
+      "sha256": "47e90b6e606761ec71fcf3db0509f2eaa7b467f34b7c4abe74c0a5df8cb243da"
+    },
+    {
+      "path": "panel/panel.html",
+      "bytes": 2969612,
+      "sha256": "8d5247e20020f36017d533e81900bdff8ca545f8434d31909e96c67fecfe748a"
+    },
+    {
+      "path": "server/tedata-server.mjs",
+      "bytes": 3216549,
+      "sha256": "edef9f2038e6eba36f85d675f49a7a905039b19c394d58985ede917351bf99a0"
+    },
+    {
+      "path": "server/tedata-watch.mjs",
+      "bytes": 6106,
+      "sha256": "27533ada61a5d2caa69412590f0fea73f5a4f67be97abe5f34b924b1e44f5f14"
+    },
+    {
+      "path": "skills/tedata/SKILL.md",
+      "bytes": 30782,
+      "sha256": "6b8fbe60c492c772d0405de492433e8939e6948e35de22272809f3e764adde14"
+    },
+    {
+      "path": "worker/data_worker.py",
+      "bytes": 30527,
+      "sha256": "92aba6d5c8881fc9596765fedbfed65afe1f8454c585052b26bcd9addbd8f8d1"
+    },
+    {
+      "path": "worker/derivation_worker.py",
+      "bytes": 23246,
+      "sha256": "019156d9d9c3fc4f70c2a0bcbd69b071d81ab383278805f9d04ae52223c98edd"
+    },
+    {
+      "path": "worker/requirements.lock",
+      "bytes": 2985,
+      "sha256": "0ff3db3c077b679b7591f076c3e12da855f12656b894b77ff4e9b8ff022c4e36"
+    },
+    {
+      "path": "worker/summary_worker.py",
+      "bytes": 10051,
+      "sha256": "c2c2dfc17923da41abc78b2ad055fc74eb9bcc0285fe8d9e97183bbdfe297c97"
+    },
+    {
+      "path": "worker/validation_worker.py",
+      "bytes": 23203,
+      "sha256": "2bd03f66393e327aeb5e29ba9289369fb218d5c9b98d6b94f366e242f6e9cfec"
+    }
+  ]
+}

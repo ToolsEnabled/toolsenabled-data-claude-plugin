@@ -1,0 +1,24 @@
+{
+  "name": "toolsenabled-data",
+  "version": "0.8.0",
+  "displayName": "ToolsEnabled Data",
+  "description": "Local data workspace: connect CSV/TSV data, then inspect, check, transform and lay out tables and charts with /tedata. Source files are never changed.",
+  "author": {
+    "name": "ToolsEnabled, Inc.",
+    "email": "support@toolsenabled.ai"
+  },
+  "homepage": "https://toolsenabled.ai",
+  "repository": "https://github.com/ToolsEnabled/toolsenabled-data-claude-plugin",
+  "documentationUrl": "https://github.com/ToolsEnabled/toolsenabled-data-claude-plugin/blob/main/README.md",
+  "supportUrl": "https://github.com/ToolsEnabled/toolsenabled-data-claude-plugin/issues",
+  "privacyPolicyUrl": "https://github.com/ToolsEnabled/toolsenabled-data-claude-plugin/blob/main/PRIVACY.md",
+  "license": "MIT",
+  "keywords": [
+    "data",
+    "csv",
+    "research",
+    "charts",
+    "validation",
+    "local"
+  ]
+}
