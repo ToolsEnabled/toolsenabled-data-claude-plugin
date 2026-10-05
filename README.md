@@ -2,7 +2,7 @@
 
 ToolsEnabled Data (TE Data) is a local data workspace that runs on your computer. Connect CSV or TSV files (also gzip-compressed, or ZIP archives of them) to a project, and Claude can inspect them, interpret columns, run data checks, make transformed copies and build a saved table-and-chart layout with you. Your source files are never changed.
 
-It works in the Claude desktop app's Code tab and in the Claude Code CLI.
+It works in Claude Code: the Claude desktop app's Code tab and the Claude Code CLI. It does not run in claude.ai chat, and it is not supported in Cowork. Cowork tasks now run in Anthropic's cloud and reach local plugins through the desktop app; if you use TE Data from one anyway, the tool results Claude requests are saved with that task's history in your Claude account.
 
 ## Getting started
 

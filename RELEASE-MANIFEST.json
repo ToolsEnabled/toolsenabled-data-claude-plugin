@@ -1,7 +1,7 @@
 {
   "plugin": "toolsenabled-data",
-  "version": "0.8.1",
-  "sourceCommit": "b4d1c5fafabb1260e3a86ae1c674eeaca75267a3",
+  "version": "0.8.2",
+  "sourceCommit": "04e0790eca35487691eb563aa645480edfe7d558",
   "files": [
     {
       "path": ".claude-plugin/icon.png",
@@ -11,12 +11,12 @@
     {
       "path": ".claude-plugin/marketplace.json",
       "bytes": 473,
-      "sha256": "b3717410da5ea07855125ebba9f0a81cdf60ad46688bf7a59967df69f43509b9"
+      "sha256": "3c0e6fa508939561dc23da41e06a5667fb601d4cf9f7c78e4e612d01dd03869b"
     },
     {
       "path": ".claude-plugin/plugin.json",
       "bytes": 914,
-      "sha256": "2ebbee31e8f3f5900b21ca8ecf692b56c2db95860eed180bd14eca7a672bbe29"
+      "sha256": "213f65374950caa6512aecd62f031e4200dac57f3fb5f391202a716dd1dd8ca4"
     },
     {
       "path": ".mcp.json",
@@ -30,13 +30,13 @@
     },
     {
       "path": "PRIVACY.md",
-      "bytes": 1113,
-      "sha256": "4b90d6f9af86656694a722e64530644153d129e724f6333ba2211fd6751892c6"
+      "bytes": 1307,
+      "sha256": "3a587f8da97391457c21b6a8880cccd8799dc4da09226802627f0b6ae9d570ef"
     },
     {
       "path": "README.md",
-      "bytes": 7244,
-      "sha256": "e49db20611a86247f63f5ab99656d87437494b815b3ebc2a6010b8b2af8d004b"
+      "bytes": 7543,
+      "sha256": "2ddba2a71c34bc5c07ba553e3a4f356f97b4c16e5e1eba6b7b8dcbdeecd19c50"
     },
     {
       "path": "THIRD-PARTY-LICENSES.txt",
@@ -66,7 +66,7 @@
     {
       "path": "server/tedata-server.mjs",
       "bytes": 3217127,
-      "sha256": "9ff25137e5e5ff4e50482413ab28831b166b0b0a65619a9f3fcca90c19eb43e7"
+      "sha256": "ba88926249dd41b1507be078ef88b72de4c339df2f9822e9f05a4342d062621e"
     },
     {
       "path": "server/tedata-watch.mjs",
@@ -75,8 +75,8 @@
     },
     {
       "path": "skills/tedata/SKILL.md",
-      "bytes": 30782,
-      "sha256": "6b8fbe60c492c772d0405de492433e8939e6948e35de22272809f3e764adde14"
+      "bytes": 31084,
+      "sha256": "316af7020022dd352425f7cf489ea27579e88bd998aa59818a6d891e91e47a2f"
     },
     {
       "path": "worker/data_worker.py",

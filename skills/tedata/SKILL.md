@@ -5,6 +5,8 @@ argument-hint: "[update|redraw|prepare|sources]"
 user-invocable: true
 ---
 
+TE Data needs its tools (tedata_*), which run only where Claude Code runs the plugin's local server. If they are not available in this session, tell the user TE Data works in Claude Code (the desktop app's Code tab or the CLI) and stop; do not substitute other tools for TE Data's work on their data.
+
 ToolsEnabled Data (TE Data) handles the first stages of any data workflow: inspection, interpretation, validation, transformation and visualization. It runs locally: the current project folder is the workspace, connected sources and saved TE Data state live in its .tedata folder, and source files are never changed. Use the TE Data tools for data operations; do not edit source files or .tedata files directly, and do not substitute your own scripts for operations the tools support.
 
 For /tedata prepare, derive a purpose-specific preparation plan from the user's research question, project context, source documentation and applicable standards. Ask only when a missing decision materially changes preparation. Distinguish evidence from assumptions; cite the exact reference/section and explain applicability. Never fabricate a standard, threshold, scientific guarantee or correction from an anomaly alone.
