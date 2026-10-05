@@ -10488,8 +10488,8 @@ var asciiTabOrNewline = /[\t\n\r]/g;
 function stripTabAndNewline(value3) {
   return value3.replace(asciiTabOrNewline, "");
 }
-function urlHostnameOk(url2, hostname4) {
-  return hostname4.lastIndex = 0, hostname4.test(url2.hostname);
+function urlHostnameOk(url2, hostname5) {
+  return hostname5.lastIndex = 0, hostname5.test(url2.hostname);
 }
 function urlProtocolOk(url2, protocol) {
   return protocol.lastIndex = 0, protocol.test(url2.protocol.endsWith(":") ? url2.protocol.slice(0, -1) : url2.protocol);
@@ -30291,9 +30291,9 @@ var here = dirname2(fileURLToPath(import.meta.url)), packaged = !existsSync(join
 
 // python-env.mjs
 import { spawn } from "node:child_process";
-import { mkdir as mkdir7, readFile as readFile8, writeFile as writeFile7, rm as rm4, access, open as open2, stat, unlink as unlink5 } from "node:fs/promises";
+import { mkdir as mkdir7, readFile as readFile8, writeFile as writeFile7, rm as rm4, access, stat, unlink as unlink5 } from "node:fs/promises";
 import { join as join9 } from "node:path";
-import { homedir } from "node:os";
+import { homedir, hostname as hostname4 } from "node:os";
 var DUCKDB_VERSION = "1.5.6", windows = process.platform === "win32";
 function dataDirectory() {
   for (let configured of [process.env.TEDATA_DATA_DIR, process.env.CLAUDE_PLUGIN_DATA]) if (configured && !configured.includes("${")) return configured;
@@ -30355,19 +30355,39 @@ async function basePython() {
   }
   return null;
 }
+async function setupLockIsLive(lockPath) {
+  let age, owner;
+  try {
+    age = Date.now() - (await stat(lockPath)).mtimeMs;
+  } catch {
+    return !1;
+  }
+  if (age >= 900 * 1e3) return !1;
+  try {
+    owner = JSON.parse(await readFile8(lockPath, "utf8"));
+  } catch {
+    return age < 1e4;
+  }
+  if (owner?.host !== hostname4() || !Number.isInteger(owner?.pid)) return !0;
+  try {
+    return process.kill(owner.pid, 0), !0;
+  } catch (error64) {
+    return error64.code === "EPERM";
+  }
+}
 async function setup({ force = !1 } = {}) {
   let current2 = await pythonStatus();
   if (current2.ready && !force) return { ...current2, alreadyReady: !0 };
   let directory = dataDirectory();
   await mkdir7(directory, { recursive: !0, mode: 448 });
-  let lockPath = join9(directory, "setup.lock"), lock;
+  let lockPath = join9(directory, "setup.lock"), take = () => writeFile7(lockPath, JSON.stringify({ pid: process.pid, host: hostname4(), startedAt: (/* @__PURE__ */ new Date()).toISOString() }), { flag: "wx", mode: 384 });
   try {
-    lock = await open2(lockPath, "wx");
+    await take();
   } catch (error64) {
     if (error64.code !== "EEXIST") throw error64;
-    if (Date.now() - (await stat(lockPath)).mtimeMs < 900 * 1e3) throw new Error("TE Data setup is already running in another session. Wait a minute and check again.");
+    if (await setupLockIsLive(lockPath)) throw new Error("TE Data setup is already running in another session. Wait a minute and check again.");
     await unlink5(lockPath).catch(() => {
-    }), lock = await open2(lockPath, "wx");
+    }), await take();
   }
   try {
     let target3 = environmentDirectory(), python = executable(target3), steps = [];
@@ -30399,7 +30419,7 @@ async function setup({ force = !1 } = {}) {
     return await writeFile7(receiptPath(), JSON.stringify(receipt, null, 2) + `
 `, { mode: 384 }), { ready: !0, ...receipt };
   } finally {
-    await lock.close(), await unlink5(lockPath).catch(() => {
+    await unlink5(lockPath).catch(() => {
     });
   }
 }
@@ -68600,14 +68620,14 @@ function systemFonts() {
     } catch {
       return !1;
     }
-  }), open4 = (path3) => {
+  }), open3 = (path3) => {
     try {
       return path3 ? parseFont(readFileSync2(path3)) : null;
     } catch {
       return null;
     }
-  }, regular = open4(find4("regular"));
-  return loaded = regular ? { regular, bold: open4(find4("bold")) } : null, loaded;
+  }, regular = open3(find4("regular"));
+  return loaded = regular ? { regular, bold: open3(find4("bold")) } : null, loaded;
 }
 
 // raster.mjs
@@ -69697,7 +69717,7 @@ svg{max-width:100%;height:auto}@media print{body{margin:0;max-width:none}a{color
 }
 
 // plugin-server.mjs
-var VERSION = "0.8.0", uri = "ui://toolsenabled-data/panel-v1.html", watchScript = join15(dirname5(fileURLToPath2(import.meta.url)), "tedata-watch.mjs"), previewModule = null, basicInstructions = `ToolsEnabled Data (TE Data) is a local data workspace for research and other workflows: inspect, interpret, validate, transform and visualize CSV/TSV data (also gzip and ZIP). The project folder is the workspace; its connected sources and all saved TE Data state live in <project>/.tedata. Source files are immutable: never modify, move or rewrite them, and never edit .tedata files by hand; use these tools.
+var VERSION = "0.8.1", uri = "ui://toolsenabled-data/panel-v1.html", watchScript = join15(dirname5(fileURLToPath2(import.meta.url)), "tedata-watch.mjs"), previewModule = null, basicInstructions = `ToolsEnabled Data (TE Data) is a local data workspace for research and other workflows: inspect, interpret, validate, transform and visualize CSV/TSV data (also gzip and ZIP). The project folder is the workspace; its connected sources and all saved TE Data state live in <project>/.tedata. Source files are immutable: never modify, move or rewrite them, and never edit .tedata files by hand; use these tools.
 Panels: tools that show results return a TE Data panel where the host can display one. Every such result has a panel field saying whether a panel was shown. When it says no panel is shown, nothing but your reply is visible: summarize the actual returned values in concise text (counts, columns, a few relevant values) and never claim a panel or table is displayed.
 Setup: the query engine needs a one-time setup on each computer. If a result says setup is needed, tell the user it installs DuckDB ${DUCKDB_VERSION} into TE Data's own data folder (internet needed once), then call tedata_setup.
 Sources: use tedata_sources to list, connect or disconnect data files, folders and documents when the user asks. A folder connects every CSV/TSV/gzip/ZIP file directly inside it. Evidence TE Data cannot compute itself (for example cross-source joins or coverage across files) may come from your own read-only scripts: write their outputs outside source folders and .tedata, connect them as documents with tedata_sources, and pin them in plan evidenceRefs.
@@ -69834,7 +69854,7 @@ function tool(name2, config2, run5, { app = !1, panel = !1 } = {}) {
   return handlers[name2] = handler, app ? j(mcp, name2, config2, handler) : mcp.registerTool(name2, config2, handler);
 }
 var handlers = {}, ui = (visibility) => ({ ui: { resourceUri: uri, visibility } }), projectId = external_exports.string().regex(/^[a-z]{2}-[a-f0-9]{32}$/).optional(), fileId2 = external_exports.string().regex(/^[a-f0-9]{24}$/), fingerprint2 = external_exports.string().regex(/^sha256:[a-f0-9]{64}$/), revision = external_exports.number().int().min(0), view = external_exports.enum(["data", "sources"]).default("data"), intent = external_exports.enum(["open", "refresh", "redraw", "update"]).default("open");
-async function open3({ view: view2 = "data", intent: intent2 = "open", projectId: project3, dataRequest: request2, inspectData = !0 }) {
+async function open2({ view: view2 = "data", intent: intent2 = "open", projectId: project3, dataRequest: request2, inspectData = !0 }) {
   if (request2) return dataOperation(project3, request2, !1, !0, !1);
   let { panel: data3, all } = await snapshot(), selected = data3.projects[0], current2 = activeViews.get(data3.selectedId);
   if (inspectData && view2 === "data" && data3.files.length) {
@@ -69871,8 +69891,8 @@ tool("tedata_collection", { title: "Show collection preparation", description: "
   let result = await dataOperation(project3, { action: "collection_get", collectionId }, !0);
   return result._meta.benchSnapshot = (await snapshot()).panel, result._meta.view = "data", result;
 }, { app: !0, panel: !0 });
-tool("tedata_open", { title: "Open or refresh TE Data", description: "Open the TE Data workspace for the current project folder. /tedata update uses intent=refresh to reread connected data while preserving layout; /tedata redraw explicitly requests new layout composition. A normal open shows the saved view or a basic raw table and suggests /tedata redraw. Do not configure automatically. For an explicit redraw, use tedata_inspect then tedata_prepare. For data checks use tedata_validate. view=sources lists the connected sources and documents. Returns actual source rows, provenance, setup state and whether a panel is visible.", inputSchema: { view, intent, projectId }, annotations: { readOnlyHint: !0, destructiveHint: !1, openWorldHint: !1 }, _meta: ui(["model", "app"]) }, open3, { app: !0, panel: !0 });
-var refreshTool = tool("tedata_refresh", { title: "Refresh TE Data panel", description: "Refresh, inspect, configure and save data views directly from the TE Data panel. Source files remain unchanged.", inputSchema: { view, intent, projectId, dataRequest: operationRequest.optional(), inspectData: external_exports.boolean().default(!0) }, annotations: { readOnlyHint: !1, destructiveHint: !1, openWorldHint: !1 }, _meta: ui(["app"]) }, open3, { app: !0 });
+tool("tedata_open", { title: "Open or refresh TE Data", description: "Open the TE Data workspace for the current project folder. /tedata update uses intent=refresh to reread connected data while preserving layout; /tedata redraw explicitly requests new layout composition. A normal open shows the saved view or a basic raw table and suggests /tedata redraw. Do not configure automatically. For an explicit redraw, use tedata_inspect then tedata_prepare. For data checks use tedata_validate. view=sources lists the connected sources and documents. Returns actual source rows, provenance, setup state and whether a panel is visible.", inputSchema: { view, intent, projectId }, annotations: { readOnlyHint: !0, destructiveHint: !1, openWorldHint: !1 }, _meta: ui(["model", "app"]) }, open2, { app: !0, panel: !0 });
+var refreshTool = tool("tedata_refresh", { title: "Refresh TE Data panel", description: "Refresh, inspect, configure and save data views directly from the TE Data panel. Source files remain unchanged.", inputSchema: { view, intent, projectId, dataRequest: operationRequest.optional(), inspectData: external_exports.boolean().default(!0) }, annotations: { readOnlyHint: !1, destructiveHint: !1, openWorldHint: !1 }, _meta: ui(["app"]) }, open2, { app: !0 });
 tool("tedata_data", { title: "Explore and configure data", description: "Shared operations for Claude and the panel: catalog, profile, state, configure, query, validate, preview_derive, save_derived, save_view, prepare_view and poll, plus evidence, preparation and collection actions (collection_export writes a study-ready folder of prepared files with an index and provenance). Catalog supports search over filenames/source labels and offset/limit pagination; results include total counts and source groups. Validate batches compare/missing/duplicate/change rules and returns evaluated/skipped/violation counts plus evidence. Filters support otherColumn instead of value for cross-column comparisons. Profile returns complete-file quality statistics, exact raw sample rows, source evidence, parser settings, fingerprint, revision and setupStatus. Configure/save_view require current fingerprint/revision and save only metadata in .tedata. Use them for an explicit layout/update request, not just opening. Dates accept explicit format/timezone; scales are reversible interpretations, not source changes. Existing configurations and views persist across sessions. Queries support typed filters, paging, derived columns, chart type and series grouping, and summarize: grouped summaries with calendar buckets in a time zone, numeric bins and measures such as last, median and quantiles (the same object plot and grouped layout blocks use); returned rows, chart values and grouped rows are model-readable. Poll running jobs to completion. No panel.", inputSchema: { projectId, request: operationRequest }, annotations: { readOnlyHint: !1, destructiveHint: !1, openWorldHint: !1 } }, ({ projectId: project3, request: request2 }) => dataOperation(project3, request2, /_poll$/.test(request2.action) ? 12e4 : !0));
 tool("tedata_sources", { title: "Connect data sources", description: "List, connect or disconnect the data sources and reference documents of this project's TE Data workspace. kind=source connects a CSV/TSV file (optionally .gz), a ZIP of them, or a folder (every such file directly inside it). kind=document connects a .txt, .md, .json or .jsonl reference such as a codebook or protocol. Paths may be absolute or relative to the project folder. Connecting never copies, moves or changes the files. Only change sources when the user asks.", inputSchema: { action: external_exports.enum(["list", "add", "remove"]), kind: external_exports.enum(["source", "document"]).default("source"), path: external_exports.string().max(4096).optional(), label: external_exports.string().max(160).optional(), description: external_exports.string().max(500).optional() }, annotations: { readOnlyHint: !1, destructiveHint: !1, openWorldHint: !1 } }, async (args) => {
   let base = await root(), workspace = await changeSources(base, args), value3 = { workspace: base, title: workspace.title, sources: await sourceRows(base, workspace), documents: workspace.documents.map(({ path: path3, label, description: description2 }) => ({ path: path3, label: label || basename7(path3), description: description2 || "" })) };

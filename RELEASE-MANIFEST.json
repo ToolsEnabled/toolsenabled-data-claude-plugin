@@ -1,7 +1,7 @@
 {
   "plugin": "toolsenabled-data",
-  "version": "0.8.0",
-  "sourceCommit": "169d127a312e2d464de2c3faf824d5807e17ffda",
+  "version": "0.8.1",
+  "sourceCommit": "b4d1c5fafabb1260e3a86ae1c674eeaca75267a3",
   "files": [
     {
       "path": ".claude-plugin/icon.png",
@@ -11,12 +11,12 @@
     {
       "path": ".claude-plugin/marketplace.json",
       "bytes": 473,
-      "sha256": "e5988feac0c5b73d7fa85f8f456ec75764396f628c86b17653edbc44fced9f9c"
+      "sha256": "b3717410da5ea07855125ebba9f0a81cdf60ad46688bf7a59967df69f43509b9"
     },
     {
       "path": ".claude-plugin/plugin.json",
       "bytes": 914,
-      "sha256": "5528cb5a6803d3f85222f4b3bf330e2c55954d91009b3f32427aa0be2456776f"
+      "sha256": "2ebbee31e8f3f5900b21ca8ecf692b56c2db95860eed180bd14eca7a672bbe29"
     },
     {
       "path": ".mcp.json",
@@ -65,8 +65,8 @@
     },
     {
       "path": "server/tedata-server.mjs",
-      "bytes": 3216549,
-      "sha256": "edef9f2038e6eba36f85d675f49a7a905039b19c394d58985ede917351bf99a0"
+      "bytes": 3217127,
+      "sha256": "9ff25137e5e5ff4e50482413ab28831b166b0b0a65619a9f3fcca90c19eb43e7"
     },
     {
       "path": "server/tedata-watch.mjs",
