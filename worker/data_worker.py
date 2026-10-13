@@ -1,5 +1,5 @@
 """Bounded, read-only delimited-table exploration. No disk extraction or spilling."""
-import csv, gzip, io, json, math, sys, os, zipfile
+import csv, gzip, io, json, math, sys, os, zipfile, atexit, shutil, tempfile, time, uuid
 from pathlib import PurePosixPath
 import duckdb
 from validation_worker import filter_sql, validate, validate_partitioned
@@ -9,12 +9,74 @@ from summary_worker import summarize
 MAX_ZIP_BYTES=128*1024*1024
 WORKER_MEMORY_LIMIT='1GB'
 MAX_CACHE_SOURCE_BYTES=128*1024*1024
+PATTERN_CHARACTERS='*?[]'
 
 def ident(s):
     return '"' + s.replace('"', '""') + '"'
 
 def literal(s):
     return "'"+str(s).replace("'","''")+"'"
+
+_alias_dir=None
+_alias=None
+ALIAS_PREFIX='tedata-source-'
+STALE_ALIAS_SECONDS=24*3600
+
+def sweep_stale_aliases(now=None):
+    """Remove alias folders left by workers that were stopped without exiting (the parent kills them).
+
+    Only folders of this worker's own prefix in the temporary folder, untouched for a day, are removed.
+    """
+    now=time.time() if now is None else now
+    try:parent=tempfile.gettempdir();names=os.listdir(parent)
+    except OSError:return
+    for name in names:
+        if not name.startswith(ALIAS_PREFIX):continue
+        path=os.path.join(parent,name)
+        try:
+            if os.path.isdir(path) and not os.path.islink(path) and now-os.lstat(path).st_mtime>STALE_ALIAS_SECONDS:shutil.rmtree(path,ignore_errors=True)
+        except OSError:pass
+
+def release_alias():
+    """Drop the pattern-free alias of the previous source; it lives only while that source is current."""
+    global _alias
+    if _alias:
+        try:os.unlink(_alias)
+        except OSError:pass
+        _alias=None
+
+def literal_path(path):
+    """DuckDB expands * ? and [ ] in a path as a pattern, so 'data[1].csv' can read 'data1.csv'.
+
+    Its CSV reader has no literal mode (DuckDB 1.5.6), so such a path is read through a pattern-free
+    alias in a private temporary folder: a symbolic link, or a hard link where links cannot be made,
+    that the system resolves to the very file the parent resolved (same device and inode, checked).
+    The rows and the fingerprint therefore describe one file. If no alias can be made, the path is
+    refused before anything is read. The alias is removed when another source becomes current.
+    """
+    global _alias_dir,_alias
+    found=[c for c in PATTERN_CHARACTERS if c in path]
+    if not found:return path
+    problem='The file path contains '+' '.join(found)+', which the data reader would expand as a pattern'
+    advice='. Rename the file or its folder without * ? [ ] and connect it again.'
+    if _alias_dir is None:
+        sweep_stale_aliases()
+        _alias_dir=tempfile.mkdtemp(prefix=ALIAS_PREFIX)
+        atexit.register(shutil.rmtree,_alias_dir,True)
+    if any(c in _alias_dir for c in PATTERN_CHARACTERS):raise ValueError(problem+', and the temporary folder is itself named with such a character'+advice)
+    lower=path.lower()
+    alias=os.path.join(_alias_dir,uuid.uuid4().hex+('.tsv' if lower.endswith(('.tsv','.tsv.gz')) else '.csv')+('.gz' if lower.endswith('.gz') else ''))
+    try:
+        try:os.symlink(path,alias)
+        except OSError:os.link(path,alias)
+        a=os.stat(alias);b=os.stat(path)
+        if (a.st_dev,a.st_ino)!=(b.st_dev,b.st_ino):raise OSError('the alias does not resolve to the file')
+    except OSError:
+        try:os.unlink(alias)
+        except OSError:pass
+        raise ValueError(problem+', and no literal alias for it could be made on this system'+advice) from None
+    _alias=alias
+    return alias
 
 def open_source(path, settings):
     """Inspect generic syntax only; interpretation remains an explicit user/model step."""
@@ -197,6 +259,7 @@ def explore(request):
         for name in ['source','interpreted_source','input_source','file_source']:
             db.execute(f'DROP VIEW IF EXISTS {name}')
         db.execute('DROP TABLE IF EXISTS cached_source')
+        release_alias()
         source,reader,raw_records,_=open_source(path,settings)
         if source is None:
             return {'kind':'profile','rows':None,'columns':[],'rawColumns':[],'rawRows':[],'rawRecords':[],'reader':reader,'requiresMember':True,'typeNote':'Select a ZIP member before inspecting records.'}
@@ -207,7 +270,7 @@ def explore(request):
             # A gzip stream cannot be sampled by seeking. A bounded read buffer keeps dialect
             # detection from decompressing the whole file repeatedly; the parsed rows are identical.
             if path.lower().endswith('.gz'):options['buffer_size']=2*1048576
-            relation=db.read_csv(source,**options)
+            relation=db.read_csv(literal_path(source),**options)
             if not reader['header']:
                 relation=relation.project(','.join(ident(n)+' AS '+ident('column_'+str(i+1)) for i,n in enumerate(relation.columns)))
             relation.create_view('file_source')

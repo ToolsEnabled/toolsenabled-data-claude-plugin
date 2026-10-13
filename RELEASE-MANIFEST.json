@@ -1,7 +1,7 @@
 {
   "plugin": "toolsenabled-data",
-  "version": "0.8.2",
-  "sourceCommit": "04e0790eca35487691eb563aa645480edfe7d558",
+  "version": "0.8.3",
+  "sourceCommit": "4f61abcf3eeb9b7532e7bfe84a49a46ab6bf928a",
   "files": [
     {
       "path": ".claude-plugin/icon.png",
@@ -11,12 +11,12 @@
     {
       "path": ".claude-plugin/marketplace.json",
       "bytes": 473,
-      "sha256": "3c0e6fa508939561dc23da41e06a5667fb601d4cf9f7c78e4e612d01dd03869b"
+      "sha256": "7c3f9742e9d1aa31149c95c09ce2204d36ecd97acfe84dad4dbba96e89c0238d"
     },
     {
       "path": ".claude-plugin/plugin.json",
       "bytes": 914,
-      "sha256": "213f65374950caa6512aecd62f031e4200dac57f3fb5f391202a716dd1dd8ca4"
+      "sha256": "5f8c76b5efb15766e89ba5ea03a21687010490f63d6b28820681c85b1ff8342e"
     },
     {
       "path": ".mcp.json",
@@ -35,8 +35,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 7543,
-      "sha256": "2ddba2a71c34bc5c07ba553e3a4f356f97b4c16e5e1eba6b7b8dcbdeecd19c50"
+      "bytes": 8720,
+      "sha256": "9efbc78b817ec0da9a02a1602e2f648e1c8447de60a905698d69d5264563fc13"
     },
     {
       "path": "THIRD-PARTY-LICENSES.txt",
@@ -65,8 +65,8 @@
     },
     {
       "path": "server/tedata-server.mjs",
-      "bytes": 3217127,
-      "sha256": "ba88926249dd41b1507be078ef88b72de4c339df2f9822e9f05a4342d062621e"
+      "bytes": 3222268,
+      "sha256": "bde49d63b01e8390932e1d5b18cf5ad6a051689e096b25f9946c19bc12a1af4a"
     },
     {
       "path": "server/tedata-watch.mjs",
@@ -80,8 +80,8 @@
     },
     {
       "path": "worker/data_worker.py",
-      "bytes": 30527,
-      "sha256": "92aba6d5c8881fc9596765fedbfed65afe1f8454c585052b26bcd9addbd8f8d1"
+      "bytes": 33539,
+      "sha256": "de6baacaa34df94dddff284816ca851467c5812dcbccdfaa2d276cf434319ee0"
     },
     {
       "path": "worker/derivation_worker.py",

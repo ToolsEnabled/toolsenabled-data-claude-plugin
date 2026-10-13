@@ -349,9 +349,9 @@ var require_codegen = __commonJS({
         let varKind = es5 ? scope_1.varKinds.var : this.varKind, rhs = this.rhs === void 0 ? "" : ` = ${this.rhs}`;
         return `${varKind} ${this.name}${rhs};` + _n;
       }
-      optimizeNames(names, constants2) {
+      optimizeNames(names, constants3) {
         if (names[this.name.str])
-          return this.rhs && (this.rhs = optimizeExpr(this.rhs, names, constants2)), this;
+          return this.rhs && (this.rhs = optimizeExpr(this.rhs, names, constants3)), this;
       }
       get names() {
         return this.rhs instanceof code_1._CodeOrName ? this.rhs.names : {};
@@ -363,9 +363,9 @@ var require_codegen = __commonJS({
       render({ _n }) {
         return `${this.lhs} = ${this.rhs};` + _n;
       }
-      optimizeNames(names, constants2) {
+      optimizeNames(names, constants3) {
         if (!(this.lhs instanceof code_1.Name && !names[this.lhs.str] && !this.sideEffects))
-          return this.rhs = optimizeExpr(this.rhs, names, constants2), this;
+          return this.rhs = optimizeExpr(this.rhs, names, constants3), this;
       }
       get names() {
         let names = this.lhs instanceof code_1.Name ? {} : { ...this.lhs.names };
@@ -412,8 +412,8 @@ var require_codegen = __commonJS({
       optimizeNodes() {
         return `${this.code}` ? this : void 0;
       }
-      optimizeNames(names, constants2) {
-        return this.code = optimizeExpr(this.code, names, constants2), this;
+      optimizeNames(names, constants3) {
+        return this.code = optimizeExpr(this.code, names, constants3), this;
       }
       get names() {
         return this.code instanceof code_1._CodeOrName ? this.code.names : {};
@@ -433,11 +433,11 @@ var require_codegen = __commonJS({
         }
         return nodes.length > 0 ? this : void 0;
       }
-      optimizeNames(names, constants2) {
+      optimizeNames(names, constants3) {
         let { nodes } = this, i = nodes.length;
         for (; i--; ) {
           let n = nodes[i];
-          n.optimizeNames(names, constants2) || (subtractNames(names, n.names), nodes.splice(i, 1));
+          n.optimizeNames(names, constants3) || (subtractNames(names, n.names), nodes.splice(i, 1));
         }
         return nodes.length > 0 ? this : void 0;
       }
@@ -475,10 +475,10 @@ var require_codegen = __commonJS({
         if (!(cond === !1 || !this.nodes.length))
           return this;
       }
-      optimizeNames(names, constants2) {
+      optimizeNames(names, constants3) {
         var _a3;
-        if (this.else = (_a3 = this.else) === null || _a3 === void 0 ? void 0 : _a3.optimizeNames(names, constants2), !!(super.optimizeNames(names, constants2) || this.else))
-          return this.condition = optimizeExpr(this.condition, names, constants2), this;
+        if (this.else = (_a3 = this.else) === null || _a3 === void 0 ? void 0 : _a3.optimizeNames(names, constants3), !!(super.optimizeNames(names, constants3) || this.else))
+          return this.condition = optimizeExpr(this.condition, names, constants3), this;
       }
       get names() {
         let names = super.names;
@@ -496,9 +496,9 @@ var require_codegen = __commonJS({
       render(opts) {
         return `for(${this.iteration})` + super.render(opts);
       }
-      optimizeNames(names, constants2) {
-        if (super.optimizeNames(names, constants2))
-          return this.iteration = optimizeExpr(this.iteration, names, constants2), this;
+      optimizeNames(names, constants3) {
+        if (super.optimizeNames(names, constants3))
+          return this.iteration = optimizeExpr(this.iteration, names, constants3), this;
       }
       get names() {
         return addNames(super.names, this.iteration.names);
@@ -522,9 +522,9 @@ var require_codegen = __commonJS({
       render(opts) {
         return `for(${this.varKind} ${this.name} ${this.loop} ${this.iterable})` + super.render(opts);
       }
-      optimizeNames(names, constants2) {
-        if (super.optimizeNames(names, constants2))
-          return this.iterable = optimizeExpr(this.iterable, names, constants2), this;
+      optimizeNames(names, constants3) {
+        if (super.optimizeNames(names, constants3))
+          return this.iterable = optimizeExpr(this.iterable, names, constants3), this;
       }
       get names() {
         return addNames(super.names, this.iterable.names);
@@ -553,9 +553,9 @@ var require_codegen = __commonJS({
         var _a3, _b;
         return super.optimizeNodes(), (_a3 = this.catch) === null || _a3 === void 0 || _a3.optimizeNodes(), (_b = this.finally) === null || _b === void 0 || _b.optimizeNodes(), this;
       }
-      optimizeNames(names, constants2) {
+      optimizeNames(names, constants3) {
         var _a3, _b;
-        return super.optimizeNames(names, constants2), (_a3 = this.catch) === null || _a3 === void 0 || _a3.optimizeNames(names, constants2), (_b = this.finally) === null || _b === void 0 || _b.optimizeNames(names, constants2), this;
+        return super.optimizeNames(names, constants3), (_a3 = this.catch) === null || _a3 === void 0 || _a3.optimizeNames(names, constants3), (_b = this.finally) === null || _b === void 0 || _b.optimizeNames(names, constants3), this;
       }
       get names() {
         let names = super.names;
@@ -795,18 +795,18 @@ var require_codegen = __commonJS({
     function addExprNames(names, from) {
       return from instanceof code_1._CodeOrName ? addNames(names, from.names) : names;
     }
-    function optimizeExpr(expr2, names, constants2) {
+    function optimizeExpr(expr2, names, constants3) {
       if (expr2 instanceof code_1.Name)
         return replaceName(expr2);
       if (!canOptimize(expr2))
         return expr2;
       return new code_1._Code(expr2._items.reduce((items, c) => (c instanceof code_1.Name && (c = replaceName(c)), c instanceof code_1._Code ? items.push(...c._items) : items.push(c), items), []));
       function replaceName(n) {
-        let c = constants2[n.str];
+        let c = constants3[n.str];
         return c === void 0 || names[n.str] !== 1 ? n : (delete names[n.str], c);
       }
       function canOptimize(e) {
-        return e instanceof code_1._Code && e._items.some((c) => c instanceof code_1.Name && names[c.str] === 1 && constants2[c.str] !== void 0);
+        return e instanceof code_1._Code && e._items.some((c) => c instanceof code_1.Name && names[c.str] === 1 && constants3[c.str] !== void 0);
       }
     }
     function subtractNames(names, from) {
@@ -2922,9 +2922,9 @@ var require_fast_uri = __commonJS({
         throw new Error(resolved.error);
       return schemelessOptions.skipEscape = !0, serialize(resolved, schemelessOptions);
     }
-    function resolveComponent(base, relative3, options, skipNormalization) {
+    function resolveComponent(base, relative4, options, skipNormalization) {
       let target3 = {};
-      return skipNormalization || (base = parse9(serialize(base, options), options), relative3 = parse9(serialize(relative3, options), options)), options = options || {}, !options.tolerant && relative3.scheme ? (target3.scheme = relative3.scheme, target3.userinfo = relative3.userinfo, target3.host = relative3.host, target3.port = relative3.port, target3.path = removeDotSegments(relative3.path || ""), target3.query = relative3.query) : (relative3.userinfo !== void 0 || relative3.host !== void 0 || relative3.port !== void 0 ? (target3.userinfo = relative3.userinfo, target3.host = relative3.host, target3.port = relative3.port, target3.path = removeDotSegments(relative3.path || ""), target3.query = relative3.query) : (relative3.path ? (relative3.path[0] === "/" ? target3.path = removeDotSegments(relative3.path) : ((base.userinfo !== void 0 || base.host !== void 0 || base.port !== void 0) && !base.path ? target3.path = "/" + relative3.path : base.path ? target3.path = base.path.slice(0, base.path.lastIndexOf("/") + 1) + relative3.path : target3.path = relative3.path, target3.path = removeDotSegments(target3.path)), target3.query = relative3.query) : (target3.path = base.path, relative3.query !== void 0 ? target3.query = relative3.query : target3.query = base.query), target3.userinfo = base.userinfo, target3.host = base.host, target3.port = base.port), target3.scheme = base.scheme), target3.fragment = relative3.fragment, target3;
+      return skipNormalization || (base = parse9(serialize(base, options), options), relative4 = parse9(serialize(relative4, options), options)), options = options || {}, !options.tolerant && relative4.scheme ? (target3.scheme = relative4.scheme, target3.userinfo = relative4.userinfo, target3.host = relative4.host, target3.port = relative4.port, target3.path = removeDotSegments(relative4.path || ""), target3.query = relative4.query) : (relative4.userinfo !== void 0 || relative4.host !== void 0 || relative4.port !== void 0 ? (target3.userinfo = relative4.userinfo, target3.host = relative4.host, target3.port = relative4.port, target3.path = removeDotSegments(relative4.path || ""), target3.query = relative4.query) : (relative4.path ? (relative4.path[0] === "/" ? target3.path = removeDotSegments(relative4.path) : ((base.userinfo !== void 0 || base.host !== void 0 || base.port !== void 0) && !base.path ? target3.path = "/" + relative4.path : base.path ? target3.path = base.path.slice(0, base.path.lastIndexOf("/") + 1) + relative4.path : target3.path = relative4.path, target3.path = removeDotSegments(target3.path)), target3.query = relative4.query) : (target3.path = base.path, relative4.query !== void 0 ? target3.query = relative4.query : target3.query = base.query), target3.userinfo = base.userinfo, target3.host = base.host, target3.port = base.port), target3.scheme = base.scheme), target3.fragment = relative4.fragment, target3;
     }
     function equal2(uriA, uriB, options) {
       let normalizedA = normalizeComparableURI(uriA, options), normalizedB = normalizeComparableURI(uriB, options);
@@ -5759,8 +5759,8 @@ var require_topojson_client = __commonJS({
 });
 
 // plugin-server.mjs
-import { readFile as readFile10, lstat as lstat8, realpath as realpath7 } from "node:fs/promises";
-import { resolve as resolve8, basename as basename7, join as join15, dirname as dirname5 } from "node:path";
+import { readFile as readFile7, lstat as lstat8, realpath as realpath7 } from "node:fs/promises";
+import { resolve as resolve8, basename as basename7, join as join15, dirname as dirname6 } from "node:path";
 import { fileURLToPath as fileURLToPath2 } from "node:url";
 
 // node_modules/zod/v3/helpers/util.js
@@ -28324,9 +28324,9 @@ function H(B3) {
 }
 
 // data-service.mjs
-import { readFile as readFile9, realpath as realpath5, lstat as lstat6, readdir as readdir5 } from "node:fs/promises";
+import { readFile as readFile6, realpath as realpath5, lstat as lstat6, readdir as readdir5 } from "node:fs/promises";
 import { createReadStream } from "node:fs";
-import { resolve as resolve6, join as join13, basename as basename5, dirname as dirname3 } from "node:path";
+import { resolve as resolve6, join as join13, basename as basename5, dirname as dirname4 } from "node:path";
 import { createHash as createHash9, randomUUID as randomUUID7 } from "node:crypto";
 import { spawn as spawn2 } from "node:child_process";
 
@@ -28801,7 +28801,7 @@ var text = external_exports.string().trim().min(1).max(4e3), id = external_expor
 ]), operationRequest = external_exports.union([dataRequest, preparationRequest, evidenceRequest, collectionRequest]);
 
 // preparation.mjs
-import { mkdir as mkdir2, readFile as readFile2, writeFile as writeFile2, unlink as unlink2, readdir } from "node:fs/promises";
+import { writeFile as writeFile2, unlink as unlink2, readdir } from "node:fs/promises";
 import { join as join2 } from "node:path";
 import { createHash as createHash3, randomUUID as randomUUID2 } from "node:crypto";
 
@@ -28939,7 +28939,8 @@ function assessmentReadPage(fullResult, request2) {
 }
 
 // workspace.mjs
-import { mkdir, readFile, writeFile, unlink, lstat, realpath } from "node:fs/promises";
+import { mkdir, readFile, writeFile, unlink, lstat, realpath, open as open2 } from "node:fs/promises";
+import { constants } from "node:fs";
 
 // credential-guard.mjs
 import { realpathSync } from "node:fs";
@@ -29017,7 +29018,7 @@ function credentialTextProblem(text4) {
 }
 
 // workspace.mjs
-import { join, resolve as resolve2, isAbsolute, basename as basename2, extname } from "node:path";
+import { join, resolve as resolve2, isAbsolute, basename as basename2, extname, dirname, relative, sep } from "node:path";
 import { createHash as createHash2, randomUUID } from "node:crypto";
 
 // atomic-rename.mjs
@@ -29034,7 +29035,47 @@ async function replaceFile(from, to, { attempts = process.platform === "win32" ?
 }
 
 // workspace.mjs
-var STATE_DIR = ".tedata", MAX_SOURCES = 128, ID = /^[a-z]{2}-[a-f0-9]{32}$/, TABLE = /\.(csv|tsv)(\.gz)?$|\.zip$/i, DOCUMENT = [".txt", ".md", ".json", ".jsonl"], clean = (value3, length3 = 500) => String(value3 ?? "").replace(/[\x00-\x08\x0b-\x1f\x7f]/g, " ").trim().slice(0, length3), object3 = (value3) => value3 && typeof value3 == "object" && !Array.isArray(value3), workspaceFile = (root2) => join(root2, STATE_DIR, "workspace.json"), stateRoot = (root2) => join(root2, STATE_DIR);
+var STATE_DIR = ".tedata", MAX_SOURCES = 128, ID = /^[a-z]{2}-[a-f0-9]{32}$/, TABLE = /\.(csv|tsv)(\.gz)?$|\.zip$/i, DOCUMENT = [".txt", ".md", ".json", ".jsonl"], clean = (value3, length3 = 500) => String(value3 ?? "").replace(/[\x00-\x08\x0b-\x1f\x7f]/g, " ").trim().slice(0, length3), object3 = (value3) => value3 && typeof value3 == "object" && !Array.isArray(value3), workspaceFile = (root2) => join(root2, STATE_DIR, "workspace.json"), stateRoot = (root2) => join(root2, STATE_DIR), STATE_ADVICE = "TE Data keeps its saved state in real folders inside the workspace; replace the link with a folder.", DERIVED_ADVICE = 'TE Data writes derived copies and exports only into real folders. Replace the link with a folder, or set "derivedDirectory" in .tedata/workspace.json to a real folder on the disk you want.', linkError = (path3, advice = STATE_ADVICE) => Object.assign(new Error(`${path3} is a symbolic link. ${advice}`), { code: "TEDATA_SYMLINK" });
+async function ensureStateDirectory(base, directory, advice = STATE_ADVICE) {
+  let inside3 = relative(base, directory);
+  if (inside3.startsWith("..") || isAbsolute(inside3)) throw new Error(`${directory} is outside ${base}.`);
+  let current2 = base;
+  for (let part of ["", ...inside3 ? inside3.split(sep) : []]) {
+    part && (current2 = join(current2, part));
+    let st = await lstat(current2).catch((error64) => {
+      if (error64.code !== "ENOENT") throw error64;
+    });
+    if (st || (await mkdir(current2, { recursive: current2 === base, mode: 448 }).catch((error64) => {
+      if (error64.code !== "EEXIST") throw error64;
+    }), st = await lstat(current2)), st.isSymbolicLink()) throw linkError(current2, advice);
+    if (!st.isDirectory()) throw new Error(`${current2} is not a folder.`);
+  }
+}
+async function assertRealPath(base, path3, advice) {
+  let inside3 = relative(base, path3);
+  if (inside3.startsWith("..") || isAbsolute(inside3)) throw new Error(`${path3} is outside ${base}.`);
+  let current2 = base;
+  for (let part of ["", ...inside3 ? inside3.split(sep) : []])
+    if (part && (current2 = join(current2, part)), (await lstat(current2)).isSymbolicLink()) throw linkError(current2, advice);
+}
+async function readStateFile(base, path3, advice = STATE_ADVICE) {
+  await assertRealPath(base, path3, advice);
+  let handle = await open2(path3, constants.O_RDONLY | (constants.O_NOFOLLOW || 0));
+  try {
+    if (!(await handle.stat()).isFile()) throw new Error(`${path3} is not a file.`);
+    return await handle.readFile("utf8");
+  } finally {
+    await handle.close();
+  }
+}
+async function stateFile(base, path3, advice = STATE_ADVICE) {
+  if (await ensureStateDirectory(base, dirname(path3), advice), (await lstat(path3).catch(() => null))?.isSymbolicLink()) throw linkError(path3, advice);
+  return path3;
+}
+async function assertRealState(root2) {
+  for (let path3 of [stateRoot(root2), workspaceFile(root2)])
+    if ((await lstat(path3).catch(() => null))?.isSymbolicLink()) throw linkError(path3);
+}
 async function defaultId(root2) {
   let actual = await realpath(root2).catch(() => resolve2(root2));
   return "td-" + createHash2("sha256").update("tedata-workspace\0" + actual).digest("hex").slice(0, 32);
@@ -29051,6 +29092,7 @@ function normalize(value3, root2, fallbackId) {
   return { version: 1, id: id3, title: clean(value3.title || basename2(root2) || "Data", 160), sources, documents, ...value3.derivedDirectory ? { derivedDirectory: value3.derivedDirectory } : {} };
 }
 async function readWorkspace(root2) {
+  await assertRealState(root2);
   try {
     return normalize(JSON.parse(await readFile(workspaceFile(root2), "utf8")), root2, await defaultId(root2));
   } catch (error64) {
@@ -29059,9 +29101,7 @@ async function readWorkspace(root2) {
   }
 }
 async function writeWorkspace(root2, value3) {
-  let next = normalize({ ...value3, version: 1 }, root2, await defaultId(root2));
-  await mkdir(stateRoot(root2), { recursive: !0, mode: 448 });
-  let destination = workspaceFile(root2), temporary = destination + "." + randomUUID() + ".tmp";
+  let next = normalize({ ...value3, version: 1 }, root2, await defaultId(root2)), destination = await stateFile(stateRoot(root2), workspaceFile(root2)), temporary = destination + "." + randomUUID() + ".tmp";
   try {
     await writeFile(temporary, JSON.stringify(next, null, 2) + `
 `, { mode: 384, flag: "wx" }), await replaceFile(temporary, destination);
@@ -29172,12 +29212,12 @@ var PreparationService = class {
     return join2(this.directory(project3), id3 + ".json");
   }
   async read(project3, id3) {
-    let r = JSON.parse(await readFile2(this.path(project3, id3), "utf8"));
+    let r = JSON.parse(await readStateFile(stateRoot(this.data.workspace), this.path(project3, id3)));
     if (r.projectId !== project3 || r.id !== id3 || r.version !== 1) throw new Error("Invalid preparation record.");
     return r;
   }
   async write(path3, value3) {
-    await mkdir2(join2(path3, ".."), { recursive: !0, mode: 448 });
+    await stateFile(stateRoot(this.data.workspace), path3);
     let temporary = path3 + "." + randomUUID2() + ".tmp";
     try {
       await writeFile2(temporary, JSON.stringify(value3) + `
@@ -29248,7 +29288,7 @@ var PreparationService = class {
     return join2(this.directory(project3), "runs", planId, runId + ".json");
   }
   async readRun(project3, planId, runId) {
-    let wasRunning = this.running.has(runId), run5 = JSON.parse(await readFile2(this.runPath(project3, planId, runId), "utf8"));
+    let wasRunning = this.running.has(runId), run5 = JSON.parse(await readStateFile(stateRoot(this.data.workspace), this.runPath(project3, planId, runId)));
     if (run5.planId !== planId || run5.id !== runId || run5.projectId !== project3) throw new Error("Invalid assessment record.");
     return run5.state === "running" && !wasRunning && !this.running.has(run5.id) ? { ...run5, state: "interrupted", error: "The service stopped before this assessment completed. Start another audit; completed evidence is retained." } : run5;
   }
@@ -29370,7 +29410,7 @@ var PreparationService = class {
 };
 
 // evidence.mjs
-import { readFile as readFile3, lstat as lstat2, realpath as realpath2 } from "node:fs/promises";
+import { readFile as readFile2, lstat as lstat2, realpath as realpath2 } from "node:fs/promises";
 import { resolve as resolve3, basename as basename3, extname as extname2 } from "node:path";
 import { createHash as createHash4 } from "node:crypto";
 var stamp = (s) => `${s.dev}:${s.ino}:${s.size}:${s.mtimeMs}:${s.ctimeMs}`, hash2 = (x5) => createHash4("sha256").update(x5).digest("hex"), EvidenceService = class {
@@ -29411,7 +29451,7 @@ var stamp = (s) => `${s.dev}:${s.ino}:${s.size}:${s.mtimeMs}:${s.ctimeMs}`, hash
       let d = (await this.documents(project3)).find((d2) => d2.id === q.documentId);
       if (!d) throw new Error("Choose a connected evidence document by its catalog ID.");
       if (d.bytes > 32 * 1024 * 1024) throw new Error("This evidence document exceeds the 32 MiB text limit. Connect a bounded reference or use a data table for records.");
-      let bytes2 = await readFile3(d.path);
+      let bytes2 = await readFile2(d.path);
       if (stamp(await lstat2(d.path)) !== d.stamp) throw new Error("The evidence document changed during reading. Retry.");
       let fingerprint3 = "sha256:" + hash2(bytes2);
       if (q.fingerprint && q.fingerprint !== fingerprint3) throw new Error("The evidence document changed. Begin again at offset 0.");
@@ -29427,23 +29467,23 @@ var stamp = (s) => `${s.dev}:${s.ino}:${s.size}:${s.mtimeMs}:${s.ctimeMs}`, hash
 };
 
 // collection.mjs
-import { mkdir as mkdir4, readFile as readFile5, writeFile as writeFile4, unlink as unlink3, readdir as readdir3, rm as rm2 } from "node:fs/promises";
+import { writeFile as writeFile4, unlink as unlink3, readdir as readdir3, rm as rm2 } from "node:fs/promises";
 import { join as join5 } from "node:path";
 import { createHash as createHash6, randomUUID as randomUUID4 } from "node:crypto";
 import { availableParallelism, totalmem, hostname as hostname3 } from "node:os";
 
 // collection-export.mjs
-import { mkdir as mkdir3, writeFile as writeFile3, symlink, copyFile, readdir as readdir2, readFile as readFile4, rm, lstat as lstat3, realpath as realpath3, chmod } from "node:fs/promises";
-import { join as join4, resolve as resolve4, relative, isAbsolute as isAbsolute2, dirname, basename as basename4 } from "node:path";
+import { mkdir as mkdir2, writeFile as writeFile3, symlink, copyFile, readdir as readdir2, readFile as readFile3, rm, lstat as lstat3, realpath as realpath3, chmod } from "node:fs/promises";
+import { join as join4, resolve as resolve4, relative as relative2, isAbsolute as isAbsolute2, dirname as dirname2, basename as basename4 } from "node:path";
 import { randomUUID as randomUUID3, createHash as createHash5 } from "node:crypto";
 var MARKER = "export.json", KIND = "tedata-collection-export", csvCell = (value3) => {
   let text4 = value3 == null ? "" : String(value3);
   return /[",\r\n]/.test(text4) ? '"' + text4.replaceAll('"', '""') + '"' : text4;
 }, csvLine = (values3) => values3.map(csvCell).join(",") + `
 `, inside = (parent, child) => {
-  let r = relative(parent, child);
+  let r = relative2(parent, child);
   return r === "" || !!r && !r.startsWith("..") && !isAbsolute2(r);
-}, slug = (text4) => String(text4 || "collection").normalize("NFKD").replace(/[^\w.-]+/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "").slice(0, 60) || "collection", preparedName = (name2) => name2.replace(/\.(csv|tsv)(\.gz)?$|\.zip$/i, "") + ".csv.gz", count2 = (value3) => Number.isFinite(value3) ? value3.toLocaleString("en-US") : "unknown", sha = (fingerprint3) => typeof fingerprint3 == "string" ? fingerprint3.replace(/^sha256:/, "") : "", OPS = { eq: "=", ne: "\u2260", lt: "<", lte: "\u2264", gt: ">", gte: "\u2265" }, sourceIdFor = (project3, path3) => createHash5("sha256").update(project3 + "\0source\0" + path3).digest("hex").slice(0, 24);
+}, slug = (text4) => String(text4 || "collection").normalize("NFKD").replace(/[^\w.-]+/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "").slice(0, 60) || "collection", preparedName = (name2) => name2.replace(/\.(csv|tsv)(\.gz)?$|\.zip$/i, "") + ".csv.gz", count2 = (value3) => Number.isFinite(value3) ? value3.toLocaleString("en-US") : "unknown", sha = (fingerprint3) => typeof fingerprint3 == "string" ? fingerprint3.replace(/^sha256:/, "") : "", OPS = { eq: "=", ne: "\u2260", lt: "<", lte: "\u2264", gt: ">", gte: "\u2265" }, validSaveIntent = (intent2) => !!intent2 && typeof intent2 == "object" && /^[a-f0-9-]{36}$/.test(intent2.previewId) && /^[a-f0-9]{24}$/.test(intent2.outputFileId), sourceIdFor = (project3, path3) => createHash5("sha256").update(project3 + "\0source\0" + path3).digest("hex").slice(0, 24);
 function describeFilter(f) {
   return f.op === "missing" ? `${f.column} is missing` : f.op === "contains" ? `${f.column} contains "${f.value}"` : `${f.column} ${OPS[f.op] || f.op} ${f.otherColumn !== void 0 ? f.otherColumn : JSON.stringify(f.value)}`;
 }
@@ -29470,15 +29510,16 @@ async function resolveThroughExisting(path3) {
     try {
       return join4(await realpath3(current2), ...tail2.reverse());
     } catch {
-      let parent = dirname(current2);
+      let parent = dirname2(current2);
       if (parent === current2) return path3;
       tail2.push(basename4(current2)), current2 = parent;
     }
 }
 async function targetDirectory(service2, project3, d, q) {
-  let base = join4(service2.data.derived.root, "exports"), target3 = q.directory ? resolve4(q.directory) : join4(base, `${slug(d.filePlan.name)}-${d.id.slice(0, 8)}`);
   if (q.directory && !isAbsolute2(q.directory)) throw new Error("Choose an absolute export directory.");
-  let binding = await service2.data.binding(), protectedRoots = [join4(service2.data.workspace, ".tedata"), service2.data.derived.directory(project3)];
+  let base = join4(service2.data.derived.root, "exports");
+  q.directory || await ensureStateDirectory(service2.data.derived.base, base, DERIVED_ADVICE);
+  let target3 = q.directory ? resolve4(q.directory) : join4(base, `${slug(d.filePlan.name)}-${d.id.slice(0, 8)}`), binding = await service2.data.binding(), protectedRoots = [join4(service2.data.workspace, ".tedata"), service2.data.derived.directory(project3)];
   for (let source4 of binding.sources || []) {
     let path3 = resolve4(service2.data.workspace, source4.path);
     protectedRoots.push(await realpath3(path3).catch(() => path3));
@@ -29491,7 +29532,7 @@ async function targetDirectory(service2, project3, d, q) {
     if ((await readdir2(actual)).length) {
       let marker = null;
       try {
-        marker = JSON.parse(await readFile4(join4(actual, MARKER), "utf8"));
+        marker = JSON.parse(await readFile3(join4(actual, MARKER), "utf8"));
       } catch {
       }
       if (marker?.kind !== KIND) throw new Error("The export directory is not empty and is not a TE Data export. Choose an empty or new directory.");
@@ -29508,12 +29549,12 @@ async function exportCollection(service2, project3, q, collectionReadiness2) {
   if (run5.phase !== "final" || run5.state !== "complete") throw new Error("Exports use a completed final collection run. Run or resume the final audit first.");
   if (run5.definitionRevision !== d.revision) throw new Error("The collection changed after this final run. Run a new final audit before exporting.");
   let readiness2 = collectionReadiness2(d, run5), manifest = await service2.manifest(project3, d), derived2 = d.output?.mode === "derived", filesMode = derived2 ? q.files : "none", { target: target3, existing } = await targetDirectory(service2, project3, d, q), source4 = ((await service2.data.binding()).sources || []).find((s) => sourceIdFor(project3, resolve4(service2.data.workspace, s.path)) === d.sourceId), stage = `${target3}.partial-${randomUUID3()}`;
-  await mkdir3(stage, { recursive: !0, mode: 493 });
+  await mkdir2(stage, { recursive: !0, mode: 493 });
   let requirements = d.filePlan.requirements || [], header = ["ordinal", "member", "source_path", "source_sha256", "source_rows", "prepared_file", "prepared_path", "prepared_sha256", "prepared_rows", "excluded_rows", "status", "assessment", ...requirements.flatMap((r) => [`${r.id}`, `${r.id}_violations`])], lines = [csvLine(header)], files = { mode: filesMode, linked: 0, copied: 0, notLinked: 0 }, problems = [], used = /* @__PURE__ */ new Set(), fallback2 = null;
   try {
     for (let member2 of manifest.members) {
       let journal = await service2.read(service2.memberPath(project3, d.id, run5.id, member2.ordinal)), preparedPath = derived2 ? null : member2.path, preparedFile = "";
-      if (derived2 && journal?.state === "complete" && journal.saveIntent && (preparedPath = join4(service2.data.derived.directory(project3), journal.saveIntent.previewId, "data.csv.gz"), (await lstat3(preparedPath).catch(() => null))?.isFile() || (problems.push(`${member2.name}: prepared copy is missing`), preparedPath = null)), derived2 && preparedPath && filesMode !== "none") {
+      if (derived2 && journal?.state === "complete" && journal.saveIntent && (validSaveIntent(journal.saveIntent) ? (preparedPath = join4(service2.data.derived.directory(project3), journal.saveIntent.previewId, "data.csv.gz"), (await lstat3(preparedPath).catch(() => null))?.isFile() || (problems.push(`${member2.name}: prepared copy is missing`), preparedPath = null)) : (problems.push(`${member2.name}: prepared copy record is invalid`), preparedPath = null)), derived2 && preparedPath && filesMode !== "none") {
         let name2 = preparedName(member2.name);
         used.has(name2) && (name2 = preparedName(member2.name.replace(/(\.[^.]+)+$/, "") + `-${member2.ordinal}.csv`)), used.add(name2);
         let destination = join4(stage, name2);
@@ -29611,7 +29652,7 @@ function collectionLanes() {
   let configured = Number(process.env.TEDATA_COLLECTION_WORKERS);
   return Number.isInteger(configured) && configured >= 1 ? Math.min(configured, 16) : Math.max(1, Math.min(8, Math.floor(availableParallelism() / 2), Math.floor(totalmem() / (3 * 1024 ** 3))));
 }
-var clone2 = (x5) => JSON.parse(JSON.stringify(x5)), canonical2 = (x5) => JSON.stringify(x5, (_, v2) => v2 && typeof v2 == "object" && !Array.isArray(v2) ? Object.fromEntries(Object.keys(v2).sort().map((k) => [k, v2[k]])) : v2), hash3 = (x5) => createHash6("sha256").update(typeof x5 == "string" ? x5 : canonical2(x5)).digest("hex"), identity5 = (x5) => ({ fileId: x5.fileId || x5.id, fingerprint: x5.fingerprint, revision: x5.revision }), equalIdentity = (a, b10) => a.fileId === b10.fileId && a.fingerprint === b10.fingerprint && a.revision === b10.revision, sleep2 = (ms) => new Promise((r) => setTimeout(r, ms)), pass = /* @__PURE__ */ new Set(["met", "supported", "not_applicable"]), failedOperations = (m) => !!m.results?.some((r) => r.error || r.check?.status === "error"), boundary = "Checks execute separately inside each frozen member file. Aggregation does not assess cross-file duplicates, neighbors, joins, coverage, or scientific adequacy.";
+var clone2 = (x5) => JSON.parse(JSON.stringify(x5)), canonical2 = (x5) => JSON.stringify(x5, (_, v2) => v2 && typeof v2 == "object" && !Array.isArray(v2) ? Object.fromEntries(Object.keys(v2).sort().map((k) => [k, v2[k]])) : v2), hash3 = (x5) => createHash6("sha256").update(typeof x5 == "string" ? x5 : canonical2(x5)).digest("hex"), identity5 = (x5) => ({ fileId: x5.fileId || x5.id, fingerprint: x5.fingerprint, revision: x5.revision }), equalIdentity = (a, b10) => a.fileId === b10.fileId && a.fingerprint === b10.fingerprint && a.revision === b10.revision, sleep2 = (ms) => new Promise((r) => setTimeout(r, ms)), pass = /* @__PURE__ */ new Set(["met", "supported", "not_applicable"]), failedOperations = (m) => !!m.results?.some((r) => r.error || r.check?.status === "error"), INVALID_INTENT = "A member evidence record has an invalid output intent.", boundary = "Checks execute separately inside each frozen member file. Aggregation does not assess cross-file duplicates, neighbors, joins, coverage, or scientific adequacy.";
 function boundedSample(sample, budget = 8192) {
   if (!sample) return sample;
   let rows = [], bytes2 = Buffer.byteLength(JSON.stringify({ ...sample, rows: [] }));
@@ -29686,7 +29727,7 @@ var CollectionService = class {
     return join5(this.directory(project3, id3), "manifests", revision2 + ".json");
   }
   async write(path3, value3) {
-    await mkdir4(join5(path3, ".."), { recursive: !0, mode: 448 });
+    await stateFile(stateRoot(this.data.workspace), path3);
     let temporary = path3 + "." + randomUUID4() + ".tmp";
     try {
       await writeFile4(temporary, JSON.stringify(value3) + `
@@ -29696,9 +29737,10 @@ var CollectionService = class {
       });
     }
   }
-  async read(path3) {
+  // Records live under .tedata/collections; a published output's manifest under the derived root.
+  async read(path3, base = stateRoot(this.data.workspace), advice = void 0) {
     try {
-      return JSON.parse(await readFile5(path3, "utf8"));
+      return JSON.parse(await readStateFile(base, path3, advice));
     } catch (e) {
       if (e.code === "ENOENT") return null;
       throw e;
@@ -29759,6 +29801,7 @@ var CollectionService = class {
   validateJournal(d, r, m, journal) {
     if (!journal) return null;
     if (journal.ordinal !== m.ordinal || journal.fileId !== m.fileId || journal.projectId !== r.projectId || journal.collectionId !== r.collectionId || journal.runId !== r.id || journal.definitionRevision !== r.definitionRevision) throw new Error("A member evidence record has incompatible collection, run, or source identity.");
+    if (journal.saveIntent !== void 0 && !validSaveIntent(journal.saveIntent)) throw new Error(INVALID_INTENT);
     if (journal.input && (journal.input.fileId !== m.fileId || journal.input.fingerprint !== m.fingerprint)) throw new StaleError("A member input identity does not match frozen membership.");
     if (r.phase !== "capture" && !["running", "complete", "error", "stale"].includes(journal.state)) throw new Error("A member evidence record has an invalid state.");
     if (journal.state === "complete" && r.phase !== "capture" && (!journal.input || !Number.isSafeInteger(journal.inputRows))) throw new Error("Completed member input evidence is missing.");
@@ -29971,7 +30014,8 @@ var CollectionService = class {
   async restoreOutput(project3, d, m, journal) {
     let intent2 = journal.saveIntent;
     if (!intent2) return null;
-    let dir = join5(this.data.derived.directory(project3), intent2.previewId), manifest = await this.read(join5(dir, "manifest.json"));
+    if (!validSaveIntent(intent2)) throw new Error(INVALID_INTENT);
+    let dir = join5(this.data.derived.directory(project3), intent2.previewId), manifest = await this.read(join5(dir, "manifest.json"), this.data.derived.base, DERIVED_ADVICE);
     if (!manifest) return null;
     let lineage = manifest.lineage;
     if (manifest.projectId !== project3 || lineage?.sourceFileId !== m.fileId || lineage.sourceFingerprint !== m.fingerprint || lineage.sourceRevision !== journal.input.revision || hash3(lineage.recipe) !== hash3(d.output.recipe)) throw new StaleError("A previously published collection output has incompatible lineage.");
@@ -29983,9 +30027,12 @@ var CollectionService = class {
   async derive(project3, d, m, journal, save) {
     let existing = await this.restoreOutput(project3, d, m, journal);
     if (existing) return existing;
-    journal.saveIntent && (await rm2(join5(this.data.derived.directory(project3), ".pending-" + journal.saveIntent.previewId), { recursive: !0, force: !0 }), await unlink3(this.data.states.path(project3, journal.saveIntent.outputFileId)).catch((e) => {
-      if (e.code !== "ENOENT") throw e;
-    }));
+    if (journal.saveIntent) {
+      if (!validSaveIntent(journal.saveIntent)) throw new Error(INVALID_INTENT);
+      await rm2(join5(this.data.derived.directory(project3), ".pending-" + journal.saveIntent.previewId), { recursive: !0, force: !0 }), await unlink3(this.data.states.path(project3, journal.saveIntent.outputFileId)).catch((e) => {
+        if (e.code !== "ENOENT") throw e;
+      });
+    }
     let preview2 = await this.dataRun(project3, { action: "preview_derive", ...journal.input, recipe: d.output.recipe }), reviewed = await this.read(this.memberPath(project3, d.id, d.output.previewRunId, m.ordinal));
     if (!reviewed || reviewed.state !== "complete" || !equalIdentity(reviewed.input, journal.input) || hash3(reviewed.recipe) !== hash3(d.output.recipe) || !sameEffects(reviewed.effectsHash, preview2)) throw new StaleError("Transformation effects no longer match the reviewed full-collection preview.");
     let outputPath = join5(this.data.derived.directory(project3), preview2.previewId, "data.csv.gz");
@@ -30102,19 +30149,19 @@ var CollectionService = class {
 };
 
 // data-state.mjs
-import { mkdir as mkdir5, readFile as readFile6, writeFile as writeFile5, unlink as unlink4 } from "node:fs/promises";
+import { writeFile as writeFile5, unlink as unlink4 } from "node:fs/promises";
 import { join as join6 } from "node:path";
 import { createHash as createHash7, randomUUID as randomUUID5 } from "node:crypto";
 var DataState = class {
   constructor(workspace) {
-    this.directory = join6(stateRoot(workspace), "data-state");
+    this.base = stateRoot(workspace), this.directory = join6(this.base, "data-state");
   }
   path(projectId2, fileId3) {
     return join6(this.directory, createHash7("sha256").update(projectId2 + "\0" + fileId3).digest("hex") + ".json");
   }
   async read(projectId2, fileId3) {
     try {
-      let value3 = JSON.parse(await readFile6(this.path(projectId2, fileId3), "utf8"));
+      let value3 = JSON.parse(await readStateFile(this.base, this.path(projectId2, fileId3)));
       if (value3.projectId !== projectId2 || value3.fileId !== fileId3 || value3.version !== 1) throw new Error("Invalid saved dataset state.");
       return value3;
     } catch (error64) {
@@ -30125,11 +30172,10 @@ var DataState = class {
   async write(projectId2, fileId3, expectedRevision, value3) {
     let previous = await this.read(projectId2, fileId3);
     if ((previous?.revision || 0) !== expectedRevision) throw new Error("The dataset setup changed. Reload its state before saving.");
-    await mkdir5(this.directory, { recursive: !0, mode: 448 });
-    let destination = this.path(projectId2, fileId3);
+    let destination = await stateFile(this.base, this.path(projectId2, fileId3));
     if (previous) {
       let history = join6(this.directory, "history");
-      await mkdir5(history, { recursive: !0, mode: 448 });
+      await ensureStateDirectory(this.base, history);
       let key2 = createHash7("sha256").update(projectId2 + "\0" + fileId3).digest("hex");
       await writeFile5(join6(history, `${key2}.${previous.revision}.json`), JSON.stringify(previous, null, 2) + `
 `, { mode: 384, flag: "wx" }).catch((e) => {
@@ -30149,7 +30195,7 @@ var DataState = class {
 };
 
 // derived-data.mjs
-import { mkdir as mkdir6, readdir as readdir4, readFile as readFile7, writeFile as writeFile6, rm as rm3, lstat as lstat5, realpath as realpath4 } from "node:fs/promises";
+import { mkdir as mkdir3, readdir as readdir4, readFile as readFile4, writeFile as writeFile6, rm as rm3, lstat as lstat5, realpath as realpath4 } from "node:fs/promises";
 import { join as join7 } from "node:path";
 import { createHash as createHash8, randomUUID as randomUUID6 } from "node:crypto";
 import { readFileSync } from "node:fs";
@@ -30157,10 +30203,11 @@ import { isAbsolute as isAbsolute3 } from "node:path";
 function derivedRoot(workspace) {
   try {
     let value3 = JSON.parse(readFileSync(workspaceFile(workspace), "utf8"));
-    if (typeof value3.derivedDirectory == "string" && isAbsolute3(value3.derivedDirectory)) return value3.derivedDirectory;
+    if (typeof value3.derivedDirectory == "string" && isAbsolute3(value3.derivedDirectory)) return { base: value3.derivedDirectory, root: value3.derivedDirectory };
   } catch {
   }
-  return join7(stateRoot(workspace), "derived-data");
+  let base = stateRoot(workspace);
+  return { base, root: join7(base, "derived-data") };
 }
 var hash4 = (value3) => createHash8("sha256").update(value3).digest("hex"), stamp2 = (s) => `${s.dev}:${s.ino}:${s.size}:${s.mtimeMs}:${s.ctimeMs}`, nonnegative = (value3) => Number.isSafeInteger(value3) && value3 >= 0;
 function validManifest(manifest, projectId2) {
@@ -30169,7 +30216,8 @@ function validManifest(manifest, projectId2) {
 }
 var DerivedData = class {
   constructor(workspace) {
-    this.root = derivedRoot(workspace), this.previews = /* @__PURE__ */ new Map();
+    let { base, root: root2 } = derivedRoot(workspace);
+    this.base = base, this.root = root2, this.previews = /* @__PURE__ */ new Map();
   }
   directory(projectId2) {
     return join7(this.root, hash4(projectId2));
@@ -30191,7 +30239,7 @@ var DerivedData = class {
     let manifestPath = join7(dir, "manifest.json"), before = await lstat5(manifestPath);
     if (!before.isFile() || before.isSymbolicLink()) throw new Error("A derived dataset manifest must be a regular file, not a symbolic link.");
     if (before.size > 4 * 1024 * 1024) throw new Error("A derived dataset manifest exceeds its metadata size limit.");
-    let bytes2 = await readFile7(manifestPath), after = await lstat5(manifestPath);
+    let bytes2 = await readFile4(manifestPath), after = await lstat5(manifestPath);
     if (!after.isFile() || after.isSymbolicLink() || stamp2(before) !== stamp2(after) || stamp2(directory) !== stamp2(await lstat5(dir))) throw new Error("A derived dataset manifest changed while it was read. Retry.");
     let manifest;
     try {
@@ -30216,10 +30264,10 @@ var DerivedData = class {
     return files;
   }
   async stage(projectId2, previewId) {
-    let base = this.directory(projectId2);
-    await mkdir6(base, { recursive: !0, mode: 448 });
-    let dir = join7(base, ".pending-" + previewId);
-    return await mkdir6(dir, { mode: 448 }), { dir, path: join7(dir, "data.csv.gz"), destination: join7(base, previewId) };
+    let directory = this.directory(projectId2);
+    await ensureStateDirectory(this.base, directory, DERIVED_ADVICE);
+    let dir = join7(directory, ".pending-" + previewId);
+    return await mkdir3(dir, { mode: 448 }), { dir, path: join7(dir, "data.csv.gz"), destination: join7(directory, previewId) };
   }
   async publish(stage, projectId2, request2, preview2, result, lineage) {
     let manifest = { version: 1, projectId: projectId2, name: request2.name, createdAt: (/* @__PURE__ */ new Date()).toISOString(), rows: result.after.total, lineage };
@@ -30281,17 +30329,17 @@ function layoutMetrics(layout) {
 
 // data-service.mjs
 import { readFileSync as readFileSync3, realpathSync as realpathSync2 } from "node:fs";
-import { mkdir as mkdir8, writeFile as writeFile8, unlink as unlink6 } from "node:fs/promises";
+import { writeFile as writeFile8, unlink as unlink6 } from "node:fs/promises";
 
 // paths.mjs
 import { existsSync } from "node:fs";
-import { dirname as dirname2, join as join8 } from "node:path";
+import { dirname as dirname3, join as join8 } from "node:path";
 import { fileURLToPath } from "node:url";
-var here = dirname2(fileURLToPath(import.meta.url)), packaged = !existsSync(join8(here, "data_worker.py")), pluginRoot = packaged ? dirname2(here) : here, workerDirectory = packaged ? join8(pluginRoot, "worker") : here, panelFile = packaged ? join8(pluginRoot, "panel", "panel.html") : join8(here, "dist", "panel.html"), requirementsFile = join8(workerDirectory, "requirements.lock");
+var here = dirname3(fileURLToPath(import.meta.url)), packaged = !existsSync(join8(here, "data_worker.py")), pluginRoot = packaged ? dirname3(here) : here, workerDirectory = packaged ? join8(pluginRoot, "worker") : here, panelFile = packaged ? join8(pluginRoot, "panel", "panel.html") : join8(here, "dist", "panel.html"), requirementsFile = join8(workerDirectory, "requirements.lock");
 
 // python-env.mjs
 import { spawn } from "node:child_process";
-import { mkdir as mkdir7, readFile as readFile8, writeFile as writeFile7, rm as rm4, access, stat, unlink as unlink5 } from "node:fs/promises";
+import { mkdir as mkdir4, readFile as readFile5, writeFile as writeFile7, rm as rm4, access, stat, unlink as unlink5 } from "node:fs/promises";
 import { join as join9 } from "node:path";
 import { homedir, hostname as hostname4 } from "node:os";
 var DUCKDB_VERSION = "1.5.6", windows = process.platform === "win32";
@@ -30308,7 +30356,7 @@ async function pythonStatus() {
   if (process.env.TEDATA_PYTHON) return { ready: !0, python: process.env.TEDATA_PYTHON, source: "TEDATA_PYTHON" };
   let receipt;
   try {
-    receipt = JSON.parse(await readFile8(receiptPath(), "utf8"));
+    receipt = JSON.parse(await readFile5(receiptPath(), "utf8"));
   } catch {
     return { ready: !1, reason: "TE Data has not been set up on this computer yet." };
   }
@@ -30364,7 +30412,7 @@ async function setupLockIsLive(lockPath) {
   }
   if (age >= 900 * 1e3) return !1;
   try {
-    owner = JSON.parse(await readFile8(lockPath, "utf8"));
+    owner = JSON.parse(await readFile5(lockPath, "utf8"));
   } catch {
     return age < 1e4;
   }
@@ -30379,7 +30427,7 @@ async function setup({ force = !1 } = {}) {
   let current2 = await pythonStatus();
   if (current2.ready && !force) return { ...current2, alreadyReady: !0 };
   let directory = dataDirectory();
-  await mkdir7(directory, { recursive: !0, mode: 448 });
+  await mkdir4(directory, { recursive: !0, mode: 448 });
   let lockPath = join9(directory, "setup.lock"), take = () => writeFile7(lockPath, JSON.stringify({ pid: process.pid, host: hostname4(), startedAt: (/* @__PURE__ */ new Date()).toISOString() }), { flag: "wx", mode: 384 });
   try {
     await take();
@@ -38561,7 +38609,7 @@ function quantize_default(interpolator, n) {
 }
 
 // node_modules/d3-scale/src/constant.js
-function constants(x5) {
+function constants2(x5) {
   return function() {
     return x5;
   };
@@ -38580,7 +38628,7 @@ function identity9(x5) {
 function normalize2(a, b10) {
   return (b10 -= a = +a) ? function(x5) {
     return (x5 - a) / b10;
-  } : constants(isNaN(b10) ? NaN : 0.5);
+  } : constants2(isNaN(b10) ? NaN : 0.5);
 }
 function clamper(a, b10) {
   var t;
@@ -42281,11 +42329,11 @@ function Overlap(params2) {
 }
 var methods = {
   parity: (items) => items.filter((item, i) => i % 2 ? item.opacity = 0 : 1),
-  greedy: (items, sep) => {
+  greedy: (items, sep2) => {
     let a;
-    return items.filter((b10, i) => !i || !intersect3(a.bounds, b10.bounds, sep) ? (a = b10, 1) : b10.opacity = 0);
+    return items.filter((b10, i) => !i || !intersect3(a.bounds, b10.bounds, sep2) ? (a = b10, 1) : b10.opacity = 0);
   }
-}, intersect3 = (a, b10, sep) => sep > Math.max(b10.x1 - a.x2, a.x1 - b10.x2, b10.y1 - a.y2, a.y1 - b10.y2), hasOverlap = (items, pad4) => {
+}, intersect3 = (a, b10, sep2) => sep2 > Math.max(b10.x1 - a.x2, a.x1 - b10.x2, b10.y1 - a.y2, a.y1 - b10.y2), hasOverlap = (items, pad4) => {
   for (var i = 1, n = items.length, a = items[0].bounds, b10; i < n; a = b10, ++i)
     if (intersect3(a, b10 = items[i].bounds, pad4)) return !0;
 }, hasBounds = (item) => {
@@ -42297,15 +42345,15 @@ var methods = {
 }, reset = (source4) => (source4.forEach((item) => item.opacity = 1), source4), reflow = (pulse2, _) => pulse2.reflow(_.modified()).modifies("opacity");
 inherits_default(Overlap, Transform, {
   transform(_, pulse2) {
-    let reduce2 = methods[_.method] || methods.parity, sep = _.separation || 0, source4 = pulse2.materialize(pulse2.SOURCE).source, items, test2;
+    let reduce2 = methods[_.method] || methods.parity, sep2 = _.separation || 0, source4 = pulse2.materialize(pulse2.SOURCE).source, items, test2;
     if (!source4 || !source4.length) return;
     if (!_.method)
       return _.modified("method") && (reset(source4), pulse2 = reflow(pulse2, _)), pulse2;
     if (source4 = source4.filter(hasBounds), !source4.length) return;
-    if (_.sort && (source4 = source4.slice().sort(_.sort)), items = reset(source4), pulse2 = reflow(pulse2, _), items.length >= 3 && hasOverlap(items, sep)) {
+    if (_.sort && (source4 = source4.slice().sort(_.sort)), items = reset(source4), pulse2 = reflow(pulse2, _), items.length >= 3 && hasOverlap(items, sep2)) {
       do
-        items = reduce2(items, sep);
-      while (items.length >= 3 && hasOverlap(items, sep));
+        items = reduce2(items, sep2);
+      while (items.length >= 3 && hasOverlap(items, sep2));
       items.length < 3 && !peek(source4).opacity && (items.length > 1 && (peek(items).opacity = 0), peek(source4).opacity = 1);
     }
     _.boundScale && _.boundTolerance >= 0 && (test2 = boundTest(_.boundScale, _.boundOrient, +_.boundTolerance), source4.forEach((item) => {
@@ -50402,7 +50450,7 @@ function stripQuotes(s) {
 }
 function codegen(opt) {
   opt = opt || {};
-  let allowed = opt.allowed ? toSet(opt.allowed) : {}, forbidden = opt.forbidden ? toSet(opt.forbidden) : {}, constants2 = opt.constants || Constants, functions = (opt.functions || Functions)(visit3), globalvar = opt.globalvar, fieldvar = opt.fieldvar, outputGlobal = isFunction(globalvar) ? globalvar : (id3) => `${globalvar}["${id3}"]`, globals = {}, fields = {}, memberDepth = 0;
+  let allowed = opt.allowed ? toSet(opt.allowed) : {}, forbidden = opt.forbidden ? toSet(opt.forbidden) : {}, constants3 = opt.constants || Constants, functions = (opt.functions || Functions)(visit3), globalvar = opt.globalvar, fieldvar = opt.fieldvar, outputGlobal = isFunction(globalvar) ? globalvar : (id3) => `${globalvar}["${id3}"]`, globals = {}, fields = {}, memberDepth = 0;
   function visit3(ast) {
     if (isString(ast)) return ast;
     let generator = Generators[ast.type];
@@ -50412,7 +50460,7 @@ function codegen(opt) {
     Literal: (n) => n.raw,
     Identifier: (n) => {
       let id3 = n.name;
-      return memberDepth > 0 ? id3 : hasOwnProperty(forbidden, id3) ? error62("Illegal identifier: " + id3) : hasOwnProperty(constants2, id3) ? constants2[id3] : hasOwnProperty(allowed, id3) ? id3 : (globals[id3] = 1, outputGlobal(id3));
+      return memberDepth > 0 ? id3 : hasOwnProperty(forbidden, id3) ? error62("Illegal identifier: " + id3) : hasOwnProperty(constants3, id3) ? constants3[id3] : hasOwnProperty(allowed, id3) ? id3 : (globals[id3] = 1, outputGlobal(id3));
     },
     MemberExpression: (n) => {
       let d = !n.computed, o = visit3(n.object);
@@ -50451,7 +50499,7 @@ function codegen(opt) {
     };
     return globals = {}, fields = {}, result;
   }
-  return codegen2.functions = functions, codegen2.constants = constants2, codegen2;
+  return codegen2.functions = functions, codegen2.constants = constants3, codegen2;
 }
 
 // node_modules/vega-selections/build/vega-selection.js
@@ -53279,8 +53327,8 @@ function parseMark(spec, scope) {
   }));
 }
 function parseOverlap(overlap, source4, scope) {
-  let method2 = overlap.method, bound2 = overlap.bound, sep = overlap.separation, params2 = {
-    separation: isSignal(sep) ? scope.signalRef(sep.signal) : sep,
+  let method2 = overlap.method, bound2 = overlap.bound, sep2 = overlap.separation, params2 = {
+    separation: isSignal(sep2) ? scope.signalRef(sep2.signal) : sep2,
     method: isSignal(method2) ? scope.signalRef(method2.signal) : method2,
     pulse: source4
   };
@@ -68620,14 +68668,14 @@ function systemFonts() {
     } catch {
       return !1;
     }
-  }), open3 = (path3) => {
+  }), open4 = (path3) => {
     try {
       return path3 ? parseFont(readFileSync2(path3)) : null;
     } catch {
       return null;
     }
-  }, regular = open3(find4("regular"));
-  return loaded = regular ? { regular, bold: open3(find4("bold")) } : null, loaded;
+  }, regular = open4(find4("regular"));
+  return loaded = regular ? { regular, bold: open4(find4("bold")) } : null, loaded;
 }
 
 // raster.mjs
@@ -69125,7 +69173,7 @@ async function checkPlot(block, grouped, theme = {}, { preview: preview2 = !1 } 
   }
   return { warnings: [...new Set(warnings)].slice(0, 8).map((w2) => String(w2).slice(0, 400)), plotted, png };
 }
-var workerTimeLimit = (bytes2) => Math.min(60 * 6e4, 12e4 + Math.ceil(Math.max(0, (bytes2 || 0) - 50 * 1048576) / (10 * 1048576)) * 6e4), sharedLookups = /* @__PURE__ */ new Map(), idFor = (project3, path3) => createHash9("sha256").update(project3 + "\0" + path3).digest("hex").slice(0, 24), sourceIdFor2 = (project3, path3) => idFor(project3, "source\0" + path3), sourceKeyFor = (binding) => createHash9("sha256").update(JSON.stringify({ projectId: binding.projectId, sources: binding.sources || [] })).digest("hex"), stampFor = (s) => `${s.dev}:${s.ino}:${s.size}:${s.mtimeMs}:${s.ctimeMs}`, viewFields = Object.keys(queryView.shape), prunedCaches = /* @__PURE__ */ new Set(), workerCodeHash = createHash9("sha256").update(["data_worker.py", "summary_worker.py", "validation_worker.py", "derivation_worker.py"].map((name2) => readFileSync3(join13(workerDirectory, name2), "utf8")).join("\0")).digest("hex"), WORKER_REUSE_LIMIT_BYTES = 128 * 1024 * 1024, workerSource = (path3, s) => ({ path: path3, size: String(s.size), mtimeNs: String(s.mtimeNs), ctimeNs: String(s.ctimeNs), dev: String(s.dev), ino: String(s.ino) }), workerConfiguration = (q) => ["preview_derive", "save_derived"].includes(q.action) && q.recipe?.basis === "raw" ? null : q.configuration || null, workerBinding = (q, source4) => JSON.stringify({ source: source4, configuration: workerConfiguration(q), reader: q.reader || workerConfiguration(q)?.reader || {} });
+var workerTimeLimit = (bytes2) => Math.min(60 * 6e4, 12e4 + Math.ceil(Math.max(0, (bytes2 || 0) - 50 * 1048576) / (10 * 1048576)) * 6e4), sharedLookups = /* @__PURE__ */ new Map(), idFor = (project3, path3) => createHash9("sha256").update(project3 + "\0" + path3).digest("hex").slice(0, 24), sourceIdFor2 = (project3, path3) => idFor(project3, "source\0" + path3), sourceKeyFor = (binding) => createHash9("sha256").update(JSON.stringify({ projectId: binding.projectId, sources: binding.sources || [] })).digest("hex"), stampFor = (s) => `${s.dev}:${s.ino}:${s.size}:${s.mtimeMs}:${s.ctimeMs}`, viewFields = Object.keys(queryView.shape), prunedCaches = /* @__PURE__ */ new Set(), workerCodeHash = createHash9("sha256").update(["data_worker.py", "summary_worker.py", "validation_worker.py", "derivation_worker.py"].map((name2) => readFileSync3(join13(workerDirectory, name2), "utf8")).join("\0")).digest("hex"), WORKER_REUSE_LIMIT_BYTES = 128 * 1024 * 1024, PROFILE_CACHE_RECORD_LIMIT = 64 * 1024 * 1024, workerSource = (path3, s) => ({ path: path3, size: String(s.size), mtimeNs: String(s.mtimeNs), ctimeNs: String(s.ctimeNs), dev: String(s.dev), ino: String(s.ino) }), workerConfiguration = (q) => ["preview_derive", "save_derived"].includes(q.action) && q.recipe?.basis === "raw" ? null : q.configuration || null, workerBinding = (q, source4) => JSON.stringify({ source: source4, configuration: workerConfiguration(q), reader: q.reader || workerConfiguration(q)?.reader || {} });
 function boundedCheck(check2) {
   let sample = { ...check2.sample, rows: [] }, bytes2 = Buffer.byteLength(JSON.stringify(sample));
   for (let row of check2.sample.rows) {
@@ -69171,7 +69219,7 @@ var DataService = class {
     }
     for (let entry2 of await this.derived.entries(projectId2)) {
       let s = await lstat6(entry2.path);
-      files.push({ ...entry2, id: idFor(projectId2, entry2.path), bytes: s.size, stamp: stampFor(s), sourceId: sourceIdFor2(projectId2, this.derived.directory(projectId2)), _manifestPath: join13(dirname3(entry2.path), "manifest.json") });
+      files.push({ ...entry2, id: idFor(projectId2, entry2.path), bytes: s.size, stamp: stampFor(s), sourceId: sourceIdFor2(projectId2, this.derived.directory(projectId2)), _manifestPath: join13(dirname4(entry2.path), "manifest.json") });
     }
     let index4 = /* @__PURE__ */ new Map();
     for (let file2 of files) index4.has(file2.id) || index4.set(file2.id, file2);
@@ -69191,7 +69239,7 @@ var DataService = class {
         if (source4.isSymbolicLink() || !source4.isDirectory() && !source4.isFile()) return null;
       }
       if (file2._manifestPath) {
-        let entry2 = await this.derived.entry(projectId2, dirname3(file2._manifestPath));
+        let entry2 = await this.derived.entry(projectId2, dirname4(file2._manifestPath));
         if (!entry2 || entry2.path !== file2.path) return null;
         file2 = { ...file2, ...entry2 };
       }
@@ -69231,10 +69279,13 @@ var DataService = class {
       if (!file2) throw new Error(`Step ${index4 + 1}: lookup file ${step.file} is not a connected dataset.`);
       let fingerprint3 = await this.fingerprint(file2), saved = await this.states.read(projectId2, file2.id), state = this.describe(file2, fingerprint3, saved), configuration = state.setupStatus === "configured" ? saved.configuration : null, reader = configuration?.reader, key2 = JSON.stringify([workerCodeHash, projectId2, file2.id, fingerprint3, state.revision, configuration, step.transforms || [], step.summarize]), cachePath = join13(stateRoot(this.workspace), "cache", "lookups", createHash9("sha256").update(key2).digest("hex").slice(0, 32) + ".json");
       sharedLookups.has(key2) || sharedLookups.set(key2, (async () => {
-        let cached2 = await readFile9(cachePath, "utf8").then(JSON.parse).catch(() => null);
+        let cached2 = await readStateFile(stateRoot(this.workspace), cachePath).then(JSON.parse).catch((error64) => {
+          if (error64.code === "TEDATA_SYMLINK") throw error64;
+          return null;
+        });
         if (cached2?.key === key2) return cached2.table;
         let table = await this.computeLookup(file2, step, index4, configuration, reader, fingerprint3, state);
-        await mkdir8(dirname3(cachePath), { recursive: !0 });
+        await stateFile(stateRoot(this.workspace), cachePath);
         let temporary = cachePath + "." + randomUUID7() + ".tmp";
         return await writeFile8(temporary, JSON.stringify({ key: key2, table })), await replaceFile(temporary, cachePath).catch(() => unlink6(temporary).catch(() => {
         })), table;
@@ -69257,32 +69308,43 @@ var DataService = class {
   profileCachePath(key2) {
     return join13(stateRoot(this.workspace), "cache", "profiles", workerCodeHash.slice(0, 12) + "-" + createHash9("sha256").update(JSON.stringify({ version: 1, worker: workerCodeHash, key: key2 })).digest("hex") + ".json");
   }
+  // Pruning removes only records this service wrote: a name of its own pattern (worker prefix, key hash)
+  // holding a cache record of another worker version. Any other file in the folder is left alone.
   async pruneProfileCache() {
     let directory = join13(stateRoot(this.workspace), "cache", "profiles");
     if (prunedCaches.has(directory)) return;
     prunedCaches.add(directory);
     let current2 = workerCodeHash.slice(0, 12) + "-";
-    for (let name2 of await readdir5(directory).catch(() => [])) name2.endsWith(".json") && !name2.startsWith(current2) && await unlink6(join13(directory, name2)).catch(() => {
-    });
+    for (let name2 of await readdir5(directory).catch(() => [])) {
+      if (!/^[a-f0-9]{12}-[a-f0-9]{64}\.json$/.test(name2) || name2.startsWith(current2)) continue;
+      let path3 = join13(directory, name2), st = await lstat6(path3).catch(() => null);
+      if (!st || !st.isFile() || st.size > PROFILE_CACHE_RECORD_LIMIT) continue;
+      let record2 = await readFile6(path3, "utf8").then(JSON.parse).catch(() => null);
+      record2?.version === 1 && typeof record2.worker == "string" && typeof record2.key == "string" && record2.profile?.kind === "profile" && await unlink6(path3).catch(() => {
+      });
+    }
   }
+  // A linked cache folder is refused on read and on write alike, so the first profile names it; any other
+  // cache problem leaves the cache unused.
   async readProfileCache(key2) {
     try {
-      let value3 = JSON.parse(await readFile9(this.profileCachePath(key2), "utf8"));
+      let value3 = JSON.parse(await readStateFile(stateRoot(this.workspace), this.profileCachePath(key2)));
       return value3.key !== key2 || value3.worker !== workerCodeHash || value3.profile?.kind !== "profile" ? null : (value3.guard && typeof value3.guard.binding == "string" && value3.guard.proof && this.profileGuards.set(value3.profile, value3.guard), value3.profile);
-    } catch {
+    } catch (error64) {
+      if (error64.code === "TEDATA_SYMLINK") throw error64;
       return null;
     }
   }
   async writeProfileCache(key2, profile) {
     if (profile.error || profile.requiresMember) return;
-    this.pruneProfileCache().catch(() => {
-    });
     let path3 = this.profileCachePath(key2), temporary = path3 + "." + randomUUID7() + ".tmp";
     try {
-      await mkdir8(dirname3(path3), { recursive: !0, mode: 448 });
+      await stateFile(stateRoot(this.workspace), path3), this.pruneProfileCache().catch(() => {
+      });
       let guard = this.profileGuards.get(profile);
       await writeFile8(temporary, JSON.stringify({ version: 1, worker: workerCodeHash, key: key2, profile, ...guard ? { guard } : {} }), { mode: 384, flag: "wx" }), await replaceFile(temporary, path3);
-    } catch {
+    } catch (error64) {
+      if (error64.code === "TEDATA_SYMLINK") throw error64;
     } finally {
       await unlink6(temporary).catch(() => {
       });
@@ -69378,8 +69440,14 @@ var DataService = class {
             if (result.layoutData[block.id] = part.grouped, block.type === "plot") {
               let { warnings, plotted, png } = await checkPlot(block, part.grouped, view2.layout.theme, { preview: previews });
               if (warnings.length && (result.layoutWarnings[block.id] = warnings), result.layoutPlotted[block.id] = plotted, png) {
-                let dir = join13(stateRoot(this.workspace), "cache", "plot-previews"), path3 = join13(dir, `${file2.id}-${block.id}.png`);
-                await mkdir8(dir, { recursive: !0 }), await writeFile8(path3, png.png), result.layoutPreviews[block.id] = { path: path3, width: png.width, height: png.height, ...png.textDrawn ? {} : { note: "No system font was found, so labels are not drawn in this preview." } };
+                let path3 = await stateFile(stateRoot(this.workspace), join13(stateRoot(this.workspace), "cache", "plot-previews", `${file2.id}-${block.id}.png`)), temporary = path3 + "." + randomUUID7() + ".tmp";
+                try {
+                  await writeFile8(temporary, png.png, { mode: 384, flag: "wx" }), await replaceFile(temporary, path3);
+                } finally {
+                  await unlink6(temporary).catch(() => {
+                  });
+                }
+                result.layoutPreviews[block.id] = { path: path3, width: png.width, height: png.height, ...png.textDrawn ? {} : { note: "No system font was found, so labels are not drawn in this preview." } };
               }
             }
           }
@@ -69418,7 +69486,7 @@ var DataService = class {
             await this.states.write(projectId2, outputId, 0, { fingerprint: outputFingerprint, stamp: stampFor(stagedStat), configuration: outputConfiguration, savedView: null, source: { name: request2.name + ".csv.gz", kind: "derived-table", metadata: { derivation: lineage } } }), preparedState = outputId, await this.assertFresh(projectId2, file2, state.revision, "before publishing the derived copy");
             let output4 = await this.derived.publish(stage, projectId2, request2, derivation, result, lineage);
             published = !0;
-            let s = await lstat6(output4.path), dataset = { id: outputId, name: request2.name + ".csv.gz", label: "Derived datasets", bytes: s.size, revision: 1, setupStatus: "configured" }, entry2 = await this.derived.entry(projectId2, dirname3(output4.path));
+            let s = await lstat6(output4.path), dataset = { id: outputId, name: request2.name + ".csv.gz", label: "Derived datasets", bytes: s.size, revision: 1, setupStatus: "configured" }, entry2 = await this.derived.entry(projectId2, dirname4(output4.path));
             if (!entry2) throw new Error("The published derived copy is no longer available.");
             return this.fileIndexes.get(projectId2)?.index.set(outputId, { ...dataset, ...entry2, stamp: stampFor(s), sourceId: sourceIdFor2(projectId2, this.derived.directory(projectId2)) }), derivation.saved = { kind: "derived", fileId: outputId, fingerprint: outputFingerprint, revision: 1, dataset, lineage, preview: { ...result, previewId: request2.previewId } }, derivation.saved;
           }
@@ -69583,8 +69651,8 @@ async function waitForDurableProgress(result, poll, { wait = !0, deadline = Date
 }
 
 // view-export.mjs
-import { mkdir as mkdir9, writeFile as writeFile9, readdir as readdir6, lstat as lstat7, realpath as realpath6, rm as rm5 } from "node:fs/promises";
-import { join as join14, resolve as resolve7, isAbsolute as isAbsolute4, dirname as dirname4, basename as basename6, relative as relative2 } from "node:path";
+import { mkdir as mkdir5, writeFile as writeFile9, readdir as readdir6, lstat as lstat7, realpath as realpath6, rm as rm5 } from "node:fs/promises";
+import { join as join14, resolve as resolve7, isAbsolute as isAbsolute4, dirname as dirname5, basename as basename6, relative as relative3 } from "node:path";
 import { randomUUID as randomUUID8 } from "node:crypto";
 var escapeHtml = (value3) => String(value3 ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]), csvCell2 = (value3) => {
   let text4 = value3 == null ? "" : String(value3);
@@ -69592,7 +69660,7 @@ var escapeHtml = (value3) => String(value3 ?? "").replace(/[&<>"']/g, (c) => ({ 
 }, csv = (header, rows) => [header, ...rows].map((row) => row.map(csvCell2).join(",")).join(`
 `) + `
 `, slug2 = (text4) => String(text4 || "export").normalize("NFKD").replace(/[^\w.-]+/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "").slice(0, 60) || "export", number11 = (value3) => typeof value3 == "number" && Number.isFinite(value3) ? value3.toLocaleString("en-US", { maximumFractionDigits: 4 }) : value3 == null ? "\u2014" : String(value3), inside2 = (parent, child) => {
-  let r = relative2(parent, child);
+  let r = relative3(parent, child);
   return r === "" || !!r && !r.startsWith("..") && !isAbsolute4(r);
 };
 async function resolveThroughExisting2(path3) {
@@ -69601,7 +69669,7 @@ async function resolveThroughExisting2(path3) {
     try {
       return join14(await realpath6(current2), ...tail2.reverse());
     } catch {
-      let parent = dirname4(current2);
+      let parent = dirname5(current2);
       if (parent === current2) return path3;
       tail2.push(basename6(current2)), current2 = parent;
     }
@@ -69626,8 +69694,13 @@ function chartRows(chart) {
   return { header: fields, rows: (chart.points || []).map((point8) => fields.map((_, index4) => point8[index4])) };
 }
 async function target2(data3, name2, directory) {
-  let chosen = directory ? resolve7(directory) : join14(data3.derived.root, "exports", `${slug2(name2)}-${(/* @__PURE__ */ new Date()).toISOString().slice(0, 19).replace(/[-:]/g, "").replace("T", "-")}`);
   if (directory && !isAbsolute4(directory)) throw new Error("Choose an absolute export directory.");
+  let chosen;
+  if (directory) chosen = resolve7(directory);
+  else {
+    let exports = join14(data3.derived.root, "exports");
+    await ensureStateDirectory(data3.derived.base, exports, DERIVED_ADVICE), chosen = join14(exports, `${slug2(name2)}-${(/* @__PURE__ */ new Date()).toISOString().slice(0, 19).replace(/[-:]/g, "").replace("T", "-")}`);
+  }
   let actual = await resolveThroughExisting2(chosen), binding = await data3.binding();
   if ([join14(data3.workspace, ".tedata"), ...await Promise.all((binding.sources || []).map(async (source4) => {
     let path3 = resolve7(data3.workspace, source4.path);
@@ -69641,7 +69714,7 @@ async function exportView(data3, project3, { fileId: fileId3, directory } = {}) 
   let file2 = (await data3.files(project3)).find((entry2) => entry2.id === fileId3);
   if (!file2) throw new Error("Choose a connected dataset to export.");
   let profile = await run4(data3, project3, { action: "profile", fileId: fileId3 }), saved = await data3.states.read(project3, fileId3), view2 = saved?.savedView || {}, result = await run4(data3, project3, { action: "query", fileId: fileId3 }), layout = view2.layout || defaultLayout(view2), name2 = layout.title && layout.title !== "Data workspace" ? layout.title : file2.name, actual = await target2(data3, name2, directory), stage = `${actual}.partial-${randomUUID8()}`;
-  await mkdir9(join14(stage, "charts"), { recursive: !0 }), await mkdir9(join14(stage, "tables"), { recursive: !0 });
+  await mkdir5(join14(stage, "charts"), { recursive: !0 }), await mkdir5(join14(stage, "tables"), { recursive: !0 });
   let files = [], html = [], summaries = new Map((result.summaries || []).map((entry2) => [entry2.key, entry2])), write = async (path3, text4) => {
     await writeFile9(join14(stage, path3), text4), files.push(path3);
   };
@@ -69717,7 +69790,7 @@ svg{max-width:100%;height:auto}@media print{body{margin:0;max-width:none}a{color
 }
 
 // plugin-server.mjs
-var VERSION = "0.8.2", uri = "ui://toolsenabled-data/panel-v1.html", watchScript = join15(dirname5(fileURLToPath2(import.meta.url)), "tedata-watch.mjs"), previewModule = null, basicInstructions = `ToolsEnabled Data (TE Data) is a local data workspace for research and other workflows: inspect, interpret, validate, transform and visualize CSV/TSV data (also gzip and ZIP). The project folder is the workspace; its connected sources and all saved TE Data state live in <project>/.tedata. Source files are immutable: never modify, move or rewrite them, and never edit .tedata files by hand; use these tools.
+var VERSION = "0.8.3", uri = "ui://toolsenabled-data/panel-v1.html", watchScript = join15(dirname6(fileURLToPath2(import.meta.url)), "tedata-watch.mjs"), previewModule = null, basicInstructions = `ToolsEnabled Data (TE Data) is a local data workspace for research and other workflows: inspect, interpret, validate, transform and visualize CSV/TSV data (also gzip and ZIP). The project folder is the workspace; its connected sources and all saved TE Data state live in <project>/.tedata. Source files are immutable: never modify, move or rewrite them, and never edit .tedata files by hand; use these tools.
 Panels: tools that show results return a TE Data panel where the host can display one. Every such result has a panel field saying whether a panel was shown. When it says no panel is shown, nothing but your reply is visible: summarize the actual returned values in concise text (counts, columns, a few relevant values) and never claim a panel or table is displayed.
 Setup: the query engine needs a one-time setup on each computer. If a result says setup is needed, tell the user it installs DuckDB ${DUCKDB_VERSION} into TE Data's own data folder (internet needed once), then call tedata_setup.
 Sources: use tedata_sources to list, connect or disconnect data files, folders and documents when the user asks. A folder connects every CSV/TSV/gzip/ZIP file directly inside it. Evidence TE Data cannot compute itself (for example cross-source joins or coverage across files) may come from your own read-only scripts: write their outputs outside source folders and .tedata, connect them as documents with tedata_sources, and pin them in plan evidenceRefs.
@@ -69821,7 +69894,7 @@ async function dataOperation(projectId2, request2, wait = !1, recordView = !1, m
   result.state === "complete" && result.result?.kind === "query" && (recordView || ["save_view", "prepare_view"].includes(request2.action)) && activeViews.set(projectId2, { fileId: result.fileId || request2.fileId, ...result.result });
   let value3 = result.state === "complete" ? result.result : result, summary2 = modelVisible ? modelQuery(modelAssessmentResult(value3)) : value3, running = ["collection_run", "preparation_run"].includes(value3?.kind) && value3.state === "running" ? value3 : value3?.kind === "collection" && value3.run?.state === "running" ? value3.run : null, shellPath = (path3) => process.platform === "win32" ? path3.replaceAll("\\", "/") : path3, quote = (value4) => "'" + String(value4).replaceAll("'", "'\\''") + "'";
   modelVisible && running && summary2 && typeof summary2 == "object" && (summary2 = { waitWithMonitor: { command: `node ${quote(shellPath(watchScript))} --workspace ${quote(shellPath(workspaceRoot))} --run ${quote(running.id)}`, how: "This run continues in the background. If you have the Monitor tool, start this command with it (timeout_ms 3600000, or persistent if offered), tell the user what is running, and end your turn. It reports every 10% and exits with the outcome when the run ends; if the monitor expires first, start it again. Without the Monitor tool, poll with the nextRequest." }, ...summary2 });
-  let previews = modelVisible && value3?.kind === "query" && value3.layoutPreviews ? await Promise.all(Object.values(value3.layoutPreviews).slice(0, 6).map((p) => readFile10(p.path).then((data4) => ({ type: "image", data: data4.toString("base64"), mimeType: "image/png" })).catch(() => null))) : [];
+  let previews = modelVisible && value3?.kind === "query" && value3.layoutPreviews ? await Promise.all(Object.values(value3.layoutPreviews).slice(0, 6).map((p) => readFile7(p.path).then((data4) => ({ type: "image", data: data4.toString("base64"), mimeType: "image/png" })).catch(() => null))) : [];
   return { content: [{ type: "text", text: JSON.stringify(summary2) }, ...previews.filter(Boolean)], structuredContent: summary2, _meta: { benchData: result, request: request2, projectId: projectId2 } };
 }
 var failure2 = (error64) => ({ isError: !0, content: [{ type: "text", text: error64?.message || String(error64) }] });
@@ -69854,7 +69927,7 @@ function tool(name2, config2, run5, { app = !1, panel = !1 } = {}) {
   return handlers[name2] = handler, app ? j(mcp, name2, config2, handler) : mcp.registerTool(name2, config2, handler);
 }
 var handlers = {}, ui = (visibility) => ({ ui: { resourceUri: uri, visibility } }), projectId = external_exports.string().regex(/^[a-z]{2}-[a-f0-9]{32}$/).optional(), fileId2 = external_exports.string().regex(/^[a-f0-9]{24}$/), fingerprint2 = external_exports.string().regex(/^sha256:[a-f0-9]{64}$/), revision = external_exports.number().int().min(0), view = external_exports.enum(["data", "sources"]).default("data"), intent = external_exports.enum(["open", "refresh", "redraw", "update"]).default("open");
-async function open2({ view: view2 = "data", intent: intent2 = "open", projectId: project3, dataRequest: request2, inspectData = !0 }) {
+async function open3({ view: view2 = "data", intent: intent2 = "open", projectId: project3, dataRequest: request2, inspectData = !0 }) {
   if (request2) return dataOperation(project3, request2, !1, !0, !1);
   let { panel: data3, all } = await snapshot(), selected = data3.projects[0], current2 = activeViews.get(data3.selectedId);
   if (inspectData && view2 === "data" && data3.files.length) {
@@ -69891,8 +69964,8 @@ tool("tedata_collection", { title: "Show collection preparation", description: "
   let result = await dataOperation(project3, { action: "collection_get", collectionId }, !0);
   return result._meta.benchSnapshot = (await snapshot()).panel, result._meta.view = "data", result;
 }, { app: !0, panel: !0 });
-tool("tedata_open", { title: "Open or refresh TE Data", description: "Open the TE Data workspace for the current project folder. /tedata update uses intent=refresh to reread connected data while preserving layout; /tedata redraw explicitly requests new layout composition. A normal open shows the saved view or a basic raw table and suggests /tedata redraw. Do not configure automatically. For an explicit redraw, use tedata_inspect then tedata_prepare. For data checks use tedata_validate. view=sources lists the connected sources and documents. Returns actual source rows, provenance, setup state and whether a panel is visible.", inputSchema: { view, intent, projectId }, annotations: { readOnlyHint: !0, destructiveHint: !1, openWorldHint: !1 }, _meta: ui(["model", "app"]) }, open2, { app: !0, panel: !0 });
-var refreshTool = tool("tedata_refresh", { title: "Refresh TE Data panel", description: "Refresh, inspect, configure and save data views directly from the TE Data panel. Source files remain unchanged.", inputSchema: { view, intent, projectId, dataRequest: operationRequest.optional(), inspectData: external_exports.boolean().default(!0) }, annotations: { readOnlyHint: !1, destructiveHint: !1, openWorldHint: !1 }, _meta: ui(["app"]) }, open2, { app: !0 });
+tool("tedata_open", { title: "Open or refresh TE Data", description: "Open the TE Data workspace for the current project folder. /tedata update uses intent=refresh to reread connected data while preserving layout; /tedata redraw explicitly requests new layout composition. A normal open shows the saved view or a basic raw table and suggests /tedata redraw. Do not configure automatically. For an explicit redraw, use tedata_inspect then tedata_prepare. For data checks use tedata_validate. view=sources lists the connected sources and documents. Returns actual source rows, provenance, setup state and whether a panel is visible.", inputSchema: { view, intent, projectId }, annotations: { readOnlyHint: !0, destructiveHint: !1, openWorldHint: !1 }, _meta: ui(["model", "app"]) }, open3, { app: !0, panel: !0 });
+var refreshTool = tool("tedata_refresh", { title: "Refresh TE Data panel", description: "Refresh, inspect, configure and save data views directly from the TE Data panel. Source files remain unchanged.", inputSchema: { view, intent, projectId, dataRequest: operationRequest.optional(), inspectData: external_exports.boolean().default(!0) }, annotations: { readOnlyHint: !1, destructiveHint: !1, openWorldHint: !1 }, _meta: ui(["app"]) }, open3, { app: !0 });
 tool("tedata_data", { title: "Explore and configure data", description: "Shared operations for Claude and the panel: catalog, profile, state, configure, query, validate, preview_derive, save_derived, save_view, prepare_view and poll, plus evidence, preparation and collection actions (collection_export writes a study-ready folder of prepared files with an index and provenance). Catalog supports search over filenames/source labels and offset/limit pagination; results include total counts and source groups. Validate batches compare/missing/duplicate/change rules and returns evaluated/skipped/violation counts plus evidence. Filters support otherColumn instead of value for cross-column comparisons. Profile returns complete-file quality statistics, exact raw sample rows, source evidence, parser settings, fingerprint, revision and setupStatus. Configure/save_view require current fingerprint/revision and save only metadata in .tedata. Use them for an explicit layout/update request, not just opening. Dates accept explicit format/timezone; scales are reversible interpretations, not source changes. Existing configurations and views persist across sessions. Queries support typed filters, paging, derived columns, chart type and series grouping, and summarize: grouped summaries with calendar buckets in a time zone, numeric bins and measures such as last, median and quantiles (the same object plot and grouped layout blocks use); returned rows, chart values and grouped rows are model-readable. Poll running jobs to completion. No panel.", inputSchema: { projectId, request: operationRequest }, annotations: { readOnlyHint: !1, destructiveHint: !1, openWorldHint: !1 } }, ({ projectId: project3, request: request2 }) => dataOperation(project3, request2, /_poll$/.test(request2.action) ? 12e4 : !0));
 tool("tedata_sources", { title: "Connect data sources", description: "List, connect or disconnect the data sources and reference documents of this project's TE Data workspace. kind=source connects a CSV/TSV file (optionally .gz), a ZIP of them, or a folder (every such file directly inside it). kind=document connects a .txt, .md, .json or .jsonl reference such as a codebook or protocol. Paths may be absolute or relative to the project folder. Connecting never copies, moves or changes the files. Only change sources when the user asks.", inputSchema: { action: external_exports.enum(["list", "add", "remove"]), kind: external_exports.enum(["source", "document"]).default("source"), path: external_exports.string().max(4096).optional(), label: external_exports.string().max(160).optional(), description: external_exports.string().max(500).optional() }, annotations: { readOnlyHint: !1, destructiveHint: !1, openWorldHint: !1 } }, async (args) => {
   let base = await root(), workspace = await changeSources(base, args), value3 = { workspace: base, title: workspace.title, sources: await sourceRows(base, workspace), documents: workspace.documents.map(({ path: path3, label, description: description2 }) => ({ path: path3, label: label || basename7(path3), description: description2 || "" })) };
@@ -69908,7 +69981,7 @@ tool("tedata_setup", { title: "Set up TE Data on this computer", description: `O
   let value3 = action === "status" ? await pythonStatus() : await setup({ force }), reply = { ...value3, dataDirectory: dataDirectory(), ...value3.ready ? { next: "TE Data is ready. Open it with /tedata." } : {} };
   return { content: [{ type: "text", text: JSON.stringify(reply) }], structuredContent: reply };
 });
-G(mcp, "TE Data panel", uri, { mimeType: L }, async () => ({ contents: [{ uri, mimeType: L, text: await readFile10(panelFile, "utf8"), _meta: { ui: { prefersBorder: !0, csp: { connectDomains: [], resourceDomains: [] } } } }] }));
+G(mcp, "TE Data panel", uri, { mimeType: L }, async () => ({ contents: [{ uri, mimeType: L, text: await readFile7(panelFile, "utf8"), _meta: { ui: { prefersBorder: !0, csp: { connectDomains: [], resourceDomains: [] } } } }] }));
 mcp.server.oninitialized = () => {
   hostShowsPanels() || (previewModule && (preview = previewModule.createPreview({ panelFile, call: (name2, args) => handlers[name2]?.(args) })), refreshTool.disable());
 };

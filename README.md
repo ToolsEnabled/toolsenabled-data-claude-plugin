@@ -56,6 +56,12 @@ Recipes are ordered, declarative steps (no code or SQL): keep, remove or flag ro
 TE Data includes an interactive panel (tables, charts, setup, checks, transformations, layout editing). Claude Code shows such panels only where the host supports MCP App panels. Elsewhere TE Data works through Claude in text, and the panel appears automatically once your Claude Code host supports it; no plugin update is needed.
 
 
+## Notes for 0.8.3
+
+- A connected file whose path contains `*`, `?`, `[` or `]` is now read literally. Until 0.8.2 the query engine treated such a path as a pattern, so `data[1].csv` could show the rows of a `data1.csv` beside it under the connected file's name and fingerprint. If you made a derived copy before 0.8.3 from a file or folder named with one of these characters, derive it again (its lineage names the source file), and inspect such a file once more so that its saved interpretation is checked against its own columns.
+- Saved state is read and written only through real folders. A symbolic link at `.tedata`, or at a folder or record below it (`data-state`, `cache`, `preparations`, `collections`, `derived-data` and its `exports`), is refused with a message naming the link. Replace the link with a folder; to keep derived copies and exports on another disk, set `derivedDirectory` (above) to a real folder instead of linking `derived-data`. Derived copies already behind a link stay listed; new copies and exports are refused until the link is replaced.
+- Profile-cache cleanup removes only the cache records TE Data wrote, never another file in that folder.
+
 ## What it runs, writes and sends
 
 - **Runs:** a local MCP server (Node.js) started by Claude Code, and a Python query worker using DuckDB. Both run on your computer only. During a long collection run, Claude may ask to start TE Data's small read-only watcher (`node .../tedata-watch.mjs`) with Claude Code's Monitor tool; it only reads the run's progress record.
