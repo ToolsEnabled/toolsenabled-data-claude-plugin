@@ -27,6 +27,18 @@ Made and tested for Claude Code; not tested in Cowork; its tools do not load in 
 | `/toolsenabled-data:sources` | Connect or disconnect files, folders and reference documents |
 | `/toolsenabled-data:setup` | One-time setup on this computer |
 
+## Try it
+
+1. Install the plugin as above, save [`examples/sample.csv`](examples/sample.csv) as `sample.csv` in an empty folder, and open Claude Code in that folder.
+2. Run `/toolsenabled-data:setup` once on this computer.
+3. Ask Claude:
+
+| Prompt | Expected result |
+|---|---|
+| "Connect sample.csv and check that high_c is never below low_c." | TE Data checks all 30 rows and finds 2 where high_c is below low_c: Oslo on 2026-01-06 and Lisbon on 2026-01-10. |
+| "Make a copy of sample.csv without duplicate rows." | A new dataset of 28 rows (the 2 exact duplicate rows removed) is saved under `.tedata/derived-data` and connected. `sample.csv` is unchanged. |
+| "Chart the daily high for each city and export a report." | A line chart with one line per city, 14 days each. The export folder holds `report.html`, the chart as SVG and PNG with its Vega-Lite spec and data, and the table as CSV; Claude gives you the path of `report.html`. |
+
 ## Updating
 
 ```sh
@@ -84,7 +96,7 @@ Recipes are ordered, declarative steps (no code or SQL): keep, remove or flag ro
 TE Data includes an interactive panel (tables, charts, setup, checks, transformations, layout editing). Claude Code shows such panels only where the host supports MCP App panels. Elsewhere TE Data works through Claude in text, and the panel appears automatically once your Claude Code host supports it; no plugin update is needed.
 
 
-## Notes for 0.8.3
+## Upgrading from 0.8.2 or earlier
 
 - A connected file whose path contains `*`, `?`, `[` or `]` is now read literally. Until 0.8.2 the query engine treated such a path as a pattern, so `data[1].csv` could show the rows of a `data1.csv` beside it under the connected file's name and fingerprint. If you made a derived copy before 0.8.3 from a file or folder named with one of these characters, derive it again (its lineage names the source file), and inspect such a file once more so that its saved interpretation is checked against its own columns.
 - Saved state is read and written only through real folders. A symbolic link at `.tedata`, or at a folder or record below it (`data-state`, `cache`, `preparations`, `collections`, `derived-data` and its `exports`), is refused with a message naming the link. Replace the link with a folder; to keep derived copies and exports on another disk, set `derivedDirectory` (above) to a real folder instead of linking `derived-data`. Derived copies already behind a link stay listed; new copies and exports are refused until the link is replaced.
@@ -94,15 +106,29 @@ TE Data includes an interactive panel (tables, charts, setup, checks, transforma
 
 - **Runs:** a local MCP server (Node.js) started by Claude Code, and a Python query worker using DuckDB. Both run on your computer only. During a long collection run, Claude may ask to start TE Data's small read-only watcher (`node .../tedata-watch.mjs`) with Claude Code's Monitor tool; it only reads the run's progress record.
 - **Reads:** only the files and folders you connect, the reference documents you connect, and an installed system font for drawing plot previews. It refuses files it recognises as logins, tokens or keys, and files in AI agents' chat history and settings folders, such as Claude Code's `.claude` folder (the full list is in [PRIVACY.md](PRIVACY.md)).
-- **Writes:** `<project>/.tedata/` (the list of connected sources, saved interpretations, views, derived copies, preparation and collection records, and caches that speed up later reads), exports you ask for (beside the prepared copies unless you choose a folder) and TE Data's data folder (the Python environment: `~/.local/share/toolsenabled-data` on Linux, `%LOCALAPPDATA%\ToolsEnabled Data` on Windows, or the folder Claude Code provides to plugins). It never modifies source files.
+- **Writes:** `<project>/.tedata/` (the list of connected sources, saved interpretations, views, derived copies, preparation and collection records, and caches that speed up later reads), exports you ask for (beside the prepared copies unless you choose a folder) and TE Data's data folder (the Python environment: in Claude Code, the folder Claude Code provides to plugins; otherwise `~/.local/share/toolsenabled-data` on Linux or `%LOCALAPPDATA%\ToolsEnabled Data` on Windows). It never modifies source files.
 - **Sends:** nothing, except the one-time setup. Setup downloads DuckDB from the Python Package Index (pypi.org and files.pythonhosted.org), or from the package index your own pip or uv configuration names. If `uv` is installed, setup uses it, and `uv` may also download a Python interpreter (uv 0.12 downloads it from releases.astral.sh). Setup runs only from TE Data's data folder, never from the project folder. What TE Data keeps, and how to delete it, is in [PRIVACY.md](PRIVACY.md). Data reaches Claude only through tool results Claude requests during your session.
 - **Permissions:** TE Data asks for no special permissions. Claude Code's normal tool permission prompts apply to its tools, including those that save views and settings.
 
 ## Requirements
 
-- Claude Code (desktop app Code tab or CLI) on Linux or Windows.
+- Claude Code (the desktop app's Code tab or the CLI). Tested on Linux; native Windows and macOS have not been tested.
 - Node.js 22 or newer on the PATH (tested with 22.14 and 22.19).
 - Python 3.10 or newer, or `uv`, for the one-time setup. On Debian and Ubuntu, `python3-venv` is needed if `uv` is not installed.
+
+## Settings
+
+TE Data reads these environment variables from the environment you start Claude Code from. None is needed for normal use.
+
+| Variable | Effect |
+|---|---|
+| `TEDATA_WORKSPACE` | The project folder to use as the workspace. Without it, the server uses the folder Claude Code names (its first root, or `CLAUDE_PROJECT_DIR`), then the current folder; the watcher uses it when `--workspace` is not given. |
+| `TEDATA_DATA_DIR` | TE Data's data folder (Python environment and setup record), instead of the folder Claude Code provides to plugins or the system default. |
+| `TEDATA_PYTHON` | A Python that already has DuckDB 1.5.6. TE Data uses it instead of its own environment, and setup reports it as ready. |
+| `TEDATA_BASE_PYTHON` | The Python 3.10 or newer that setup tries first when it creates TE Data's environment (with `uv`, the Python version `uv` should use). |
+| `TEDATA_COLLECTION_WORKERS` | Lanes for collection runs, 1 to 16 (default: up to 8, half the processor threads and about 3 GB of memory per lane). |
+| `TEDATA_WATCH_INTERVAL_MS` | How often the watcher reads run records, in milliseconds (default 10000). |
+| `TEDATA_WATCH_STALL_MS` | How long a running run may record no progress before the watcher says so, in milliseconds (default 900000, 15 minutes). |
 
 ## Support
 
