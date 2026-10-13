@@ -1,7 +1,11 @@
 {
   "plugin": "toolsenabled-data",
-  "version": "0.8.3",
-  "sourceCommit": "4f61abcf3eeb9b7532e7bfe84a49a46ab6bf928a",
+  "version": "0.8.4",
+  "sourceCommit": "23f1fa2ca18bf3f323e8539a626d3be8a9bdb420",
+  "sourceKind": "public-payload",
+  "payloadBaseCommit": "85bb0693a329f56a8a0c74847d58f2fa8b27371f",
+  "bundledSourceCommit": "4f61abcf3eeb9b7532e7bfe84a49a46ab6bf928a",
+  "bundledSourceAvailability": "Internal 0.8.3 build source; not distributed in this public repository.",
   "files": [
     {
       "path": ".claude-plugin/icon.png",
@@ -11,17 +15,22 @@
     {
       "path": ".claude-plugin/marketplace.json",
       "bytes": 473,
-      "sha256": "7c3f9742e9d1aa31149c95c09ce2204d36ecd97acfe84dad4dbba96e89c0238d"
+      "sha256": "a83ce3226cf277226c2e0697be9e603fe5a2af1ddf180f21fad5f8f4b58ab415"
     },
     {
       "path": ".claude-plugin/plugin.json",
       "bytes": 914,
-      "sha256": "5f8c76b5efb15766e89ba5ea03a21687010490f63d6b28820681c85b1ff8342e"
+      "sha256": "5999b348bc8d9f4bf21a18dcdcc861be4e25ec4042dad58cdd5312f478890ad9"
     },
     {
       "path": ".mcp.json",
       "bytes": 154,
       "sha256": "fc23b1fcaeb1ca4ecb114a42690bb423c9a669352681ab4e1b51a31d8e7d24db"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "bytes": 659,
+      "sha256": "7d948f993c7ed3c11042eea48e54d5628d799cee73cb80574a3d168db0fe528c"
     },
     {
       "path": "LICENSE",
@@ -35,8 +44,13 @@
     },
     {
       "path": "README.md",
-      "bytes": 8720,
-      "sha256": "9efbc78b817ec0da9a02a1602e2f648e1c8447de60a905698d69d5264563fc13"
+      "bytes": 10410,
+      "sha256": "3975d187979119b10843f5fff51b49570243195c7b4d559bb22a5eac4eea79a8"
+    },
+    {
+      "path": "SECURITY.md",
+      "bytes": 2936,
+      "sha256": "cfc4454bbf4dedc63722e7355404ac50aa466bc6d06a3f94dee7d683f99b6662"
     },
     {
       "path": "THIRD-PARTY-LICENSES.txt",
@@ -66,17 +80,37 @@
     {
       "path": "server/tedata-server.mjs",
       "bytes": 3222268,
-      "sha256": "bde49d63b01e8390932e1d5b18cf5ad6a051689e096b25f9946c19bc12a1af4a"
+      "sha256": "f247c8a7db422b4723d52091980308c5205ef3489c374f40563f9795fb16a9ee"
     },
     {
       "path": "server/tedata-watch.mjs",
-      "bytes": 6106,
-      "sha256": "27533ada61a5d2caa69412590f0fea73f5a4f67be97abe5f34b924b1e44f5f14"
+      "bytes": 6734,
+      "sha256": "187eb1e8d788303bfe8791da6f05981deeb00a2fbb77bd93d609d8d19e8e89f9"
     },
     {
       "path": "skills/tedata/SKILL.md",
       "bytes": 31084,
       "sha256": "316af7020022dd352425f7cf489ea27579e88bd998aa59818a6d891e91e47a2f"
+    },
+    {
+      "path": "test/release.test.mjs",
+      "bytes": 5187,
+      "sha256": "f0b60f7e3e7b2ef9bbf3a98dd3b33913dfa3a959ab9e963d045e52f7f1469435"
+    },
+    {
+      "path": "test/verify.test.mjs",
+      "bytes": 3762,
+      "sha256": "29c6015635bf10ba3793166a9ff4d4f7b80abc07d3c52351e03838ac1df60645"
+    },
+    {
+      "path": "tools/build-release.mjs",
+      "bytes": 1042,
+      "sha256": "e3e86b96d77f998061f4398aa09f7319bde5239a83ef893255502591cf570f42"
+    },
+    {
+      "path": "tools/verify-release.mjs",
+      "bytes": 2377,
+      "sha256": "c5c6d8691299474880aded74278638618cd812aa9a12b18aab6630a49487d1d4"
     },
     {
       "path": "worker/data_worker.py",
