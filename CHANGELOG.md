@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.8.5 — 2026-10-13
+
+- Refuse AI agents' chat history and settings as data sources and documents: Claude Code's `.claude` folder, the Claude app's data folders, and the `.codex`, `.gemini`, `.copilot` and opencode folders. Files connected from them by an earlier version are no longer listed or read.
+- Two tool calls that reach a fresh server at once both work; the second no longer fails with "Cannot read properties of null (reading 'request')".
+- Every tool declares a title annotation. tedata_open, tedata_inspect and tedata_validate say that their only write is TE Data's own profile cache. tedata_setup is marked destructive, because installing first deletes TE Data's earlier Python environment.
+- Claude asks the user before running the one-time setup, and says that uv may download a Python interpreter.
+- README: Claude Code wording, a Try it section with `examples/sample.csv`, a Settings table and the platform tested. PRIVACY.md: what TE Data keeps, for how long, how to delete it, and the download hosts. The plugin's homepage is https://toolsenabled.ai/data/.
+
 ## 0.8.4 — 2026-10-13
 
 - Add literal first-install and update commands to the README.

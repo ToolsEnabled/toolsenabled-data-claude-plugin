@@ -50,17 +50,17 @@ Restart Claude Code after updating.
 
 ## Verifying a release
 
-The 0.8.4 release includes `toolsenabled-data-0.8.4.tar.gz` and its SHA-256 sidecar. Download both from the [release page](https://github.com/ToolsEnabled/toolsenabled-data-claude-plugin/releases/tag/toolsenabled-data--v0.8.4), then run:
+The 0.8.5 release includes `toolsenabled-data-0.8.5.tar.gz` and its SHA-256 sidecar. Download both from the [release page](https://github.com/ToolsEnabled/toolsenabled-data-claude-plugin/releases/tag/toolsenabled-data--v0.8.5), then run:
 
 ```sh
-sha256sum -c toolsenabled-data-0.8.4.tar.gz.sha256
-tar -xzf toolsenabled-data-0.8.4.tar.gz
+sha256sum -c toolsenabled-data-0.8.5.tar.gz.sha256
+tar -xzf toolsenabled-data-0.8.5.tar.gz
 cd toolsenabled-data
 node tools/verify-release.mjs
 node --test test/*.test.mjs
 ```
 
-The verifier checks every listed file's size and SHA-256 and refuses unlisted payload files. `RELEASE-MANIFEST.json` is the checksum list; it cannot hash itself. Its `sourceCommit` identifies the public payload commit before the manifest was refreshed. `bundledSourceCommit` identifies the internal 0.8.3 build source for the prebuilt server and panel; that internal source, its `release.mjs`, and its original suites are not distributed here. The tests above exercise the shipped watcher and MCP protocol; they are not the original source suites. The bundled server differs from 0.8.3 only in its reported version.
+The verifier checks every listed file's size and SHA-256 and refuses unlisted payload files. `RELEASE-MANIFEST.json` is the checksum list; it cannot hash itself. Its `sourceCommit` identifies the public payload commit before the manifest was refreshed. `bundledSourceCommit` identifies the internal 0.8.3 build source for the prebuilt server and panel; that internal source, its `release.mjs`, and its original suites are not distributed here. The tests above exercise the shipped watcher and MCP server; they are not the original source suites. The bundled server is the 0.8.3 build with the changes listed in CHANGELOG.md made directly in the public payload (0.8.4: its reported version; 0.8.5: the agent-history refusal, the shared workspace lookup, annotation titles and wording). The panel and the Python workers are unchanged from 0.8.3.
 
 ## Large collections
 
