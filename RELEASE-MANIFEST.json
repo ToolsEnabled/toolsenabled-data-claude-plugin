@@ -1,7 +1,7 @@
 {
   "plugin": "toolsenabled-data",
   "version": "0.8.5",
-  "sourceCommit": "584e4b339c4a4b962bdfb87cbd89b23684285f3f",
+  "sourceCommit": "daff3020f44fcb4ad4d6ff0010c956f3aa2fe242",
   "sourceKind": "public-payload",
   "payloadBaseCommit": "d6a6fe1deaa27093a548068c932be9ababb8eb4e",
   "bundledSourceCommit": "4f61abcf3eeb9b7532e7bfe84a49a46ab6bf928a",
@@ -29,8 +29,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 1948,
-      "sha256": "7ac0709a4090a91c3b88b0c1ab56cf4a1a88200342c8b161cc8c66db2ed8023c"
+      "bytes": 2061,
+      "sha256": "64fbd3ce9c19f197a9540e33ee2408edb5e3592d1803c2b545495bcfb4195d9b"
     },
     {
       "path": "LICENSE",
@@ -39,8 +39,8 @@
     },
     {
       "path": "PRIVACY.md",
-      "bytes": 3718,
-      "sha256": "e131fd3e5ade8d812f3e5e312e468eb04a1c3bee23da323ceb492967375f8473"
+      "bytes": 3830,
+      "sha256": "a76ed33749bce61fbc3e29e404f6e5ea526b09088bee44d6f8f4c2be45b88b9d"
     },
     {
       "path": "README.md",
@@ -84,8 +84,8 @@
     },
     {
       "path": "server/tedata-server.mjs",
-      "bytes": 3226030,
-      "sha256": "452f97671d2fc189e40e6f2f67995d8ce0005e948c150607f4366cabc42794df"
+      "bytes": 3227193,
+      "sha256": "a829931b21e71cc985a0a8be5cceb0341b8693dc0f0cff459fc480045ed54af5"
     },
     {
       "path": "server/tedata-watch.mjs",
@@ -104,8 +104,8 @@
     },
     {
       "path": "test/server.test.mjs",
-      "bytes": 15418,
-      "sha256": "9c7f8ed509b852df4ff3d77f22bf249adff6f89f4623a137b3f53634a1c60502"
+      "bytes": 17709,
+      "sha256": "26f39dc012579d9db22b6653cc9c11b8efe18afbd3ca8bac9529917d617fb669"
     },
     {
       "path": "test/verify.test.mjs",
