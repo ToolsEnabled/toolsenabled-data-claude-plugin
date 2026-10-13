@@ -108,3 +108,13 @@ test('files connected by an earlier version from ~/.claude are no longer listed 
   assert.deepEqual(files.map(f => f.name), ['measurements.csv']);
  } finally { await s.close(); }
 });
+
+test('two tool calls at once on a fresh server both succeed', async () => {
+ const s = await start();
+ try {
+  await s.initialize();
+  const call = {name: 'tedata_data', arguments: {request: {action: 'evidence_catalog'}}};
+  const responses = await s.together([['tools/call', call], ['tools/call', call]]);
+  for (const response of responses) assert.notEqual(response.result?.isError, true, text(response));
+ } finally { await s.close(); }
+});
