@@ -4,6 +4,8 @@ ToolsEnabled Data (TE Data) is a local data workspace that runs on your computer
 
 Made and tested for Claude Code; not tested in Cowork; its tools do not load in claude.ai chat.
 
+Codex is not supported. This repository's Codex marketplace file, `.agents/plugins/marketplace.json`, lists TE Data as not available for installation.
+
 ## Getting started
 
 1. Install from a terminal, then open a Claude Code session in your project folder:
