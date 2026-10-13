@@ -1,7 +1,7 @@
 {
   "plugin": "toolsenabled-data",
   "version": "0.8.5",
-  "sourceCommit": "91719ed189552dbb0da4a941bde49cca7398d8c5",
+  "sourceCommit": "584e4b339c4a4b962bdfb87cbd89b23684285f3f",
   "sourceKind": "public-payload",
   "payloadBaseCommit": "d6a6fe1deaa27093a548068c932be9ababb8eb4e",
   "bundledSourceCommit": "4f61abcf3eeb9b7532e7bfe84a49a46ab6bf928a",
@@ -29,8 +29,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 1877,
-      "sha256": "a2d2357463f5b54789aba780c454f22ea2734aca24eec5a4e4ed76b4355968d1"
+      "bytes": 1948,
+      "sha256": "7ac0709a4090a91c3b88b0c1ab56cf4a1a88200342c8b161cc8c66db2ed8023c"
     },
     {
       "path": "LICENSE",
@@ -39,13 +39,13 @@
     },
     {
       "path": "PRIVACY.md",
-      "bytes": 3268,
-      "sha256": "b23b9e19e6f25d6fbb8fedffae78083499887aea0fdad500b3c3b7b48fd25831"
+      "bytes": 3718,
+      "sha256": "e131fd3e5ade8d812f3e5e312e468eb04a1c3bee23da323ceb492967375f8473"
     },
     {
       "path": "README.md",
-      "bytes": 13224,
-      "sha256": "eab0a47f69ae47d48e7db4b3f3eb9070b21ed2d2ba68c11eff147195c619d294"
+      "bytes": 13197,
+      "sha256": "1c3aeaa934b1b12b9a487f26a011d9c249104f7a835b2b1d2c014b56323a5190"
     },
     {
       "path": "SECURITY.md",
@@ -64,8 +64,8 @@
     },
     {
       "path": "commands/setup.md",
-      "bytes": 529,
-      "sha256": "1b37aa2f1eb9bd1b2ba09e160773911c3f18bca33087d0c40cdea9656b1ef4bb"
+      "bytes": 700,
+      "sha256": "e1798e8ac956cf667683fe2017b07c558401bbad97ca5a53281d8fa0b5dec64c"
     },
     {
       "path": "commands/sources.md",
@@ -84,8 +84,8 @@
     },
     {
       "path": "server/tedata-server.mjs",
-      "bytes": 3224414,
-      "sha256": "abfb6a44317e5a1babda199453977a541e9bfabda2be91bb2f2449aace910bbf"
+      "bytes": 3226030,
+      "sha256": "452f97671d2fc189e40e6f2f67995d8ce0005e948c150607f4366cabc42794df"
     },
     {
       "path": "server/tedata-watch.mjs",
@@ -94,8 +94,8 @@
     },
     {
       "path": "skills/tedata/SKILL.md",
-      "bytes": 31167,
-      "sha256": "f1421f26c435ff77b06df6579069a0d278a0d992b1a90499367cfa5b7eaa76ba"
+      "bytes": 31243,
+      "sha256": "ce82d87f5555bbfd9e9b79f1720297cecfe376d48b54c7a1b0241671b2650370"
     },
     {
       "path": "test/release.test.mjs",
@@ -104,8 +104,8 @@
     },
     {
       "path": "test/server.test.mjs",
-      "bytes": 13165,
-      "sha256": "f2d64ef6feeec7184d691be02a0e46ca851278f1ba9286cb70a665d400f6cfaf"
+      "bytes": 15418,
+      "sha256": "9c7f8ed509b852df4ff3d77f22bf249adff6f89f4623a137b3f53634a1c60502"
     },
     {
       "path": "test/verify.test.mjs",
