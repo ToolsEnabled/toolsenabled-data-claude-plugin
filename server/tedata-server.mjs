@@ -29001,10 +29001,9 @@ var DIRECTORIES = [".ssh", ".aws", ".azure", ".gnupg", ".kube", ".docker", ".cod
 ]), PATTERNS = [/^\.env\./, /_accesskeys\.csv$/, /_credentials\.csv$/, /^client_secret.*\.json$/, /\.(pem|key|p12|pfx|kdbx|keychain|keychain-db|ppk|asc|gpg)$/, /^\.claude\.json$/];
 // Claude Code keeps a project's git worktrees in <project>/.claude/worktrees/<name>. Those are project folders,
 // not agent history, so that one .claude segment is not refused; a .claude folder inside a worktree still is.
-// Folders named .claude-<name> or .codex-<name> hold other accounts' Claude and Codex settings and history.
 function reason2(path3) {
   let parts = path3.replace(/\\/g, "/").toLowerCase().split("/").filter(Boolean), name2 = parts.at(-1) || "";
-  let folder = (part) => AGENT_FOLDERS.has(part) || AGENT_PREFIX.test(part) ? AGENT_REASON : "it is inside a folder that holds login credentials", listed = parts.find((part, i) => (DIRECTORIES.includes(part) || AGENT_PREFIX.test(part)) && !(part === ".claude" && parts[i + 1] === "worktrees"));
+  let folder = (part) => AGENT_FOLDERS.has(part) ? AGENT_REASON : "it is inside a folder that holds login credentials", listed = parts.find((part, i) => DIRECTORIES.includes(part) && !(part === ".claude" && parts[i + 1] === "worktrees"));
   if (listed) return folder(listed);
   if (parts.includes(".claude") && /credential/.test(name2)) return "it holds login credentials";
   for (let pair of NESTED) for (let i = 0; i + pair.length <= parts.length; i++) if (pair.every((part, k) => parts[i + k] === part)) return folder(pair.at(-1));
@@ -29012,12 +29011,25 @@ function reason2(path3) {
 }
 // Claude Code keeps its chat history, memory and settings in CLAUDE_CONFIG_DIR when that is set (and passes its
 // environment to this server), and Codex in CODEX_HOME. Files inside either are refused like the default
-// .claude and .codex folders. A value that names a whole disk or the home folder is ignored.
-var agentHomeCache = { key: null, homes: [] }, foldCase = (path3) => process.platform === "win32" || process.platform === "darwin" ? path3.toLowerCase() : path3;
+// .claude and .codex folders, except in their worktrees folder. A value that names a whole disk or the home
+// folder (by its path or its real path) is ignored. People with several accounts keep the others in folders
+// such as ~/.claude-work or ~/.codex-work: a .claude-<name> or .codex-<name> folder directly in the home folder
+// is refused too, except its worktrees folder.
+var agentHomeCache = { key: null, homes: [] }, userHomeCache = { key: null, homes: [] }, foldCase = (path3) => process.platform === "win32" || process.platform === "darwin" ? path3.toLowerCase() : path3, withSep = (folder) => folder.endsWith(guardSep) ? folder : folder + guardSep;
+function userHomes() {
+  let key = guardHomedir();
+  if (userHomeCache.key === key) return userHomeCache.homes;
+  let homes = [foldCase(resolve(key))];
+  try {
+    homes.push(foldCase(realpathSync.native(key)));
+  } catch {
+  }
+  return userHomeCache = { key, homes: [...new Set(homes)] }, userHomeCache.homes;
+}
 function agentHomes() {
   let key = `${process.env.CLAUDE_CONFIG_DIR || ""}\0${process.env.CODEX_HOME || ""}`;
   if (agentHomeCache.key === key) return agentHomeCache.homes;
-  let homes = [], home = foldCase(resolve(guardHomedir()));
+  let homes = [], ownHomes = userHomes();
   for (let value of [process.env.CLAUDE_CONFIG_DIR, process.env.CODEX_HOME]) {
     if (!value || !guardIsAbsolute(value)) continue;
     let folder = resolve(value), real = folder;
@@ -29025,13 +29037,21 @@ function agentHomes() {
       real = realpathSync.native(folder);
     } catch {
     }
-    for (let candidate of new Set([folder, real])) resolve(candidate, "..") !== candidate && foldCase(candidate) !== home && homes.push(foldCase(candidate));
+    for (let candidate of new Set([folder, real])) resolve(candidate, "..") !== candidate && !ownHomes.includes(foldCase(candidate)) && homes.push(foldCase(candidate));
   }
   return agentHomeCache = { key, homes }, homes;
 }
 function insideAgentHome(path3) {
   let folded = foldCase(path3);
-  return agentHomes().some((home) => folded === home || folded.startsWith(home.endsWith(guardSep) ? home : home + guardSep));
+  return agentHomes().some((home) => (folded === home || folded.startsWith(withSep(home))) && !folded.startsWith(withSep(home) + "worktrees" + guardSep));
+}
+function inAccountFolder(path3) {
+  let folded = foldCase(path3);
+  return userHomes().some((home) => {
+    if (!folded.startsWith(withSep(home))) return !1;
+    let [first, second] = folded.slice(withSep(home).length).split(guardSep);
+    return second !== void 0 && AGENT_PREFIX.test(first) && second !== "worktrees";
+  });
 }
 function credentialPathProblem(path3, root2 = process.cwd()) {
   let absolute = resolve(root2, path3), target3 = absolute;
@@ -29039,7 +29059,7 @@ function credentialPathProblem(path3, root2 = process.cwd()) {
     target3 = realpathSync.native(absolute);
   } catch {
   }
-  let why = reason2(absolute) || (target3 !== absolute ? reason2(target3) : null) || (insideAgentHome(absolute) || insideAgentHome(target3) ? AGENT_REASON : null);
+  let why = reason2(absolute) || (target3 !== absolute ? reason2(target3) : null) || (insideAgentHome(absolute) || insideAgentHome(target3) || inAccountFolder(absolute) || inAccountFolder(target3) ? AGENT_REASON : null);
   return why ? `TE Data does not read ${basename(target3)}: ${why}. TE Data never reads, copies, links or stores logins, tokens or keys.` : null;
 }
 function assertNotCredential(path3, root2) {

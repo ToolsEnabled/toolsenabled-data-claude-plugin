@@ -16,9 +16,11 @@ const text = response => (response.result?.content || []).map(part => part.text)
 // TEDATA_* settings, so no test can reach a real project, chat history or Python environment.
 // With roots, the workspace comes from this client's roots/list answer instead of TEDATA_WORKSPACE.
 // extraEnv(home) adds variables after the filtering, for tests that need CLAUDE_CONFIG_DIR or CODEX_HOME.
-async function start({roots = false, project: relativeProject = 'project', extraEnv = () => ({})} = {}) {
+// homeLink makes the home folder a link to its real folder, as on systems where /home links to /var/home.
+async function start({roots = false, project: relativeProject = 'project', extraEnv = () => ({}), homeLink = false} = {}) {
  const base = await mkdtemp(join(scratch, 'case-'));
  const home = join(base, 'home'), project = join(base, relativeProject);
+ if (homeLink) { await mkdir(join(base, 'real-home')); await symlink(join(base, 'real-home'), home, process.platform === 'win32' ? 'junction' : 'dir'); }
  await mkdir(home, {recursive: true}); await mkdir(project, {recursive: true});
  const env = Object.fromEntries(Object.entries(process.env).filter(([key]) => !/^(CLAUDE|TEDATA)_/.test(key)));
  Object.assign(env, {HOME: home, USERPROFILE: home, TEDATA_DATA_DIR: join(base, 'data')}, roots ? {} : {TEDATA_WORKSPACE: project}, extraEnv(home));
@@ -98,11 +100,38 @@ test('chat history and memory in a moved Claude or Codex folder (CLAUDE_CONFIG_D
 });
 
 test('a CLAUDE_CONFIG_DIR that names the home folder itself does not refuse ordinary files', async () => {
- const s = await start({extraEnv: home => ({CLAUDE_CONFIG_DIR: home})});
+ for (const homeLink of [false, true]) {
+  const s = await start({homeLink, extraEnv: home => ({CLAUDE_CONFIG_DIR: home})});
+  try {
+   await s.initialize();
+   const notes = await s.call('tedata_sources', {action: 'add', kind: 'document', path: await file(join(s.home, 'notes', 'protocol.md'), 'Protocol.\n')});
+   assert.notEqual(notes.result.isError, true, `${homeLink ? 'linked home: ' : ''}${text(notes)}`);
+  } finally { await s.close(); }
+ }
+});
+
+test('only account folders directly in the home folder are refused by their .claude- or .codex- name', async () => {
+ const s = await start({project: join('home', 'work', 'plugin-repo')});
  try {
   await s.initialize();
-  const notes = await s.call('tedata_sources', {action: 'add', kind: 'document', path: await file(join(s.home, 'notes', 'protocol.md'), 'Protocol.\n')});
-  assert.notEqual(notes.result.isError, true, text(notes));
+  // Other tools' worktrees, plugin repositories' .claude-plugin folders and dot-files are not agent history.
+  for (const [kind, path] of [
+   ['document', join(s.project, '.claude-plugin', 'marketplace.json')], ['document', join(s.project, '.codex-plugin', 'plugin.json')],
+   ['source', join(s.home, '.claude-squad', 'worktrees', 'feature', 'data', 'measurements.csv')], ['source', join(s.home, '.claude-usage.csv')]]) {
+   const added = await s.call('tedata_sources', {action: 'add', kind, path: await file(path, kind === 'source' ? 'a,b\n1,2\n' : '{}\n')});
+   assert.notEqual(added.result.isError, true, `${path}: ${text(added)}`);
+  }
+ } finally { await s.close(); }
+});
+
+test('a session in <CLAUDE_CONFIG_DIR>/worktrees still connects its own files', async () => {
+ const s = await start({project: join('home', '.claude', 'worktrees', 'feature'), extraEnv: home => ({CLAUDE_CONFIG_DIR: join(home, '.claude')})});
+ try {
+  await s.initialize();
+  const added = await s.call('tedata_sources', {action: 'add', kind: 'source', path: await file(join(s.project, 'data', 'measurements.csv'), 'a,b\n1,2\n')});
+  assert.notEqual(added.result.isError, true, text(added));
+  const history = await s.call('tedata_sources', {action: 'add', kind: 'document', path: await file(join(s.home, '.claude', 'history.jsonl'), '{"display":"chat transcript"}\n')});
+  assert.equal(history.result.isError, true, 'history beside the worktrees was connected');
  } finally { await s.close(); }
 });
 
