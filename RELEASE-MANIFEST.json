@@ -1,12 +1,17 @@
 {
   "plugin": "toolsenabled-data",
-  "version": "0.8.5",
-  "sourceCommit": "daff3020f44fcb4ad4d6ff0010c956f3aa2fe242",
+  "version": "0.8.6",
+  "sourceCommit": "ae9d0016616aee40fa821093e3e3ce669837a0d6",
   "sourceKind": "public-payload",
-  "payloadBaseCommit": "d6a6fe1deaa27093a548068c932be9ababb8eb4e",
+  "payloadBaseCommit": "a19846666cf02676239a66b133eaee611ed4ad7a",
   "bundledSourceCommit": "4f61abcf3eeb9b7532e7bfe84a49a46ab6bf928a",
   "bundledSourceAvailability": "Internal 0.8.3 build source; not distributed in this public repository. Since 0.8.4, public payload commits change server/tedata-server.mjs directly; CHANGELOG.md lists the changes.",
   "files": [
+    {
+      "path": ".agents/plugins/marketplace.json",
+      "bytes": 377,
+      "sha256": "2e311209da787ee06b49d328655acdfbef403471eb00b5fbcfb0adec34ad0521"
+    },
     {
       "path": ".claude-plugin/icon.png",
       "bytes": 24871,
@@ -15,12 +20,12 @@
     {
       "path": ".claude-plugin/marketplace.json",
       "bytes": 473,
-      "sha256": "5dfa22cb629b54eee9e479fdfa4274e6f4793390761cbe864768e46217e3d3b0"
+      "sha256": "ff80a0eac2657970c100681653fa9ccaaea44b753853842becf09812928c9e75"
     },
     {
       "path": ".claude-plugin/plugin.json",
       "bytes": 920,
-      "sha256": "b91e58cf7c60733daef293a6fe5f5c58f103b1538bdd5a6a611272300adc06c8"
+      "sha256": "0073681196493d5ad5e7d43ab6a3d2ddf6f0296753e183ba60c6959798eb85b3"
     },
     {
       "path": ".mcp.json",
@@ -29,8 +34,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 2061,
-      "sha256": "64fbd3ce9c19f197a9540e33ee2408edb5e3592d1803c2b545495bcfb4195d9b"
+      "bytes": 2805,
+      "sha256": "77a5dbc170585748c96147e1860aa23bbce8f71e4345934ba8893647adc24ef2"
     },
     {
       "path": "LICENSE",
@@ -44,8 +49,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 13197,
-      "sha256": "1c3aeaa934b1b12b9a487f26a011d9c249104f7a835b2b1d2c014b56323a5190"
+      "bytes": 13349,
+      "sha256": "fb52cecde9dd7911a7a98548dc2c7e87f1d2c40fda091b879e451d570663107c"
     },
     {
       "path": "SECURITY.md",
@@ -85,7 +90,7 @@
     {
       "path": "server/tedata-server.mjs",
       "bytes": 3227193,
-      "sha256": "a829931b21e71cc985a0a8be5cceb0341b8693dc0f0cff459fc480045ed54af5"
+      "sha256": "4777d2d6ad498592aaabb1d2490e830dd73f24b3fff183beebf5cf20b344793c"
     },
     {
       "path": "server/tedata-watch.mjs",
