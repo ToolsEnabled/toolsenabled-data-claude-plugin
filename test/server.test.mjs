@@ -3,7 +3,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {spawn} from 'node:child_process';
-import {mkdtemp, mkdir, writeFile, symlink} from 'node:fs/promises';
+import {mkdtemp, mkdir, writeFile, symlink, readFile} from 'node:fs/promises';
 import {join, dirname} from 'node:path';
 import {tmpdir} from 'node:os';
 import {fileURLToPath, pathToFileURL} from 'node:url';
@@ -210,5 +210,9 @@ test('setup is offered only with the user\'s agreement and names what uv may dow
   assert.equal(opened.setupReady, false);
   assert.match(opened.setupNeeded, /Ask the user, and call tedata_setup only after they agree/);
   assert.match(opened.setupNeeded, /uv may also download a Python interpreter/);
+  // Only the user can run the setup command; Claude cannot invoke it on its own.
+  const command = await readFile(fileURLToPath(new URL('../commands/setup.md', import.meta.url)), 'utf8');
+  assert.match(command, /^---\n(?:.*\n)*?disable-model-invocation: true\n(?:.*\n)*?---\n/);
+  assert.match(command, /uv may also download a Python interpreter/);
  } finally { await s.close(); }
 });
