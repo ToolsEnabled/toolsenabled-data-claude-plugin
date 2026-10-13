@@ -1,14 +1,15 @@
 // Behavioural tests of the bundled MCP server: agent chat history is refused, concurrent first calls,
 // tool annotations, and the consent wording before setup downloads anything.
-import test from 'node:test';
+import test, {after} from 'node:test';
 import assert from 'node:assert/strict';
 import {spawn} from 'node:child_process';
-import {mkdtemp, mkdir, writeFile, symlink, readFile} from 'node:fs/promises';
+import {mkdtemp, mkdir, writeFile, symlink, readFile, rm} from 'node:fs/promises';
 import {join, dirname} from 'node:path';
 import {tmpdir} from 'node:os';
 import {fileURLToPath, pathToFileURL} from 'node:url';
 const server = fileURLToPath(new URL('../server/tedata-server.mjs', import.meta.url));
 const scratch = await mkdtemp(join(tmpdir(), 'tedata-server-test-'));
+after(() => rm(scratch, {recursive: true, force: true}));
 const text = response => (response.result?.content || []).map(part => part.text).join('\n') || JSON.stringify(response.error);
 
 // Every server gets its own home, project and data folder and none of the caller's CLAUDE_* or
@@ -136,7 +137,7 @@ test('a project in a Claude Code worktree (.claude/worktrees) still connects its
   // A folder in ~/.claude/worktrees that links into ~/.claude/projects is judged by where it leads.
   await file(join(s.home, '.claude', 'projects', '-home-user-project', 'session.jsonl'), '{"display":"chat transcript"}\n');
   await mkdir(join(s.home, '.claude', 'worktrees'), {recursive: true});
-  await symlink(join(s.home, '.claude', 'projects', '-home-user-project'), join(s.home, '.claude', 'worktrees', 'linked'));
+  await symlink(join(s.home, '.claude', 'projects', '-home-user-project'), join(s.home, '.claude', 'worktrees', 'linked'), process.platform === 'win32' ? 'junction' : 'dir');
   const linked = await s.call('tedata_sources', {action: 'add', kind: 'document', path: join(s.home, '.claude', 'worktrees', 'linked', 'session.jsonl')});
   assert.equal(linked.result.isError, true, 'a transcript reached through .claude/worktrees was connected');
   assert.deepEqual((await catalog(s)).map(d => d.name), ['protocol.md']);

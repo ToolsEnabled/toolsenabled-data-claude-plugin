@@ -37,7 +37,7 @@ Made and tested for Claude Code; not tested in Cowork; its tools do not load in 
 |---|---|
 | "Connect sample.csv and check that high_c is never below low_c." | TE Data checks all 30 rows and finds 2 where high_c is below low_c: Oslo on 2026-01-06 and Lisbon on 2026-01-10. |
 | "Make a copy of sample.csv without duplicate rows." | A new dataset of 28 rows (the 2 exact duplicate rows removed) is saved under `.tedata/derived-data` and connected. `sample.csv` is unchanged. |
-| "Chart the daily high for each city and export a report." | A line chart with one line per city, 14 days each. The export folder holds `report.html`, the chart as SVG and PNG with its Vega-Lite spec and data, and the table as CSV; Claude gives you the path of `report.html`. |
+| "Chart the daily high for each city and export a report." | A line chart with one line per city, 14 days each. The export folder holds `report.html` and the chart as SVG with its Vega-Lite spec and data; Claude gives you the path of `report.html`. |
 
 ## Updating
 
