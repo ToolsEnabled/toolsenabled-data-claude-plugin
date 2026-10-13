@@ -118,3 +118,29 @@ test('two tool calls at once on a fresh server both succeed', async () => {
   for (const response of responses) assert.notEqual(response.result?.isError, true, text(response));
  } finally { await s.close(); }
 });
+
+test('every tool declares annotations.title and its reviewed hints', async () => {
+ // [readOnlyHint, destructiveHint, openWorldHint]. A change here must be deliberate.
+ const reviewed = {
+  tedata_inspect: [true, false, false], tedata_prepare: [false, false, false], tedata_validate: [true, false, false],
+  tedata_derive: [false, false, false], tedata_preparation: [true, false, false], tedata_collection: [true, false, false],
+  tedata_open: [true, false, false], tedata_refresh: [false, false, false], tedata_data: [false, false, false],
+  tedata_sources: [false, false, false], tedata_export: [false, false, false], tedata_setup: [false, true, true],
+ };
+ const s = await start();
+ try {
+  // A host that shows panels also lists the panel-only tool, so all twelve are checked.
+  await s.initialize({extensions: {'io.modelcontextprotocol/ui': {mimeTypes: ['text/html;profile=mcp-app']}}});
+  const {tools} = (await s.request('tools/list')).result;
+  assert.deepEqual(tools.map(t => t.name).sort(), Object.keys(reviewed).sort());
+  for (const tool of tools) {
+   assert.ok(tool.title, `${tool.name} has no title`);
+   assert.equal(tool.annotations?.title, tool.title, `${tool.name} annotations.title`);
+   const {readOnlyHint, destructiveHint, openWorldHint} = tool.annotations;
+   assert.deepEqual([readOnlyHint, destructiveHint, openWorldHint], reviewed[tool.name], tool.name);
+  }
+  // Marked read-only, these three write TE Data's own profile cache; their descriptions say so.
+  for (const name of ['tedata_open', 'tedata_inspect', 'tedata_validate']) assert.match(tools.find(t => t.name === name).description, /\.tedata\/cache\/profiles/, name);
+  assert.match(tools.find(t => t.name === 'tedata_setup').description, /deletes/);
+ } finally { await s.close(); }
+});
