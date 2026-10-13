@@ -1,7 +1,7 @@
 {
   "plugin": "toolsenabled-data",
   "version": "0.8.4",
-  "sourceCommit": "6ce144c6cdc04955438252b3ccfb2c5feab8dc86",
+  "sourceCommit": "204092dc2d27bedbb4f452970e24b19ab1eb0b55",
   "sourceKind": "public-payload",
   "payloadBaseCommit": "85bb0693a329f56a8a0c74847d58f2fa8b27371f",
   "bundledSourceCommit": "4f61abcf3eeb9b7532e7bfe84a49a46ab6bf928a",
@@ -29,8 +29,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 659,
-      "sha256": "7d948f993c7ed3c11042eea48e54d5628d799cee73cb80574a3d168db0fe528c"
+      "bytes": 726,
+      "sha256": "1749be5017f0333ddd6f76c4f59efcafa5d9e65fed6b6bbfaecc7441198ca7a1"
     },
     {
       "path": "LICENSE",
@@ -84,8 +84,8 @@
     },
     {
       "path": "server/tedata-watch.mjs",
-      "bytes": 6734,
-      "sha256": "187eb1e8d788303bfe8791da6f05981deeb00a2fbb77bd93d609d8d19e8e89f9"
+      "bytes": 6773,
+      "sha256": "3375e80c03c73a158584b6cded6192b19da2fd430f45ea8444d6297f3f8edeed"
     },
     {
       "path": "skills/tedata/SKILL.md",
@@ -94,8 +94,8 @@
     },
     {
       "path": "test/release.test.mjs",
-      "bytes": 5221,
-      "sha256": "e59d7c08e71339558ded8dc6c1f1ae2f8ac1c507cef66876ad6b06aa4299e885"
+      "bytes": 5922,
+      "sha256": "ff5a0bf32e4bb7979087b35f55e98bed65f7f8cf0b2e1b40c4a9fb1e175fcece"
     },
     {
       "path": "test/verify.test.mjs",
