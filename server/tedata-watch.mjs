@@ -6,14 +6,26 @@ import {join,resolve} from 'node:path';
 
 // Watch every run in the workspace, or one run (--run ID) and exit when it ends:
 //   node tedata-watch.mjs [--workspace DIR] [--run RUN_ID] [--once]
-const option=name=>{const index=process.argv.indexOf(name);return index>0?process.argv[index+1]:undefined;};
-const root=resolve(option('--workspace')||process.env.TEDATA_WORKSPACE||process.env.CLAUDE_PROJECT_DIR||process.cwd());
-const only=option('--run');
+const usage='Usage: node tedata-watch.mjs [--workspace DIR] [--run RUN_ID] [--once] [--help]';
+const options=new Map();
+for(let index=2;index<process.argv.length;index++){
+ const name=process.argv[index];
+ if(name==='--help'||name==='-h'){console.log(usage);process.exit(0);}
+ if(!['--workspace','--run','--once'].includes(name)||options.has(name)){
+  console.error(`Unknown or repeated option: ${name}\n${usage}`);process.exit(2);
+ }
+ if(name==='--once'){options.set(name,true);continue;}
+ const value=process.argv[++index];
+ if(!value||value.startsWith('--')){console.error(`Missing value for ${name}\n${usage}`);process.exit(2);}
+ options.set(name,value);
+}
+const root=resolve(options.get('--workspace')||process.env.TEDATA_WORKSPACE||process.env.CLAUDE_PROJECT_DIR||process.cwd());
+const only=options.get('--run');
 const state=join(root,'.tedata');
 const intervalMs=Number(process.env.TEDATA_WATCH_INTERVAL_MS)||10000;
 // A run whose record has not changed for this long may have lost its TE Data server.
 const stallMs=Number(process.env.TEDATA_WATCH_STALL_MS)||15*60000;
-const once=process.argv.includes('--once');
+const once=options.has('--once');
 const seen=new Map();// run file -> {state, step, stalled}
 const count=value=>Number.isFinite(value)?value.toLocaleString('en-US'):'?';
 const say=line=>process.stdout.write(line+'\n');
@@ -74,6 +86,7 @@ async function scan(first){
  }
 }
 
+if(!once&&!only)say(`Watching TE Data runs in ${root}. Stop with Ctrl+C.`);
 await scan(true);
 if(only){
  if(finished)process.exit(0);

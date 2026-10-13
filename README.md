@@ -6,7 +6,12 @@ It works in Claude Code: the Claude desktop app's Code tab and the Claude Code C
 
 ## Getting started
 
-1. Install the plugin and open a Claude Code session in your project folder.
+1. Install from a terminal, then open a Claude Code session in your project folder:
+
+   ```sh
+   claude plugin marketplace add ToolsEnabled/toolsenabled-data-claude-plugin
+   claude plugin install toolsenabled-data@toolsenabled-data
+   ```
 2. Run `/toolsenabled-data:setup` once per computer. It installs the query engine (DuckDB 1.5.6) into TE Data's own data folder.
 3. Connect data, for example: "connect data/measurements.csv" or `/toolsenabled-data:sources connect ~/exports`.
 4. Run `/tedata` to open it.
@@ -22,9 +27,32 @@ It works in Claude Code: the Claude desktop app's Code tab and the Claude Code C
 | `/toolsenabled-data:sources` | Connect or disconnect files, folders and reference documents |
 | `/toolsenabled-data:setup` | One-time setup on this computer |
 
+## Updating
+
+```sh
+claude plugin marketplace update toolsenabled-data
+claude plugin update toolsenabled-data@toolsenabled-data
+```
+
+Restart Claude Code after updating.
+
+## Verifying a release
+
+The 0.8.4 release includes `toolsenabled-data-0.8.4.tar.gz` and its SHA-256 sidecar. Download both from the [release page](https://github.com/ToolsEnabled/toolsenabled-data-claude-plugin/releases/tag/toolsenabled-data--v0.8.4), then run:
+
+```sh
+sha256sum -c toolsenabled-data-0.8.4.tar.gz.sha256
+tar -xzf toolsenabled-data-0.8.4.tar.gz
+cd toolsenabled-data
+node tools/verify-release.mjs
+node --test test/*.test.mjs
+```
+
+The verifier checks every listed file's size and SHA-256 and refuses unlisted payload files. `RELEASE-MANIFEST.json` is the checksum list; it cannot hash itself. Its `sourceCommit` identifies the public payload commit before the manifest was refreshed. `bundledSourceCommit` identifies the internal 0.8.3 build source for the prebuilt server and panel; that internal source, its `release.mjs`, and its original suites are not distributed here. The tests above exercise the shipped watcher and MCP protocol; they are not the original source suites. The bundled server differs from 0.8.3 only in its reported version.
+
 ## Large collections
 
-Collection preparations (the same interpretation and checks applied to every file of a source group) run several files at once, one worker per lane: by default up to 8 lanes, limited to half the processor threads and about 3 GB of memory per lane. Set `TEDATA_COLLECTION_WORKERS` to choose the number. Runs keep going while the Claude Code session stays open, and an interrupted run can be resumed. Claude follows a long run with Claude Code's Monitor tool, using a small read-only watcher that TE Data provides, so you hear about progress and the outcome without asking. Claude Code asks before it starts the watcher; allow it for that run. TE Data does not suggest a standing allow rule for it.
+Collection preparations (the same interpretation and checks applied to every file of a source group) run several files at once, one worker per lane: by default up to 8 lanes, limited to half the processor threads and about 3 GB of memory per lane. Set `TEDATA_COLLECTION_WORKERS` to choose the number. Runs keep going while the Claude Code session stays open, and an interrupted run can be resumed. Claude follows a long run with Claude Code's Monitor tool, using a small read-only watcher that TE Data provides, so you hear about progress and the outcome without asking. For usage, run `node .../tedata-watch.mjs --help`; it prints the options and exits. Continuous watching announces the workspace; `--once` scans once and exits. Claude Code asks before it starts the watcher; allow it for that run. TE Data does not suggest a standing allow rule for it.
 
 When a collection's final check has run, ask Claude to export it: you get one folder with every prepared file under its original name, `index.csv` (each source file, its prepared file, SHA-256 hashes, rows before and after, and every requirement's result), `export.json` (full provenance) and a README describing exactly what was done. Your analysis code can read the folder or the index directly.
 
@@ -78,4 +106,4 @@ TE Data includes an interactive panel (tables, charts, setup, checks, transforma
 
 ## Support
 
-support@toolsenabled.ai. See PRIVACY.md for the privacy notice and THIRD-PARTY-LICENSES.txt for bundled software licenses.
+support@toolsenabled.ai. See [PRIVACY.md](PRIVACY.md) for the privacy notice, [THIRD-PARTY-LICENSES.txt](THIRD-PARTY-LICENSES.txt) for bundled software licenses, and [the security policy](https://toolsenabled.ai/security/) for private vulnerability reporting.
