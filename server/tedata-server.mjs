@@ -28965,7 +28965,7 @@ var DIRECTORIES = [".ssh", ".aws", ".azure", ".gnupg", ".kube", ".docker", ".cod
   ["localcache", "roaming", "claude"],
   [".config", "opencode"],
   [".local", "share", "opencode"]
-], AGENT_FOLDERS = /* @__PURE__ */ new Set([".claude", ".codex", ".gemini", ".copilot", "claude", "opencode"]), AGENT_REASON = "it is inside an AI agent's chat history and settings folder", NAMES = /* @__PURE__ */ new Set([
+], AGENT_FOLDERS = /* @__PURE__ */ new Set([".claude", ".codex", ".gemini", ".copilot", "claude", "opencode"]), AGENT_REASON = "it is inside an AI agent's chat history and settings folder", AGENT_PREFIX = /^\.(claude|codex)-./, NAMES = /* @__PURE__ */ new Set([
   ".netrc",
   "_netrc",
   ".git-credentials",
@@ -29001,9 +29001,10 @@ var DIRECTORIES = [".ssh", ".aws", ".azure", ".gnupg", ".kube", ".docker", ".cod
 ]), PATTERNS = [/^\.env\./, /_accesskeys\.csv$/, /_credentials\.csv$/, /^client_secret.*\.json$/, /\.(pem|key|p12|pfx|kdbx|keychain|keychain-db|ppk|asc|gpg)$/, /^\.claude\.json$/];
 // Claude Code keeps a project's git worktrees in <project>/.claude/worktrees/<name>. Those are project folders,
 // not agent history, so that one .claude segment is not refused; a .claude folder inside a worktree still is.
+// Folders named .claude-<name> or .codex-<name> hold other accounts' Claude and Codex settings and history.
 function reason2(path3) {
   let parts = path3.replace(/\\/g, "/").toLowerCase().split("/").filter(Boolean), name2 = parts.at(-1) || "";
-  let folder = (part) => AGENT_FOLDERS.has(part) ? AGENT_REASON : "it is inside a folder that holds login credentials", listed = parts.find((part, i) => DIRECTORIES.includes(part) && !(part === ".claude" && parts[i + 1] === "worktrees"));
+  let folder = (part) => AGENT_FOLDERS.has(part) || AGENT_PREFIX.test(part) ? AGENT_REASON : "it is inside a folder that holds login credentials", listed = parts.find((part, i) => (DIRECTORIES.includes(part) || AGENT_PREFIX.test(part)) && !(part === ".claude" && parts[i + 1] === "worktrees"));
   if (listed) return folder(listed);
   if (parts.includes(".claude") && /credential/.test(name2)) return "it holds login credentials";
   for (let pair of NESTED) for (let i = 0; i + pair.length <= parts.length; i++) if (pair.every((part, k) => parts[i + k] === part)) return folder(pair.at(-1));

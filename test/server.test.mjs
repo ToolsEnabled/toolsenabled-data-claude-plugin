@@ -73,7 +73,8 @@ test("Claude's app data folders and other agents' history folders are refused", 
  try {
   await s.initialize();
   for (const relative of ['.config/Claude/claude-code-sessions/session.json', 'Library/Application Support/Claude/session.json', 'AppData/Roaming/Claude/session.json',
-   'AppData/Local/Packages/Claude_example/LocalCache/Roaming/Claude/session.json', '.codex/history.jsonl', '.gemini/tmp/project/chats/session.json', '.copilot/session-state/session.jsonl', '.local/share/opencode/storage/session/info.json', '.config/opencode/opencode.json']) {
+   'AppData/Local/Packages/Claude_example/LocalCache/Roaming/Claude/session.json', '.claude-work/projects/-home-user-project/session.jsonl', '.codex-backup/history.jsonl',
+   '.codex/history.jsonl', '.gemini/tmp/project/chats/session.json', '.copilot/session-state/session.jsonl', '.local/share/opencode/storage/session/info.json', '.config/opencode/opencode.json']) {
    const added = await s.call('tedata_sources', {action: 'add', kind: 'document', path: await file(join(s.home, relative), '{"note":"history"}\n')});
    assert.equal(added.result.isError, true, `~/${relative} was connected`);
   }
