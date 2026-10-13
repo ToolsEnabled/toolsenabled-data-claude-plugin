@@ -3,7 +3,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {spawn} from 'node:child_process';
-import {mkdtemp, mkdir, writeFile} from 'node:fs/promises';
+import {mkdtemp, mkdir, writeFile, symlink} from 'node:fs/promises';
 import {join, dirname} from 'node:path';
 import {tmpdir} from 'node:os';
 import {fileURLToPath, pathToFileURL} from 'node:url';
@@ -14,9 +14,9 @@ const text = response => (response.result?.content || []).map(part => part.text)
 // Every server gets its own home, project and data folder and none of the caller's CLAUDE_* or
 // TEDATA_* settings, so no test can reach a real project, chat history or Python environment.
 // With roots, the workspace comes from this client's roots/list answer instead of TEDATA_WORKSPACE.
-async function start({roots = false} = {}) {
+async function start({roots = false, project: relativeProject = 'project'} = {}) {
  const base = await mkdtemp(join(scratch, 'case-'));
- const home = join(base, 'home'), project = join(base, 'project');
+ const home = join(base, 'home'), project = join(base, relativeProject);
  await mkdir(home, {recursive: true}); await mkdir(project, {recursive: true});
  const env = Object.fromEntries(Object.entries(process.env).filter(([key]) => !/^(CLAUDE|TEDATA)_/.test(key)));
  Object.assign(env, {HOME: home, USERPROFILE: home, TEDATA_DATA_DIR: join(base, 'data')}, roots ? {} : {TEDATA_WORKSPACE: project});
@@ -94,6 +94,30 @@ test('ordinary data files and documents still connect and read back', async () =
   assert.deepEqual(documents.map(d => d.name).sort(), ['claude-notes.md', 'events.jsonl']);
   const read = await s.call('tedata_data', {request: {action: 'evidence_read', documentId: documents.find(d => d.name === 'events.jsonl').id}});
   assert.match(text(read), /ordinary record/);
+ } finally { await s.close(); }
+});
+
+test('a project in a Claude Code worktree (.claude/worktrees) still connects its own files', async () => {
+ const s = await start({project: join('repo', '.claude', 'worktrees', 'feature')});
+ try {
+  await s.initialize();
+  const csv = await file(join(s.project, 'data', 'measurements.csv'), 'time,high,low\n2026-10-01,5,3\n');
+  const notes = await file(join(s.project, 'docs', 'protocol.md'), 'Protocol.\n');
+  for (const [kind, path] of [['source', csv], ['document', notes]]) {
+   const added = await s.call('tedata_sources', {action: 'add', kind, path});
+   assert.notEqual(added.result.isError, true, text(added));
+  }
+  const settings = await s.call('tedata_sources', {action: 'add', kind: 'document', path: await file(join(s.project, '.claude', 'settings.local.json'), '{}\n')});
+  assert.equal(settings.result.isError, true, "the worktree's own .claude settings were connected");
+  // A folder in ~/.claude/worktrees that links into ~/.claude/projects is judged by where it leads.
+  await file(join(s.home, '.claude', 'projects', '-home-user-project', 'session.jsonl'), '{"display":"chat transcript"}\n');
+  await mkdir(join(s.home, '.claude', 'worktrees'), {recursive: true});
+  await symlink(join(s.home, '.claude', 'projects', '-home-user-project'), join(s.home, '.claude', 'worktrees', 'linked'));
+  const linked = await s.call('tedata_sources', {action: 'add', kind: 'document', path: join(s.home, '.claude', 'worktrees', 'linked', 'session.jsonl')});
+  assert.equal(linked.result.isError, true, 'a transcript reached through .claude/worktrees was connected');
+  assert.deepEqual((await catalog(s)).map(d => d.name), ['protocol.md']);
+  const files = JSON.parse(text(await s.call('tedata_data', {request: {action: 'catalog'}}))).files;
+  assert.deepEqual(files.map(f => f.name), ['measurements.csv']);
  } finally { await s.close(); }
 });
 
