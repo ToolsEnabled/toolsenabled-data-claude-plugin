@@ -6,32 +6,35 @@ import {spawn} from 'node:child_process';
 import {mkdtemp, mkdir, writeFile} from 'node:fs/promises';
 import {join, dirname} from 'node:path';
 import {tmpdir} from 'node:os';
-import {fileURLToPath} from 'node:url';
+import {fileURLToPath, pathToFileURL} from 'node:url';
 const server = fileURLToPath(new URL('../server/tedata-server.mjs', import.meta.url));
 const scratch = await mkdtemp(join(tmpdir(), 'tedata-server-test-'));
 const text = response => (response.result?.content || []).map(part => part.text).join('\n') || JSON.stringify(response.error);
 
 // Every server gets its own home, project and data folder and none of the caller's CLAUDE_* or
 // TEDATA_* settings, so no test can reach a real project, chat history or Python environment.
-async function start() {
+// With roots, the workspace comes from this client's roots/list answer instead of TEDATA_WORKSPACE.
+async function start({roots = false} = {}) {
  const base = await mkdtemp(join(scratch, 'case-'));
  const home = join(base, 'home'), project = join(base, 'project');
  await mkdir(home, {recursive: true}); await mkdir(project, {recursive: true});
  const env = Object.fromEntries(Object.entries(process.env).filter(([key]) => !/^(CLAUDE|TEDATA)_/.test(key)));
- Object.assign(env, {HOME: home, USERPROFILE: home, TEDATA_WORKSPACE: project, TEDATA_DATA_DIR: join(base, 'data')});
+ Object.assign(env, {HOME: home, USERPROFILE: home, TEDATA_DATA_DIR: join(base, 'data')}, roots ? {} : {TEDATA_WORKSPACE: project});
  const child = spawn(process.execPath, [server], {cwd: project, env, stdio: ['pipe', 'pipe', 'pipe']});
- let stderr = '', buffer = '', id = 0; const pending = new Map();
+ let stderr = '', buffer = '', id = 0, rootRequests = 0; const pending = new Map();
  child.stderr.on('data', chunk => { stderr += chunk; });
  child.stdout.on('data', chunk => { buffer += chunk; let end; while ((end = buffer.indexOf('\n')) >= 0) {
   const line = buffer.slice(0, end); buffer = buffer.slice(end + 1); if (!line.trim()) continue;
-  try { const message = JSON.parse(line), handler = pending.get(message.id); if (handler && !message.method) { pending.delete(message.id); handler(message); } } catch {}
+  let message; try { message = JSON.parse(line); } catch { continue; }
+  if (message.method === 'roots/list' && message.id !== undefined) { rootRequests++; child.stdin.write(JSON.stringify({jsonrpc: '2.0', id: message.id, result: {roots: [{uri: pathToFileURL(project).href, name: 'project'}]}}) + '\n'); continue; }
+  const handler = pending.get(message.id); if (handler && !message.method) { pending.delete(message.id); handler(message); }
  }});
  const prepare = (method, params = {}) => { const key = ++id; return {line: JSON.stringify({jsonrpc: '2.0', id: key, method, params}) + '\n', done: new Promise((accept, reject) => {
   const timer = setTimeout(() => { pending.delete(key); reject(new Error(`MCP ${method} timed out; stderr: ${stderr}`)); }, 10000);
   pending.set(key, message => { clearTimeout(timer); accept(message); });
  })}; };
  const request = (method, params) => { const r = prepare(method, params); child.stdin.write(r.line); return r.done; };
- return {home, project,
+ return {home, project, get rootRequests() { return rootRequests; },
   request,
   // Requests in one write, so a fresh server receives them at the same moment.
   together: calls => { const rs = calls.map(([method, params]) => prepare(method, params)); child.stdin.write(rs.map(r => r.line).join('')); return Promise.all(rs.map(r => r.done)); },
@@ -109,14 +112,17 @@ test('files connected by an earlier version from ~/.claude are no longer listed 
  } finally { await s.close(); }
 });
 
-test('two tool calls at once on a fresh server both succeed', async () => {
- const s = await start();
- try {
-  await s.initialize();
-  const call = {name: 'tedata_data', arguments: {request: {action: 'evidence_catalog'}}};
-  const responses = await s.together([['tools/call', call], ['tools/call', call]]);
-  for (const response of responses) assert.notEqual(response.result?.isError, true, text(response));
- } finally { await s.close(); }
+test('two tool calls at once on a fresh server both succeed and share one workspace lookup', async () => {
+ const call = {name: 'tedata_data', arguments: {request: {action: 'evidence_catalog'}}};
+ for (const roots of [false, true]) {
+  const s = await start({roots});
+  try {
+   await s.initialize(roots ? {roots: {}} : {});
+   const responses = await s.together([['tools/call', call], ['tools/call', call]]);
+   for (const response of responses) assert.notEqual(response.result?.isError, true, text(response));
+   if (roots) assert.equal(s.rootRequests, 1, 'the server looked up its workspace more than once');
+  } finally { await s.close(); }
+ }
 });
 
 test('every tool declares annotations.title and its reviewed hints', async () => {
