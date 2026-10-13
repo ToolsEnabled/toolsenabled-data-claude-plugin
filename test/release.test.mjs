@@ -27,7 +27,7 @@ test('--help exits promptly and explains all options', () => {
  for (const option of ['--workspace', '--run', '--once']) assert.ok(result.stdout.includes(option));
  assert.equal(result.stderr, '');
 });
-for (const args of [['--unknown'], ['--workspace'], ['--run'], ['--workspace', '--once'], ['--once', '--once']]) {
+for (const args of [['--unknown'], ['--unknown', 'value', '--once'], ['--workspace'], ['--run'], ['--workspace', '--once'], ['--once', '--once']]) {
  test(`invalid arguments ${JSON.stringify(args)} refuse promptly`, () => {
   const result = run(args);
   assert.equal(result.error, undefined, 'should not wait for timeout');
