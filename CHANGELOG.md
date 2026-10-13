@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.8.6 — 2026-10-13
+
+- Codex no longer offers TE Data. Codex reads `.agents/plugins/marketplace.json` before `.claude-plugin/marketplace.json`, so `codex plugin marketplace add` of this repository used to offer the plugin through the Claude marketplace file, although TE Data does not run in Codex. The new `.agents/plugins/marketplace.json` lists it with `"policy": {"installation": "NOT_AVAILABLE", "authentication": "ON_INSTALL"}` and `"category": "Productivity"`, so Codex shows it as not installable. Claude Code keeps using `.claude-plugin/marketplace.json`.
+- README says that Codex is not supported.
+- RELEASE-MANIFEST.json lists the new file: 29 files.
+- The server, panel, watcher, skills, commands and PRIVACY.md are unchanged.
+
 ## 0.8.5 — 2026-10-13
 
 - Refuse AI agents' chat history and settings as data sources and documents: Claude Code's `.claude` folder (or the folder `CLAUDE_CONFIG_DIR` names, and other accounts' `.claude-<name>` folders in the home folder), the Claude app's data folders, the `.codex` folder (or `CODEX_HOME`, and `.codex-<name>` folders in the home folder), and the `.gemini`, `.copilot` and opencode folders. Files connected from them by an earlier version are no longer listed or read. Projects in Claude Code worktrees (`.claude/worktrees`) keep working.

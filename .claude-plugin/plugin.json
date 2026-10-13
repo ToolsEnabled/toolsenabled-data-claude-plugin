@@ -1,6 +1,6 @@
 {
   "name": "toolsenabled-data",
-  "version": "0.8.5",
+  "version": "0.8.6",
   "displayName": "ToolsEnabled Data",
   "description": "Local data workspace: connect CSV/TSV data, then inspect, check, transform and lay out tables and charts with /tedata. Source files are never changed.",
   "author": {
