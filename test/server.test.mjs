@@ -144,3 +144,17 @@ test('every tool declares annotations.title and its reviewed hints', async () =>
   assert.match(tools.find(t => t.name === 'tedata_setup').description, /deletes/);
  } finally { await s.close(); }
 });
+
+test('setup is offered only with the user\'s agreement and names what uv may download', async () => {
+ const s = await start();
+ try {
+  const info = await s.initialize();
+  assert.match(info.instructions, /ask the user, and call tedata_setup only after they agree/);
+  assert.match(info.instructions, /uv may also download a Python interpreter/);
+  assert.doesNotMatch(info.instructions, /then call tedata_setup/);
+  const opened = JSON.parse(text(await s.call('tedata_open', {})));
+  assert.equal(opened.setupReady, false);
+  assert.match(opened.setupNeeded, /Ask the user, and call tedata_setup only after they agree/);
+  assert.match(opened.setupNeeded, /uv may also download a Python interpreter/);
+ } finally { await s.close(); }
+});

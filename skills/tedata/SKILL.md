@@ -32,7 +32,7 @@ Collection runs process several member files at once (one worker per lane, scale
 
 For plain /tedata, call tedata_open once with view=data and intent=open. Display the existing saved layout or automatically populated basic raw table. Do not automatically configure, transform or redesign it. Suggest /tedata redraw when useful, then stop. For /tedata sources, call tedata_open once with view=sources. Omit projectId; the workspace is the current project folder.
 
-If tedata_open reports noSources, ask which files or folders to connect and use tedata_sources (action add). If it reports setupNeeded, tell the user in one sentence that TE Data needs a one-time setup that installs DuckDB 1.5.6 into its own data folder (internet needed once), then call tedata_setup and open again.
+If tedata_open reports noSources, ask which files or folders to connect and use tedata_sources (action add). If it reports setupNeeded, tell the user in one sentence that TE Data needs a one-time setup that installs DuckDB 1.5.6 into its own data folder (internet needed once; if uv is installed, uv may also download a Python interpreter). Ask the user, and call tedata_setup only after they agree; then open again.
 
 For /tedata update, call tedata_open once with view=data and intent=refresh. Refresh current connected sources and existing visualizations using the saved layout and interpretation. Do not redesign, choose new semantic conversions, clean source values, rebuild derived datasets or download new external data. If source content changed, report stale interpretation evidence and suggest redraw/review instead of silently reapplying an obsolete recipe.
 

@@ -12,7 +12,7 @@ It works in Claude Code: the Claude desktop app's Code tab and the Claude Code C
    claude plugin marketplace add ToolsEnabled/toolsenabled-data-claude-plugin
    claude plugin install toolsenabled-data@toolsenabled-data
    ```
-2. Run `/toolsenabled-data:setup` once per computer. It installs the query engine (DuckDB 1.5.6) into TE Data's own data folder.
+2. Run `/toolsenabled-data:setup` once per computer. It downloads and installs the query engine (DuckDB 1.5.6) into TE Data's own data folder; if `uv` is installed, `uv` may also download a Python interpreter. If a TE Data tool finds that setup is still needed, Claude asks you before running it.
 3. Connect data, for example: "connect data/measurements.csv" or `/toolsenabled-data:sources connect ~/exports`.
 4. Run `/tedata` to open it.
 
