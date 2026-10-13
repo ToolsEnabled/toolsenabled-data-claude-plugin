@@ -83,10 +83,11 @@ test("Claude's app data folders and other agents' history folders are refused", 
 });
 
 test('chat history and memory in a moved Claude or Codex folder (CLAUDE_CONFIG_DIR, CODEX_HOME) are refused', async () => {
- const s = await start({extraEnv: home => ({CLAUDE_CONFIG_DIR: join(home, '.claude-work'), CODEX_HOME: join(home, 'codex-home')})});
+ // Folder names without a .claude or .codex prefix, so only the environment can mark them.
+ const s = await start({extraEnv: home => ({CLAUDE_CONFIG_DIR: join(home, 'accounts', 'work', 'claude'), CODEX_HOME: join(home, 'codex-home')})});
  try {
   await s.initialize();
-  for (const relative of ['.claude-work/projects/-home-user-project/0b6f1c2e-5d4a-4e7b-9a43-2f1d8c7b6a50.jsonl', '.claude-work/projects/-home-user-project/memory/MEMORY.md', 'codex-home/sessions/2026/10/13/rollout.jsonl']) {
+  for (const relative of ['accounts/work/claude/projects/-home-user-project/0b6f1c2e-5d4a-4e7b-9a43-2f1d8c7b6a50.jsonl', 'accounts/work/claude/projects/-home-user-project/memory/MEMORY.md', 'codex-home/sessions/2026/10/13/rollout.jsonl']) {
    const added = await s.call('tedata_sources', {action: 'add', kind: 'document', path: await file(join(s.home, relative), '{"display":"chat transcript"}\n')});
    assert.equal(added.result.isError, true, `~/${relative} was connected`);
    assert.match(text(added), /AI agent's chat history and settings folder/);
