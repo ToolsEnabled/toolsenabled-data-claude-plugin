@@ -54,6 +54,17 @@ test('completed collection reports real values and exits for --run', async () =>
  assert.match(result.stdout, /collection_export/);
  assert.match(result.stdout, /runId run-a/);
 });
+test('--once with a running --run reports one scan and exits promptly', async () => {
+ const workspace=await mkdtemp(join(scratch,'running-'));
+ const collection=join(workspace,'.tedata','collections','project','collection');
+ const runPath=join(collection,'runs','run-a');
+ await mkdir(runPath,{recursive:true});
+ await writeFile(join(collection,'definition.json'),JSON.stringify({filePlan:{name:'fixture'}}));
+ await writeFile(join(runPath,'state.json'),JSON.stringify({state:'running',total:7,completed:2}));
+ const result=run(['--workspace',workspace,'--run','run-a','--once']);
+ assert.equal(result.status,0,result.error?.message||result.stderr);
+ assert.match(result.stdout,/2 of 7 files/);
+});
 test('missing requested run names itself and returns failure', () => {
  const result = run(['--workspace', scratch, '--run', 'absent-run']);
  assert.equal(result.status, 1, result.stderr);

@@ -70,7 +70,7 @@ async function scan(first){
   if(!previous){
    if(only){
     // Watching one run: say where it stands; if it has already ended, report that and stop.
-    if(record.state==='running')say(`${label} in progress: ${count(completed)} of ${count(total)} ${run.unit} (${ids}). Watching until it ends.`);
+    if(record.state==='running')say(`${label} in progress: ${count(completed)} of ${count(total)} ${run.unit} (${ids}).${once?'':' Watching until it ends.'}`);
     else{say(ending(run,record,label,ids,completed,total));finished=true;}
    }else if(record.state==='running'){
     // Runs that had already finished when watching began are history, not news.
@@ -91,6 +91,7 @@ await scan(true);
 if(only){
  if(finished)process.exit(0);
  if(!seen.size){say(`No TE Data run ${only} was found in ${root}.`);process.exit(1);}
+ if(once)process.exit(0);
  const timer=setInterval(()=>{scan(false).then(()=>{if(finished){clearInterval(timer);process.exit(0);}}).catch(()=>{});},intervalMs);
 }else if(!once){
  const timer=setInterval(()=>{scan(false).catch(()=>{});},intervalMs);
