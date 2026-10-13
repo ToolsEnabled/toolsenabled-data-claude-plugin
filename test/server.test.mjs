@@ -14,12 +14,13 @@ const text = response => (response.result?.content || []).map(part => part.text)
 // Every server gets its own home, project and data folder and none of the caller's CLAUDE_* or
 // TEDATA_* settings, so no test can reach a real project, chat history or Python environment.
 // With roots, the workspace comes from this client's roots/list answer instead of TEDATA_WORKSPACE.
-async function start({roots = false, project: relativeProject = 'project'} = {}) {
+// extraEnv(home) adds variables after the filtering, for tests that need CLAUDE_CONFIG_DIR or CODEX_HOME.
+async function start({roots = false, project: relativeProject = 'project', extraEnv = () => ({})} = {}) {
  const base = await mkdtemp(join(scratch, 'case-'));
  const home = join(base, 'home'), project = join(base, relativeProject);
  await mkdir(home, {recursive: true}); await mkdir(project, {recursive: true});
  const env = Object.fromEntries(Object.entries(process.env).filter(([key]) => !/^(CLAUDE|TEDATA)_/.test(key)));
- Object.assign(env, {HOME: home, USERPROFILE: home, TEDATA_DATA_DIR: join(base, 'data')}, roots ? {} : {TEDATA_WORKSPACE: project});
+ Object.assign(env, {HOME: home, USERPROFILE: home, TEDATA_DATA_DIR: join(base, 'data')}, roots ? {} : {TEDATA_WORKSPACE: project}, extraEnv(home));
  const child = spawn(process.execPath, [server], {cwd: project, env, stdio: ['pipe', 'pipe', 'pipe']});
  let stderr = '', buffer = '', id = 0, rootRequests = 0; const pending = new Map();
  child.stderr.on('data', chunk => { stderr += chunk; });
@@ -71,11 +72,34 @@ test("Claude's app data folders and other agents' history folders are refused", 
  try {
   await s.initialize();
   for (const relative of ['.config/Claude/claude-code-sessions/session.json', 'Library/Application Support/Claude/session.json', 'AppData/Roaming/Claude/session.json',
-   '.codex/history.jsonl', '.gemini/tmp/project/chats/session.json', '.copilot/session-state/session.jsonl', '.local/share/opencode/storage/session/info.json', '.config/opencode/opencode.json']) {
+   'AppData/Local/Packages/Claude_example/LocalCache/Roaming/Claude/session.json', '.codex/history.jsonl', '.gemini/tmp/project/chats/session.json', '.copilot/session-state/session.jsonl', '.local/share/opencode/storage/session/info.json', '.config/opencode/opencode.json']) {
    const added = await s.call('tedata_sources', {action: 'add', kind: 'document', path: await file(join(s.home, relative), '{"note":"history"}\n')});
    assert.equal(added.result.isError, true, `~/${relative} was connected`);
   }
   assert.deepEqual(await catalog(s), []);
+ } finally { await s.close(); }
+});
+
+test('chat history and memory in a moved Claude or Codex folder (CLAUDE_CONFIG_DIR, CODEX_HOME) are refused', async () => {
+ const s = await start({extraEnv: home => ({CLAUDE_CONFIG_DIR: join(home, '.claude-work'), CODEX_HOME: join(home, 'codex-home')})});
+ try {
+  await s.initialize();
+  for (const relative of ['.claude-work/projects/-home-user-project/0b6f1c2e-5d4a-4e7b-9a43-2f1d8c7b6a50.jsonl', '.claude-work/projects/-home-user-project/memory/MEMORY.md', 'codex-home/sessions/2026/10/13/rollout.jsonl']) {
+   const added = await s.call('tedata_sources', {action: 'add', kind: 'document', path: await file(join(s.home, relative), '{"display":"chat transcript"}\n')});
+   assert.equal(added.result.isError, true, `~/${relative} was connected`);
+   assert.match(text(added), /AI agent's chat history and settings folder/);
+  }
+  const notes = await s.call('tedata_sources', {action: 'add', kind: 'document', path: await file(join(s.home, 'notes', 'protocol.md'), 'Protocol.\n')});
+  assert.notEqual(notes.result.isError, true, text(notes));
+ } finally { await s.close(); }
+});
+
+test('a CLAUDE_CONFIG_DIR that names the home folder itself does not refuse ordinary files', async () => {
+ const s = await start({extraEnv: home => ({CLAUDE_CONFIG_DIR: home})});
+ try {
+  await s.initialize();
+  const notes = await s.call('tedata_sources', {action: 'add', kind: 'document', path: await file(join(s.home, 'notes', 'protocol.md'), 'Protocol.\n')});
+  assert.notEqual(notes.result.isError, true, text(notes));
  } finally { await s.close(); }
 });
 
