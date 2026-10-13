@@ -5,10 +5,20 @@ ToolsEnabled Data (TE Data) runs entirely on your computer.
 - It collects no telemetry, analytics or usage data, and ToolsEnabled receives nothing from it.
 - It reads only the files, folders and documents you connect, and never modifies them.
 - It stores its records in the `.tedata` folder of your project and its Python environment in its data folder on your computer.
-- Its only network access is the one-time setup, which downloads DuckDB from the Python Package Index (PyPI), or uses `uv`, which may download Python and DuckDB.
+- Its only network access is the one-time setup. Setup downloads DuckDB from the Python Package Index (pypi.org and files.pythonhosted.org), or from the package index your own pip or uv configuration names. If `uv` is installed, setup uses it, and `uv` may also download a Python interpreter (uv 0.12 downloads it from releases.astral.sh).
 - Claude sees data only through the tool results it requests during your session. How Anthropic handles your conversations is governed by your agreement with Anthropic.
-- TE Data is made for Claude Code. If you use it from a Cowork task, which runs in Anthropic's cloud, the tool results Claude requests are saved with that task's history in your Claude account.
+- Made and tested for Claude Code; not tested in Cowork; its tools do not load in claude.ai chat.
 - TE Data never reads, stores or sends logins, tokens or keys. It refuses to connect or read files in credential locations (for example `.ssh`, `.aws`, `.config/gcloud`, keychains) or with credential names (for example `.netrc`, `auth.json`, `.env`, private key files), and it will not return a document whose text is a private key or a list of tokens.
 - It refuses to connect or read files in AI agents' chat history and settings folders: Claude Code's `.claude` folder, the Claude app's data folder (`.config/Claude`, `Library/Application Support/Claude` or `AppData/Roaming/Claude`), and the `.codex`, `.gemini`, `.copilot` and opencode (`.config/opencode`, `.local/share/opencode`) folders. Files connected from these folders with an earlier version are no longer listed or read.
+
+## What TE Data keeps, and for how long
+
+Everything TE Data writes stays on your computer, and ToolsEnabled keeps nothing. Nothing expires: it stays until you delete it.
+
+- `<project>/.tedata`: the list of connected sources and documents, saved interpretations and views, preparation and collection records, and caches. These hold sample rows and summaries of your data.
+- Derived copies and exports: `<project>/.tedata/derived-data` and its `exports` folder, or the `derivedDirectory` you set in `.tedata/workspace.json`, and any folder you choose for an export. These are full copies of the data you transform or export.
+- TE Data's data folder: its Python environment and setup record, with none of your data. In Claude Code this is the plugin data folder Claude Code provides (`~/.claude/plugins/data/<plugin id>/`); otherwise `~/.local/share/toolsenabled-data` on Linux or `%LOCALAPPDATA%\ToolsEnabled Data` on Windows. `TEDATA_DATA_DIR` overrides both.
+
+Uninstalling TE Data leaves `.tedata`, the derived copies and the exports where they are. `claude plugin uninstall` also removes the plugin data folder unless you add `--keep-data`; a data folder elsewhere stays. To remove everything, delete the project's `.tedata` folder, any derived-copy and export folders outside it, and TE Data's data folder.
 
 Questions: support@toolsenabled.ai

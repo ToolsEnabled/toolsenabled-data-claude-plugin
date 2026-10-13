@@ -2,7 +2,7 @@
 
 ToolsEnabled Data (TE Data) is a local data workspace that runs on your computer. Connect CSV or TSV files (also gzip-compressed, or ZIP archives of them) to a project, and Claude can inspect them, interpret columns, run data checks, make transformed copies and build a saved table-and-chart layout with you. Your source files are never changed.
 
-It works in Claude Code: the Claude desktop app's Code tab and the Claude Code CLI. It does not run in claude.ai chat, and it is not supported in Cowork. Cowork tasks now run in Anthropic's cloud and reach local plugins through the desktop app; if you use TE Data from one anyway, the tool results Claude requests are saved with that task's history in your Claude account.
+Made and tested for Claude Code; not tested in Cowork; its tools do not load in claude.ai chat.
 
 ## Getting started
 
@@ -94,8 +94,8 @@ TE Data includes an interactive panel (tables, charts, setup, checks, transforma
 
 - **Runs:** a local MCP server (Node.js) started by Claude Code, and a Python query worker using DuckDB. Both run on your computer only. During a long collection run, Claude may ask to start TE Data's small read-only watcher (`node .../tedata-watch.mjs`) with Claude Code's Monitor tool; it only reads the run's progress record.
 - **Reads:** only the files and folders you connect, the reference documents you connect, and an installed system font for drawing plot previews. It refuses files it recognises as logins, tokens or keys, and files in AI agents' chat history and settings folders, such as Claude Code's `.claude` folder (the full list is in [PRIVACY.md](PRIVACY.md)).
-- **Writes:** `<project>/.tedata/` (the list of connected sources, saved interpretations, views, derived copies, preparation and collection records), exports you ask for (beside the prepared copies unless you choose a folder) and TE Data's data folder (the Python environment: `~/.local/share/toolsenabled-data` on Linux, `%LOCALAPPDATA%\ToolsEnabled Data` on Windows, or the folder Claude Code provides to plugins). It never modifies source files.
-- **Sends:** nothing, except the one-time setup download of DuckDB from PyPI, or from the package index your own pip or uv configuration names (and, if `uv` is used, anything `uv` itself downloads, such as a Python interpreter). Setup runs only from TE Data's data folder, never from the project folder. Data reaches Claude only through tool results Claude requests during your session.
+- **Writes:** `<project>/.tedata/` (the list of connected sources, saved interpretations, views, derived copies, preparation and collection records, and caches that speed up later reads), exports you ask for (beside the prepared copies unless you choose a folder) and TE Data's data folder (the Python environment: `~/.local/share/toolsenabled-data` on Linux, `%LOCALAPPDATA%\ToolsEnabled Data` on Windows, or the folder Claude Code provides to plugins). It never modifies source files.
+- **Sends:** nothing, except the one-time setup. Setup downloads DuckDB from the Python Package Index (pypi.org and files.pythonhosted.org), or from the package index your own pip or uv configuration names. If `uv` is installed, setup uses it, and `uv` may also download a Python interpreter (uv 0.12 downloads it from releases.astral.sh). Setup runs only from TE Data's data folder, never from the project folder. What TE Data keeps, and how to delete it, is in [PRIVACY.md](PRIVACY.md). Data reaches Claude only through tool results Claude requests during your session.
 - **Permissions:** TE Data asks for no special permissions. Claude Code's normal tool permission prompts apply to its tools, including those that save views and settings.
 
 ## Requirements
