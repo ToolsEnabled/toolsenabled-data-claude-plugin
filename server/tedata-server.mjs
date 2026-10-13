@@ -28945,7 +28945,7 @@ import { constants } from "node:fs";
 // credential-guard.mjs
 import { realpathSync } from "node:fs";
 import { resolve, basename } from "node:path";
-var DIRECTORIES = [".ssh", ".aws", ".azure", ".gnupg", ".kube", ".docker", ".codex", ".password-store", ".vault-token", ".terraform.d", ".oci", ".gcloud"], NESTED = [
+var DIRECTORIES = [".ssh", ".aws", ".azure", ".gnupg", ".kube", ".docker", ".codex", ".password-store", ".vault-token", ".terraform.d", ".oci", ".gcloud", ".claude", ".gemini", ".copilot"], NESTED = [
   [".config", "gcloud"],
   [".config", "gh"],
   [".config", "hub"],
@@ -28957,8 +28957,13 @@ var DIRECTORIES = [".ssh", ".aws", ".azure", ".gnupg", ".kube", ".docker", ".cod
   ["microsoft", "credentials"],
   ["microsoft", "protect"],
   ["microsoft", "crypto"],
-  ["appdata", "roaming", "gcloud"]
-], NAMES = /* @__PURE__ */ new Set([
+  ["appdata", "roaming", "gcloud"],
+  [".config", "claude"],
+  ["library", "application support", "claude"],
+  ["appdata", "roaming", "claude"],
+  [".config", "opencode"],
+  [".local", "share", "opencode"]
+], AGENT_FOLDERS = /* @__PURE__ */ new Set([".claude", ".codex", ".gemini", ".copilot", "claude", "opencode"]), NAMES = /* @__PURE__ */ new Set([
   ".netrc",
   "_netrc",
   ".git-credentials",
@@ -28994,9 +28999,10 @@ var DIRECTORIES = [".ssh", ".aws", ".azure", ".gnupg", ".kube", ".docker", ".cod
 ]), PATTERNS = [/^\.env\./, /_accesskeys\.csv$/, /_credentials\.csv$/, /^client_secret.*\.json$/, /\.(pem|key|p12|pfx|kdbx|keychain|keychain-db|ppk|asc|gpg)$/, /^\.claude\.json$/];
 function reason2(path3) {
   let parts = path3.replace(/\\/g, "/").toLowerCase().split("/").filter(Boolean), name2 = parts.at(-1) || "";
-  if (parts.some((part) => DIRECTORIES.includes(part))) return "it is inside a folder that holds login credentials";
+  let folder = (part) => AGENT_FOLDERS.has(part) ? "it is inside an AI agent's chat history and settings folder" : "it is inside a folder that holds login credentials", listed = parts.find((part) => DIRECTORIES.includes(part));
+  if (listed) return folder(listed);
   if (parts.includes(".claude") && /credential/.test(name2)) return "it holds login credentials";
-  for (let pair of NESTED) for (let i = 0; i + pair.length <= parts.length; i++) if (pair.every((part, k) => parts[i + k] === part)) return "it is inside a folder that holds login credentials";
+  for (let pair of NESTED) for (let i = 0; i + pair.length <= parts.length; i++) if (pair.every((part, k) => parts[i + k] === part)) return folder(pair.at(-1));
   return NAMES.has(name2) || PATTERNS.some((pattern) => pattern.test(name2)) ? "its name marks it as login, token or key material" : null;
 }
 function credentialPathProblem(path3, root2 = process.cwd()) {
