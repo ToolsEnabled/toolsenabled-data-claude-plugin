@@ -17,12 +17,17 @@ try {
   const bytes=await readFile(path);
   if(bytes.length!==entry.bytes||createHash('sha256').update(bytes).digest('hex')!==entry.sha256)throw new Error(`File verification failed: ${entry.path}`);
  }
+ // The plugin directory's listing image, the one PNG in .claude-plugin, is read by the directory and never by
+ // TE Data, so the manifest does not list it; a second image there, or an image anywhere else, must be listed.
+ let images=0;
  async function walk(directory,prefix=''){
   for(const item of await readdir(directory,{withFileTypes:true})){
    const name=prefix+item.name;
    if(name==='.git'||name==='RELEASE-MANIFEST.json')continue;
-   if(item.isDirectory())await walk(join(directory,item.name),name+'/');
-   else if(!item.isFile()||!listed.has(name))throw new Error(`Unlisted or non-regular file: ${name}`);
+   if(item.isDirectory()){await walk(join(directory,item.name),name+'/');continue;}
+   if(item.isFile()&&listed.has(name))continue;
+   if(item.isFile()&&/^\.claude-plugin\/[^/]+\.png$/.test(name)&&++images===1)continue;
+   throw new Error(images>1?`Only one listing image may sit in .claude-plugin: ${name}`:`Unlisted or non-regular file: ${name}`);
   }
  }
  await walk(root);

@@ -46,3 +46,10 @@ test('duplicate entries cannot inflate the verified file count',async()=>{
 test('matching hashes do not hide disagreeing versions',async()=>{
  const {root,manifest}=await fixture();manifest.version='0.8.5';await writeFile(join(root,'RELEASE-MANIFEST.json'),JSON.stringify(manifest));const result=run(root);assert.equal(result.status,1);assert.match(result.stderr,/versions disagree/);
 });
+test('the one listing image in .claude-plugin verifies unlisted; a second image, or one elsewhere, is refused',async()=>{
+ const {root}=await fixture();await writeFile(join(root,'.claude-plugin','listing.png'),'png bytes');
+ const one=run(root);assert.equal(one.status,0,one.stderr);assert.match(one.stdout,/Verified 3 files/);
+ await writeFile(join(root,'.claude-plugin','second.png'),'png bytes');const two=run(root);assert.equal(two.status,1);assert.match(two.stderr,/Only one listing image/);
+ const {root:other}=await fixture();await mkdir(join(other,'images'));await writeFile(join(other,'images','listing.png'),'png bytes');
+ const elsewhere=run(other);assert.equal(elsewhere.status,1);assert.match(elsewhere.stderr,/Unlisted or non-regular file: images\/listing.png/);
+});
