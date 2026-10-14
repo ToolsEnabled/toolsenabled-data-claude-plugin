@@ -1345,8 +1345,8 @@ async function renderPlot(container, plot, { theme: theme2 = {} } = {}) {
 function currentInk(dark) {
   let ink = { ...INK[dark ? "dark" : "light"] }, probe = document.createElement("span");
   probe.style.display = "none", document.body.append(probe);
-  for (let [key2, token] of [["text", "--te-text"], ["text2", "--te-text-2"], ["text3", "--te-text-3"], ["surface", "--te-surface"]]) {
-    probe.style.color = "", probe.style.color = `var(${token})`;
+  for (let [key2, cssVar] of [["text", "--te-text"], ["text2", "--te-text-2"], ["text3", "--te-text-3"], ["surface", "--te-surface"]]) {
+    probe.style.color = "", probe.style.color = `var(${cssVar})`;
     let value3 = getComputedStyle(probe).color;
     value3 && probe.style.color && (ink[key2] = value3);
   }

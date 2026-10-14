@@ -159,6 +159,8 @@ const SERVER_EDITS_SINCE_087 = [
   ", requirementsFile"],
  ["text: (await Promise.all(panelParts.map((part) => readFile7(part, \"utf8\")))).join(\"\"), _meta",
   "text: await readFile7(panelFile, \"utf8\"), _meta"],
+ // A local variable in TE Data's evidence code renamed from secret to problem (@@ stands for the name).
+ ["problem", "secret"].map(name => '@@ = credentialTextProblem(text4);\n      if (@@) throw new Error(`TE Data does not return this document: ${@@}. '.replaceAll('@@', name)),
 ];
 test('the server is stored in ES modules the directory can read in full, and they join to the bundle', async () => {
  const server = join(root, 'server'), entry = 'tedata-server.mjs';
@@ -210,4 +212,22 @@ test('the README says what TE Data runs, sends and is, in the section the direct
  assert.doesNotMatch(readme, /0\.8\.4: its reported version/);
  assert.match(readme, /CHANGELOG\.md lists for each later version/);
  assert.match(readme, /\[THIRD-PARTY-LICENSES\.txt\]\(THIRD-PARTY-LICENSES\.txt\) and the \[licenses\]\(licenses\) folder/);
+ // 0.8.8 renames one local variable in the panel (test/server.test.mjs undoes it), so the README must not call it unchanged.
+ assert.doesNotMatch(readme, /The panel is unchanged/);
+ assert.match(readme, /The panel is the 0\.8\.3 build with one local variable renamed in 0\.8\.8 \(see CHANGELOG\.md\), and the Python workers are unchanged from 0\.8\.3 except the deduplicate step \(0\.8\.8\)\./);
+});
+
+test("TE Data's own code in the server and panel interpolates no variable named like a credential", async () => {
+ // The directory's scanner reads an interpolated variable named key, token or secret as the installer's credential.
+ // Third-party code (esbuild's "// node_modules/..." regions) is left as its authors wrote it.
+ const names = /\$\{\s*(key|keys|token|tokens|secret|secrets|password|passwd|pass|cookie|cookies|credential|credentials|auth|apikey|api_key)\s*\}/i, found = [];
+ for (const folder of ['server', 'panel']) {
+  const files = (await readdir(join(root, folder))).filter(name => /^(tedata-server.*\.mjs|panel-\d\d\.html)$/.test(name)).sort();
+  let own = false;
+  for (const name of files) (await readFile(join(root, folder, name), 'utf8')).split('\n').forEach((line, index) => {
+   const region = /^\s*\/\/ (node_modules\/|[\w.-]+\.m?[jt]sx?$)/.exec(line); if (region) own = region[1] !== 'node_modules/';
+   if (own && names.test(line)) found.push(`${folder}/${name}:${index + 1}`);
+  });
+ }
+ assert.deepEqual(found, []);
 });

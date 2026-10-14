@@ -334,7 +334,7 @@ test('tedata_derive says that a preview lives only in the running server', async
  } finally { await s.close(); }
 });
 
-test('the panel is stored in files the directory can read in full and served exactly as 0.8.7 built it', async () => {
+test('the panel is stored in files the directory can read in full and served as 0.8.7 built it', async () => {
  const panel = fileURLToPath(new URL('../panel/', import.meta.url)), names = (await readdir(panel)).sort();
  assert.deepEqual(names, Array.from({length: 13}, (_, index) => `panel-${String(index + 1).padStart(2, '0')}.html`));
  for (const name of names) assert.ok((await stat(join(panel, name))).size <= 256 * 1024, name);
@@ -343,9 +343,13 @@ test('the panel is stored in files the directory can read in full and served exa
   await s.initialize();
   const {contents} = (await s.request('resources/read', {uri: 'ui://toolsenabled-data/panel-v1.html'})).result;
   assert.equal(contents.length, 1);
-  // 0.8.7's panel/panel.html: 2,969,612 bytes, unchanged since 0.8.3.
-  assert.equal(Buffer.byteLength(contents[0].text), 2969612);
-  assert.equal(createHash('sha256').update(contents[0].text).digest('hex'), '8d5247e20020f36017d533e81900bdff8ca545f8434d31909e96c67fecfe748a');
+  // The panel's text is 0.8.7's panel/panel.html (2,969,612 bytes, unchanged since 0.8.3) with one local variable
+  // in its chart code renamed from token to cssVar (@@ stands for the name); undoing that gives 0.8.7's panel exactly.
+  const PANEL_EDITS_SINCE_087 = [['cssVar', 'token'].map(name => 'for (let [key2, @@] of [["text", "--te-text"], ["text2", "--te-text-2"], ["text3", "--te-text-3"], ["surface", "--te-surface"]]) {\n    probe.style.color = "", probe.style.color = `var(${@@})`;'.replaceAll('@@', name))];
+  let text = contents[0].text;
+  for (const [now, before] of PANEL_EDITS_SINCE_087) { assert.equal(text.split(now).length, 2, now); text = text.replace(now, before); }
+  assert.equal(Buffer.byteLength(text), 2969612);
+  assert.equal(createHash('sha256').update(text).digest('hex'), '8d5247e20020f36017d533e81900bdff8ca545f8434d31909e96c67fecfe748a');
   assert.deepEqual(contents[0]._meta.ui.csp, {connectDomains: [], resourceDomains: []});
  } finally { await s.close(); }
 });
