@@ -161,6 +161,8 @@ const SERVER_EDITS_SINCE_087 = [
   "text: await readFile7(panelFile, \"utf8\"), _meta"],
  // A local variable in TE Data's evidence code renamed from secret to problem (@@ stands for the name).
  ["problem", "secret"].map(name => '@@ = credentialTextProblem(text4);\n      if (@@) throw new Error(`TE Data does not return this document: ${@@}. '.replaceAll('@@', name)),
+ // The version this server reports.
+ ['var VERSION = "0.8.8", uri = ', 'var VERSION = "0.8.7", uri = '],
 ];
 test('the server is stored in ES modules the directory can read in full, and they join to the bundle', async () => {
  const server = join(root, 'server'), entry = 'tedata-server.mjs';

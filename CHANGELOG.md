@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.8.8 — 2026-10-14
+
+- Every file of the plugin can now be read in full: no file is larger than 256 KiB. The plugin directory's validator reads text files only up to 256 KiB and held three files for review: the server and panel bundles (over its 1 MiB read limit) and the licence inventory. Nothing they do changed:
+  - The server bundle is stored as 15 ES modules in `server/`, cut between top-level statements with no bundle text changed. `tedata-server.mjs`, the file Claude Code starts, holds TE Data's MCP tools and loads `tedata-server-01-ajv.mjs` to `tedata-server-14-vega-lite.mjs`. Each part first imports the part before it, so the parts run in the bundle's order, then the names it uses from other parts. Without those import and export lines the parts join to the single bundle byte for byte; a release test checks this and that undoing the listed edits gives 0.8.7's server exactly. tools/list, resources/list and the README's Try it calls give the same results before and after the split, and the server starts as fast.
+  - The panel is stored as `panel/panel-01.html` to `panel-13.html`, which the server joins into one page when a host asks for the panel.
+  - The licence texts are in `licenses/javascript-1.txt`, `licenses/javascript-2.txt` and `licenses/duckdb.txt`; `THIRD-PARTY-LICENSES.txt` keeps its opening lines and lists them. Joined, they are the whole inventory, with no text lost.
+- Deduplicate keeps the rows it keeps in their source order. "Make a copy of sample.csv without duplicate rows" used to start at 2026-01-02, with 2026-01-01 Oslo 15th; it now gives source rows 1 to 28 in order. `keep: "first"` and `"last"` also return the kept rows in source order. The schema and recipe descriptions say so.
+- An exported chart block's data CSV writes its time column as UTC ISO text (`2026-01-01T00:00:00.000Z`), the time the chart's tooltip shows, where it wrote Unix seconds.
+- The licence inventory names ToolsEnabled Data (TE Data); it said "Bench" in four places.
+- The directory's "Uses a credential from the user's machine" hold named two files that neither read a credential nor send anything: the watcher's loop variable for a run's ids is now `field`, and `tools/build-release.mjs` runs `git archive` with fixed arguments and builds no string at run time (its archives are byte-identical to the old tool's). Two local variables in TE Data's own server and panel code are also renamed plainly (`problem` in the evidence reader, `cssVar` in the panel's chart code); the refusal message and what the panel shows are unchanged.
+- README: "What it runs, writes and sends" names every program TE Data starts, says that setup and the query worker run with Claude Code's environment so your own package index, proxy and certificate settings apply, that the panel connects nowhere, what the release tools do (neither sends anything), and who publishes TE Data (ToolsEnabled is not affiliated with or endorsed by Anthropic). Verifying a release points to this changelog for the in-payload server changes and explains the new files.
+- Eleven new tests, 50 in all. The two in `test/duckdb.test.mjs` need the query engine: they run when `TEDATA_PYTHON` names a Python with DuckDB 1.5.6 and are skipped otherwise. PRIVACY.md, the skills, the commands and the watcher's behaviour are unchanged.
+
 ## 0.8.7 — 2026-10-13
 
 - A deduplicate step has two forms in the tedata_data schema, as the recipe validator always required: `keep: "unique"` (the default) takes no `columns` or `orderBy`; `keep: "first"` or `"last"` requires both. A step with `columns` and `keep: "unique"` is refused by the schema with the key named, where 0.8.6's schema accepted it and the validator then refused it.
