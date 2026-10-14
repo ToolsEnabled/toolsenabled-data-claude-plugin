@@ -1,11 +1,11 @@
 {
   "plugin": "toolsenabled-data",
-  "version": "0.8.7",
-  "sourceCommit": "3837b01efe3833a03963c5f3e40ca4407db9e53e",
+  "version": "0.8.8",
+  "sourceCommit": "f3d39390ab86de7374bd90e37679a8f242cc03d1",
   "sourceKind": "public-payload",
-  "payloadBaseCommit": "d29b7cc5be2456c208ae6877cd0de3587eb4f12b",
+  "payloadBaseCommit": "5b169e42308ac49bb3cb583bddaace393470a4e0",
   "bundledSourceCommit": "4f61abcf3eeb9b7532e7bfe84a49a46ab6bf928a",
-  "bundledSourceAvailability": "Internal 0.8.3 build source; not distributed in this public repository. Since 0.8.4, public payload commits change server/tedata-server.mjs directly; CHANGELOG.md lists the changes.",
+  "bundledSourceAvailability": "Internal 0.8.3 build source; not distributed in this public repository. Since 0.8.4, public payload commits change the server bundle directly; since 0.8.8 it is stored as server/tedata-server.mjs and the 14 parts it imports, which join to the one bundle. CHANGELOG.md lists the changes.",
   "files": [
     {
       "path": ".agents/plugins/marketplace.json",
@@ -15,12 +15,12 @@
     {
       "path": ".claude-plugin/marketplace.json",
       "bytes": 473,
-      "sha256": "a9754f71db621bd5af6ac683f53a3233543ef2dc46fe410f6732e4798cb76c4d"
+      "sha256": "76d81f4c9a32a9eceba4c02f8fa76af0da0159e7087a84baf86d7a9be3b22bd4"
     },
     {
       "path": ".claude-plugin/plugin.json",
       "bytes": 920,
-      "sha256": "0444eeeb39298ceb58e9f6d4a2d84936af0c081a652a248fa9f2a21c27c705b5"
+      "sha256": "fb7fc3aa99d162a5567342b397701ed4b9b7362c4c4a62735ab8c08c3eccc1e9"
     },
     {
       "path": ".mcp.json",
@@ -29,8 +29,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 4367,
-      "sha256": "20fb142b2c606437395397a851e02b7fa4c6e659ca476e79a2955dfb5474d9be"
+      "bytes": 7690,
+      "sha256": "c807fde8436d417c97fe778f2f6ce212b5ad8a9417e2926972b417c9032b6512"
     },
     {
       "path": "LICENSE",
@@ -44,8 +44,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 13480,
-      "sha256": "f7c08f368a604168df2a516996c3754a5343df4444ee1eccb2bc080680deeb43"
+      "bytes": 16475,
+      "sha256": "7b0dbd75a87ae218c71745e9c09ea9a23fb3effd302c231ccd167e91e5df5f9c"
     },
     {
       "path": "SECURITY.md",
@@ -54,8 +54,8 @@
     },
     {
       "path": "THIRD-PARTY-LICENSES.txt",
-      "bytes": 457640,
-      "sha256": "c153f3008487de302118fb4f75f86230d0a8aaacb41a9217fc3f81e90380057c"
+      "bytes": 905,
+      "sha256": "417013a6c1fddfaa8dea784d8d068ebb13337f12009fbac425eb4087758a11ea"
     },
     {
       "path": "commands/export.md",
@@ -78,19 +78,164 @@
       "sha256": "60b73f53d11d5071e11bb32b289bd93126f114d585cbad63267b3c53a24b832a"
     },
     {
-      "path": "panel/panel.html",
-      "bytes": 2969612,
-      "sha256": "8d5247e20020f36017d533e81900bdff8ca545f8434d31909e96c67fecfe748a"
+      "path": "licenses/duckdb.txt",
+      "bytes": 177916,
+      "sha256": "8099eab5971f28f1893f8114c5434f8e147d3fe6aadd854c394e948454d266de"
+    },
+    {
+      "path": "licenses/javascript-1.txt",
+      "bytes": 140123,
+      "sha256": "470493f73fda6149827171c94453155984fb07adc22f066031481b7860c8147e"
+    },
+    {
+      "path": "licenses/javascript-2.txt",
+      "bytes": 139230,
+      "sha256": "999e767a4fa3b36b9f3fded59bd37ba4ddb1d83e9ea24b286ae1702d6e0bbf0c"
+    },
+    {
+      "path": "panel/panel-01.html",
+      "bytes": 228436,
+      "sha256": "5ed91be2acf74c78b8c5f42078f8b5fdd5411c7b9462be6e6db6b7ae3560db33"
+    },
+    {
+      "path": "panel/panel-02.html",
+      "bytes": 228597,
+      "sha256": "9190cd608032bc7f873cc4e370a6dae178e13825bd9f095726f491fd1784f770"
+    },
+    {
+      "path": "panel/panel-03.html",
+      "bytes": 228316,
+      "sha256": "f854001c05fdce932bd86cda63583ce9ac7ae97d7fad1a834ca6dfaa89879d5f"
+    },
+    {
+      "path": "panel/panel-04.html",
+      "bytes": 228380,
+      "sha256": "8eedede5099ac4d01a4fd7d5b273e9890a7079b3a6b53dbda7b4ff85c4cf9af1"
+    },
+    {
+      "path": "panel/panel-05.html",
+      "bytes": 228454,
+      "sha256": "3306e1316b763e768de91cc4d4d581dc7335e27ebc727a2ca994fd125e11911b"
+    },
+    {
+      "path": "panel/panel-06.html",
+      "bytes": 228453,
+      "sha256": "7921f4645f9994273d6fe2ffc3db3d19671dc969494810faa2ec2802c10c3ad8"
+    },
+    {
+      "path": "panel/panel-07.html",
+      "bytes": 228471,
+      "sha256": "49e622f0b22f2d88969e1e87ffe77493db91207d16584ce3f0397b8d8043a21b"
+    },
+    {
+      "path": "panel/panel-08.html",
+      "bytes": 228363,
+      "sha256": "a76d02ef5af2a9326b8b27cd35afb80a7e54f8236058ecf1c76659cc8011983f"
+    },
+    {
+      "path": "panel/panel-09.html",
+      "bytes": 228420,
+      "sha256": "613f80deeeea45bf5b26b36056cc36fab7f942a5ddd6e6a7e3f24927daf5a0c9"
+    },
+    {
+      "path": "panel/panel-10.html",
+      "bytes": 228541,
+      "sha256": "c6d0d095e1941c57451a486d1ec5b23f8faf98bc65f4be92a9e6cf8e35107638"
+    },
+    {
+      "path": "panel/panel-11.html",
+      "bytes": 228329,
+      "sha256": "eef25a41f7cec3121d9279eeabbd4d66e100cf1385340791a662d8f675c57409"
+    },
+    {
+      "path": "panel/panel-12.html",
+      "bytes": 228459,
+      "sha256": "7e29cc5da1c7afcb9c939818b05fcefdcf8bade65751dcb8205472330c72f033"
+    },
+    {
+      "path": "panel/panel-13.html",
+      "bytes": 228395,
+      "sha256": "f78c3150df6aad68bb077193846489cd46a472335873115166a8ce5b4b60c91e"
+    },
+    {
+      "path": "server/tedata-server-01-ajv.mjs",
+      "bytes": 230939,
+      "sha256": "5dd43c2546ea4e558a3efa08270b2dc036356ba7dff73a212ccf29cdb7b7c21d"
+    },
+    {
+      "path": "server/tedata-server-02-zod.mjs",
+      "bytes": 235470,
+      "sha256": "eb226b5e09551122d30c11524bb92500196c1a82abf8439e9e7ffa182a3e5cc5"
+    },
+    {
+      "path": "server/tedata-server-03-zod.mjs",
+      "bytes": 230361,
+      "sha256": "0423cfe5206e1f37c55a94565946a03d7dec046c0e6799cde4c1ffd0a6143404"
+    },
+    {
+      "path": "server/tedata-server-04-zod.mjs",
+      "bytes": 231571,
+      "sha256": "4ad5eed0cea1b353c9d702bd9de2ad6d478f006f9f748dd22edab50665154070"
+    },
+    {
+      "path": "server/tedata-server-05-zod.mjs",
+      "bytes": 186685,
+      "sha256": "3fb1a8c16b5bb6e84cf93a9f7940c9600b7676af4a2ae8b2946dea9779bc0b93"
+    },
+    {
+      "path": "server/tedata-server-06-mcp-sdk.mjs",
+      "bytes": 190947,
+      "sha256": "a01fa8cae9d1b99ab55c965e4af41074996ab0078ce933828b1776adab575f26"
+    },
+    {
+      "path": "server/tedata-server-07-tedata.mjs",
+      "bytes": 206836,
+      "sha256": "d2165a0971cc77304a568d51c8cb0cc8ae675c467be29b4dc940b5bcdbf34200"
+    },
+    {
+      "path": "server/tedata-server-08-vega.mjs",
+      "bytes": 232051,
+      "sha256": "f2412049e128d764cdaacab621efc6e236e0fcb8eb0413290dba615e849eac77"
+    },
+    {
+      "path": "server/tedata-server-09-vega.mjs",
+      "bytes": 221241,
+      "sha256": "8faff203f45106d352cdd74b32114601c6e8ecfdb57fe43a0789bb1b463f4816"
+    },
+    {
+      "path": "server/tedata-server-10-vega.mjs",
+      "bytes": 232787,
+      "sha256": "08789b53878b4fc4c688d460349872110753c28006bd1b020cbfccf467a72a12"
+    },
+    {
+      "path": "server/tedata-server-11-vega.mjs",
+      "bytes": 231883,
+      "sha256": "0fbfe7e730ff8937c628f27ea1cd429318f5b247accd93237f7b31a9ea55c4f0"
+    },
+    {
+      "path": "server/tedata-server-12-vega-lite.mjs",
+      "bytes": 239244,
+      "sha256": "16ebd69efd5a3368c196aabc3ce1f5dafbf23b0e09ce807857eb98e5e63b28f1"
+    },
+    {
+      "path": "server/tedata-server-13-vega-lite.mjs",
+      "bytes": 237498,
+      "sha256": "f2127826d3a9da75621ed89b9c96a5fbcb5fccdf70c1d36baea1c1deade39b20"
+    },
+    {
+      "path": "server/tedata-server-14-vega-lite.mjs",
+      "bytes": 234404,
+      "sha256": "be3e58a5c7c44060bb6769f58de86152357aea3b0f62ad466e55943de546cabc"
     },
     {
       "path": "server/tedata-server.mjs",
-      "bytes": 3227443,
-      "sha256": "59459e7f9064d4a605b344968db7df5ac3621f5ac4c57038f3292451d8559b7e"
+      "bytes": 145495,
+      "sha256": "74c92fc8e1ae41a8f6ffa7399ae0f7769235ce2cd5bd420b71b5ebe14a9d0037"
     },
     {
       "path": "server/tedata-watch.mjs",
-      "bytes": 6773,
-      "sha256": "3375e80c03c73a158584b6cded6192b19da2fd430f45ea8444d6297f3f8edeed"
+      "bytes": 6777,
+      "sha256": "7b0acf3a78b5bd8eba14e682f8749f188f52d9af6c361ed4d9f4e58623690ac7"
     },
     {
       "path": "skills/tedata/SKILL.md",
@@ -98,14 +243,19 @@
       "sha256": "ce82d87f5555bbfd9e9b79f1720297cecfe376d48b54c7a1b0241671b2650370"
     },
     {
+      "path": "test/duckdb.test.mjs",
+      "bytes": 8292,
+      "sha256": "b2017b83bf5585265895a112a0d67506290fb0731b916042493102d5a4080072"
+    },
+    {
       "path": "test/release.test.mjs",
-      "bytes": 6331,
-      "sha256": "a08180957294bd3dc7c68caab8acce27d22e2a10ecd98667aa4c4275045de75a"
+      "bytes": 17806,
+      "sha256": "b55d1a459535145424426d2e8e954a1190548ee16d15675079ceab7f6b1c96e0"
     },
     {
       "path": "test/server.test.mjs",
-      "bytes": 24024,
-      "sha256": "4bd7db8e39f5c957b53658759c540b724e9206109c7aaaccc61428a13a75e58d"
+      "bytes": 25676,
+      "sha256": "942db702c8a96ca985ef83bb64b96680d1cefe76b332feff430c795ba70229aa"
     },
     {
       "path": "test/verify.test.mjs",
@@ -114,8 +264,8 @@
     },
     {
       "path": "tools/build-release.mjs",
-      "bytes": 1042,
-      "sha256": "e3e86b96d77f998061f4398aa09f7319bde5239a83ef893255502591cf570f42"
+      "bytes": 1155,
+      "sha256": "d9ab403a625aef50a600779ffbd8a1ff3e2d14496444a1073fac0b639781d84c"
     },
     {
       "path": "tools/verify-release.mjs",
@@ -129,8 +279,8 @@
     },
     {
       "path": "worker/derivation_worker.py",
-      "bytes": 23246,
-      "sha256": "019156d9d9c3fc4f70c2a0bcbd69b071d81ab383278805f9d04ae52223c98edd"
+      "bytes": 23954,
+      "sha256": "aa3d278f0833c1e79cad1d75c7775f64cfdeddcdeb70401f5e38d491f1ce09ad"
     },
     {
       "path": "worker/requirements.lock",
