@@ -231,3 +231,14 @@ test("TE Data's own code in the server and panel interpolates no variable named 
  }
  assert.deepEqual(found, []);
 });
+
+test('the README names every program TE Data starts, and the panel connects nowhere', async () => {
+ const readme = await readFile(join(root, 'README.md'), 'utf8');
+ const runs = readme.split('\n').find(line => line.startsWith('- **Runs:**'));
+ assert.match(runs, /TE Data starts two kinds of program and no others: setup runs `uv` if it is installed and your Python 3\.10 or newer \(`TEDATA_BASE_PYTHON`, `python3` or `python`, or `py -3` on Windows\)[^\n]*the query worker is that `python`, or the one `TEDATA_PYTHON` names, running `worker\/data_worker\.py`\./);
+ assert.match(runs, /its content security policy lists no domains, so it can connect to nothing and load nothing from the network/);
+ // The server starts exactly two programs: setup's commands and the query worker.
+ const server = (await Promise.all((await readdir(join(root, 'server'))).filter(name => name.startsWith('tedata-server')).map(name => readFile(join(root, 'server', name), 'utf8')))).join('\n');
+ assert.deepEqual(server.match(/\bspawn2?\((?=[a-z(])/g), ['spawn(', 'spawn2(']);
+ assert.equal((server.match(/from "node:child_process"/g) || []).length, 2);
+});
