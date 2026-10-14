@@ -195,3 +195,19 @@ test('no file in the plugin is larger than 256 KiB, so the directory can read ev
  await walk(root);
  assert.deepEqual(large, []);
 });
+
+test('the README says what TE Data runs, sends and is, in the section the directory reviewer reads', async () => {
+ const readme = await readFile(join(root, 'README.md'), 'utf8');
+ const section = readme.slice(readme.indexOf('## What it runs, writes and sends'), readme.indexOf('## Requirements'));
+ // The release tools: what they run, and that they send nothing.
+ assert.match(section, /`tools\/build-release\.mjs` and `tools\/verify-release\.mjs` are release tools you run yourself[^\n]*neither sends anything\./);
+ // Setup's environment, and the files that hold the server and panel.
+ assert.match(section, /with the environment Claude Code starts TE Data with[^\n]*reads no login, token or key/);
+ assert.match(section, /`server\/tedata-server\.mjs`[^\n]*14 parts[^\n]*panel/);
+ // Who publishes it: the answer to the directory's name and publisher similarity holds.
+ assert.match(section, /\*\*Publisher:\*\* ToolsEnabled, Inc\.[^\n]*not affiliated with or endorsed by Anthropic\./);
+ // The in-payload server changes are listed per version in CHANGELOG.md, not up to one version in the README.
+ assert.doesNotMatch(readme, /0\.8\.4: its reported version/);
+ assert.match(readme, /CHANGELOG\.md lists for each later version/);
+ assert.match(readme, /\[THIRD-PARTY-LICENSES\.txt\]\(THIRD-PARTY-LICENSES\.txt\) and the \[licenses\]\(licenses\) folder/);
+});
