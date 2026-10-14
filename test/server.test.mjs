@@ -324,3 +324,12 @@ test('a layout saved before a column interpretation names the configure action',
   assert.match(job.error, /^Save a column interpretation before composing a layout \(tedata_data action configure, or tedata_prepare with a configuration\)\.$/);
  } finally { await s.close(); }
 });
+
+test('tedata_derive says that a preview lives only in the running server', async () => {
+ const s = await start();
+ try {
+  await s.initialize();
+  const {tools} = (await s.request('tools/list')).result;
+  assert.match(tools.find(t => t.name === 'tedata_derive').description, /restart[^.]*preview/i);
+ } finally { await s.close(); }
+});
