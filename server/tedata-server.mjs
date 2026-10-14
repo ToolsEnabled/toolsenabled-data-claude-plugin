@@ -69748,7 +69748,7 @@ async function chartSvg(chart, theme) {
 }
 function chartRows(chart) {
   let fields = chart.pointFields || ["x", "value", "count", "min", "max", "series"];
-  return { header: fields, rows: (chart.points || []).map((point8) => fields.map((_, index4) => point8[index4])) };
+  return { header: fields, rows: (chart.points || []).map((point8) => fields.map((_, index4) => index4 === 0 && chart.temporal && point8[0] != null ? time5(point8[0]) : point8[index4])) };
 }
 async function target2(data3, name2, directory) {
   if (directory && !isAbsolute4(directory)) throw new Error("Choose an absolute export directory.");

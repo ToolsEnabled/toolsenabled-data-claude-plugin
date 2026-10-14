@@ -77,3 +77,25 @@ test('removing duplicate rows keeps the first of each in source order, also for 
   assert.deepEqual(last.rows, expected.filter(row => row.startsWith('2026-01-14,')));
  } finally { await s.close(); }
 });
+
+test('an exported chart block writes its time column as UTC ISO text, as the chart shows it', {skip}, async () => {
+ const s = await start();
+ try {
+  const configuration = {reader: {header: true, delimiter: ','}, columns: [
+   {source: 'date', name: 'date', type: 'datetime', format: '%Y-%m-%d'}, {source: 'city', name: 'city', type: 'text'},
+   {source: 'high_c', name: 'high_c', type: 'number', unit: 'C'}, {source: 'low_c', name: 'low_c', type: 'number', unit: 'C'}, {source: 'rain_mm', name: 'rain_mm', type: 'number', unit: 'mm'}]};
+  const layout = {version: 1, title: 'Daily highs', sections: [{title: 'Highs', blocks: [{id: 'highs', type: 'chart', title: 'Daily high by city', chart: {x: 'date', y: 'high_c', series: 'city', chartType: 'line'}}]}]};
+  await s.settle(s.call('tedata_prepare', {...s.base, configuration, view: {x: 'date', y: 'high_c', series: 'city', chartType: 'line', layout}}));
+  const exported = await s.json(s.call('tedata_export', {fileId: s.base.fileId}));
+  const [chartCsv] = await files(exported.directory, /^charts[/\\].*\.csv$/);
+  const [header, ...rows] = (await readFile(chartCsv, 'utf8')).trim().split('\n').map(line => line.split(','));
+  assert.deepEqual(header, ['intervalStart', 'value', 'count', 'min', 'max', 'series']);
+  // One row per point, 14 intervals for each of the 2 cities, in the order and with the times of the chart's
+  // own data (its tooltip's "date (UTC)"): the chart block chooses its intervals itself.
+  assert.equal(rows.length, 28);
+  const spec = JSON.parse(await readFile(chartCsv.replace(/\.csv$/, '.vl.json'), 'utf8'));
+  assert.deepEqual(rows.map(row => [row[0], row[1], row[5]]), spec.data.values.map(value => [value.axisValue, value.chartValue, value.series]));
+  for (const row of rows) assert.match(row[0], /^2026-01-[01][0-9]T[0-9]{2}:[0-9]{2}:[0-9]{2}\.000Z$/, row.join(','));
+  assert.deepEqual(rows.find(row => row[5] === 'Oslo').slice(0, 2), ['2026-01-01T00:00:00.000Z', '1.2']);
+ } finally { await s.close(); }
+});
