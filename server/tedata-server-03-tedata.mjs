@@ -1,11 +1,13 @@
-// ToolsEnabled Data server, part 7 of 15: TE Data's own code (lines 28325-30532 of the bundle).
-// The server is one esbuild bundle stored as 15 ES modules of under 256 KiB each, cut between top-level statements
-// so that every file can be read in full (README.md, "Verifying a release"). The import lines first load the previous
-// part, so the parts run in the bundle's order, then name what this part uses from other parts; the export line names
-// what other parts use from it. Without the lines outside "Bundle text", the parts join to the bundle byte for byte.
-import "./tedata-server-06-mcp-sdk.mjs";
-import { external_exports } from "./tedata-server-05-zod.mjs";
-// Bundle text, part 7 of 15
+// ToolsEnabled Data server, part 3 of 5: TE Data's own code: its data services, schemas, workspace, preparation,
+// evidence and collection code (lines 28325-30532 of the bundle).
+// The server is one esbuild bundle stored as 5 ES modules, cut between top-level statements: TE Data's own code in
+// parts 1, 3 and 5, each under 256 KiB so that it can be read in full, and the bundled third-party libraries in parts
+// 2 and 4 (README.md, "Verifying a release"). The import lines first load the previous part, so the parts run in the
+// bundle's order, then name what this part uses from other parts; the export line names what other parts use from it.
+// Without the lines outside "Bundle text", the parts join to the bundle byte for byte.
+import "./tedata-server-02-vendor-mcp.mjs";
+import { external_exports } from "./tedata-server-02-vendor-mcp.mjs";
+// Bundle text, part 3 of 5
 
 // data-service.mjs
 import { readFile as readFile6, realpath as realpath5, lstat as lstat6, readdir as readdir5 } from "node:fs/promises";
@@ -2214,7 +2216,7 @@ async function setup({ force = !1 } = {}) {
     });
   }
 }
-// End of bundle text, part 7 of 15
+// End of bundle text, part 3 of 5
 export { CollectionService, DERIVED_ADVICE, DUCKDB_VERSION, DataState, DerivedData, EvidenceService, INK,
   PreparationService, basename5, changeSources, createHash9, createReadStream, credentialPathProblem, dataDirectory,
   defaultLayout, describeGrouped, dirname4, ensureStateDirectory, join13, layoutBlocks, layoutMetrics, lstat6,

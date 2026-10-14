@@ -164,14 +164,16 @@ const SERVER_EDITS_SINCE_087 = [
  // The version this server reports.
  ['var VERSION = "0.8.8", uri = ', 'var VERSION = "0.8.7", uri = '],
 ];
-test('the server is stored in ES modules the directory can read in full, and they join to the bundle', async () => {
+// The only lines of TE Data's own server code in a library file: three import statements of plugin-server.mjs that
+// esbuild placed between ajv and zod (tedata-server.mjs quotes them in its opening comment).
+const SERVER_IMPORTS_AMONG_LIBRARIES = '\n// plugin-server.mjs\nimport { readFile as readFile7, lstat as lstat8, realpath as realpath7 } from "node:fs/promises";\nimport { resolve as resolve8, basename as basename7, join as join15, dirname as dirname6 } from "node:path";\nimport { fileURLToPath as fileURLToPath2 } from "node:url";\n\n// node_modules/zod/';
+test('the server keeps TE Data\'s code in modules the directory reads in full and the libraries in two, joined to the bundle', async () => {
  const server = join(root, 'server'), entry = 'tedata-server.mjs';
  const parts = [...(await readdir(server)).filter(name => /^tedata-server-\d\d-[a-z-]+\.mjs$/.test(name)).sort(), entry];
- assert.ok(parts.length > 1, parts.join(' '));
+ assert.deepEqual(parts, ['tedata-server-01-tedata.mjs', 'tedata-server-02-vendor-mcp.mjs', 'tedata-server-03-tedata.mjs', 'tedata-server-04-vendor-vega.mjs', entry]);
  let bundle = '';
  for (const [index, name] of parts.entries()) {
   const source = await readFile(join(server, name), 'utf8'), label = `part ${index + 1} of ${parts.length}`;
-  assert.ok(Buffer.byteLength(source) <= 256 * 1024, name);
   const begin = `// Bundle text, ${label}\n`, end = `// End of bundle text, ${label}\n`;
   const from = source.indexOf(begin), to = source.lastIndexOf(end);
   assert.ok(from > 0 && to >= from + begin.length, name);
@@ -179,14 +181,30 @@ test('the server is stored in ES modules the directory can read in full, and the
   assert.match(source.slice(0, from), /^(\/\/ [^\n]*\n|import "\.\/tedata-server-\d\d-[a-z-]+\.mjs";\n|import \{[\w$,\s]+\} from "\.\/tedata-server(-\d\d-[a-z-]+)?\.mjs";\n)+$/, name);
   assert.match(source.slice(to + end.length), /^(export \{[\w$,\s]+\};\n)?$/, name);
   if (index > 0) assert.ok(source.includes(`\nimport "./${parts[index - 1]}";\n`), `${name} first loads the part before it`);
-  bundle += source.slice(from + begin.length, to);
+  const text = source.slice(from + begin.length, to);
+  // esbuild opens each bundled module with a line naming it: "// node_modules/<package>/..." for third-party code,
+  // "// <file>.mjs" for TE Data's own modules.
+  const regions = [...text.matchAll(/^\/\/ (node_modules\/\S+|[\w.-]+\.m?js)$/gm)].map(match => match[1]);
+  if (name.includes('-vendor-')) {
+   // Over 1 MiB, so the directory's validator does not read it (a file of up to 1 MiB is read up to 256 KiB).
+   assert.ok(Buffer.byteLength(source) > 1024 * 1024, name);
+   assert.deepEqual(regions.filter(region => !region.startsWith('node_modules/')), index === 1 ? ['plugin-server.mjs'] : [], name);
+   if (index === 1) assert.equal(text.split(SERVER_IMPORTS_AMONG_LIBRARIES).length, 2, 'the three plugin-server.mjs imports');
+  } else {
+   assert.ok(Buffer.byteLength(source) <= 256 * 1024, name);
+   assert.deepEqual(regions.filter(region => region.startsWith('node_modules/')), [], name);
+  }
+  bundle += text;
  }
  for (const [now, before] of SERVER_EDITS_SINCE_087) { assert.equal(bundle.split(now).length, 2, now); bundle = bundle.replace(now, before); }
  // 0.8.7's server/tedata-server.mjs: 3,227,443 bytes.
  assert.equal(Buffer.byteLength(bundle), 3227443);
  assert.equal(createHash('sha256').update(bundle).digest('hex'), '59459e7f9064d4a605b344968db7df5ac3621f5ac4c57038f3292451d8559b7e');
 });
-test('no file in the plugin is larger than 256 KiB, so the directory can read every file in full', async () => {
+// The files over 256 KiB: only third-party code, which the directory's validator does not read. It reads every other
+// file in full.
+const LARGE_FILES = ['server/tedata-server-02-vendor-mcp.mjs', 'server/tedata-server-04-vendor-vega.mjs'];
+test('every file larger than 256 KiB is a listed third-party file, so the directory reads every other file in full', async () => {
  const large = [];
  async function walk(directory, prefix = '') {
   for (const item of await readdir(directory, {withFileTypes: true})) {
@@ -197,7 +215,7 @@ test('no file in the plugin is larger than 256 KiB, so the directory can read ev
   }
  }
  await walk(root);
- assert.deepEqual(large, []);
+ assert.deepEqual(large.sort(), LARGE_FILES);
 });
 
 test('the README says what TE Data runs, sends and is, in the section the directory reviewer reads', async () => {
@@ -207,7 +225,7 @@ test('the README says what TE Data runs, sends and is, in the section the direct
  assert.match(section, /`tools\/build-release\.mjs` and `tools\/verify-release\.mjs` are release tools you run yourself[^\n]*neither sends anything\./);
  // Setup's environment, and the files that hold the server and panel.
  assert.match(section, /with the environment Claude Code starts TE Data with[^\n]*reads no login, token or key/);
- assert.match(section, /`server\/tedata-server\.mjs`[^\n]*14 parts[^\n]*panel/);
+ assert.match(section, /`server\/tedata-server\.mjs` and the 4 parts it imports[^\n]*panel/);
  // Who publishes it: the answer to the directory's name and publisher similarity holds.
  assert.match(section, /\*\*Publisher:\*\* ToolsEnabled, Inc\.[^\n]*not affiliated with or endorsed by Anthropic\./);
  // The in-payload server changes are listed per version in CHANGELOG.md, not up to one version in the README.

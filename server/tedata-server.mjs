@@ -1,12 +1,18 @@
-// ToolsEnabled Data server, part 15 of 15: TE Data's own code (lines 68461-70059 of the bundle).
-// The server is one esbuild bundle stored as 15 ES modules of under 256 KiB each, cut between top-level statements
-// so that every file can be read in full (README.md, "Verifying a release"). The import lines first load the previous
-// part, so the parts run in the bundle's order, then name what this part uses from other parts; the export line names
-// what other parts use from it. Without the lines outside "Bundle text", the parts join to the bundle byte for byte.
-import "./tedata-server-14-vega-lite.mjs";
-import { basename7, dirname6, fileURLToPath2, join15, lstat8, readFile7, realpath7, resolve8 } from "./tedata-server-02-zod.mjs";
-import { external_exports } from "./tedata-server-05-zod.mjs";
-import { G, H, L, McpServer, StdioServerTransport, j } from "./tedata-server-06-mcp-sdk.mjs";
+// ToolsEnabled Data server, part 5 of 5: TE Data's own code: the MCP server and its tools (lines 68461-70059 of the
+// bundle).
+// The server is one esbuild bundle stored as 5 ES modules, cut between top-level statements: TE Data's own code in
+// parts 1, 3 and 5, each under 256 KiB so that it can be read in full, and the bundled third-party libraries in parts
+// 2 and 4 (README.md, "Verifying a release"). The import lines first load the previous part, so the parts run in the
+// bundle's order, then name what this part uses from other parts; the export line names what other parts use from it.
+// Without the lines outside "Bundle text", the parts join to the bundle byte for byte.
+// readFile7, lstat8, realpath7, resolve8, basename7, join15, dirname6, fileURLToPath2 come from part 2, from these 3
+// import statements of TE Data's plugin-server.mjs that esbuild placed there:
+// import { readFile as readFile7, lstat as lstat8, realpath as realpath7 } from "node:fs/promises";
+// import { resolve as resolve8, basename as basename7, join as join15, dirname as dirname6 } from "node:path";
+// import { fileURLToPath as fileURLToPath2 } from "node:url";
+import "./tedata-server-04-vendor-vega.mjs";
+import { G, H, L, McpServer, StdioServerTransport, basename7, dirname6, external_exports, fileURLToPath2, j, join15,
+  lstat8, readFile7, realpath7, resolve8 } from "./tedata-server-02-vendor-mcp.mjs";
 import { CollectionService, DERIVED_ADVICE, DUCKDB_VERSION, DataState, DerivedData, EvidenceService, INK,
   PreparationService, basename5, changeSources, createHash9, createReadStream, credentialPathProblem, dataDirectory,
   defaultLayout, describeGrouped, dirname4, ensureStateDirectory, join13, layoutBlocks, layoutMetrics, lstat6,
@@ -14,11 +20,9 @@ import { CollectionService, DERIVED_ADVICE, DUCKDB_VERSION, DataState, DerivedDa
   plotSpecProblem, plottedValues, pythonPath, pythonStatus, queryView, randomUUID7, readFile6, readFileSync3,
   readStateFile, readWorkspace, readdir5, realpath5, realpathSync2, replaceFile, resolve6, resolveColorTokens, setup,
   sourceConfiguration, spawn2, stateFile, stateRoot, temporalComparisonProblems, themeColors, themeWarnings, unlink6,
-  validateLayout, validationRule, workerDirectory, writeFile8 } from "./tedata-server-07-tedata.mjs";
-import { color } from "./tedata-server-09-vega.mjs";
-import { View, parse8 } from "./tedata-server-12-vega-lite.mjs";
-import { compile2, expression3 } from "./tedata-server-14-vega-lite.mjs";
-// Bundle text, part 15 of 15
+  validateLayout, validationRule, workerDirectory, writeFile8 } from "./tedata-server-03-tedata.mjs";
+import { View, color, compile2, expression3, parse8 } from "./tedata-server-04-vendor-vega.mjs";
+// Bundle text, part 5 of 5
 
 // chart.js
 var exact = (value3) => value3 == null ? "\u2014" : String(value3), timeNumber = (value3) => typeof value3 == "number" ? value3 * 1e3 : Date.parse(String(value3)), time5 = (value3) => {
@@ -1618,4 +1622,4 @@ var shutdown = () => {
 };
 process.stdin.on("end", shutdown);
 process.on("SIGTERM", shutdown);
-// End of bundle text, part 15 of 15
+// End of bundle text, part 5 of 5
