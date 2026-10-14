@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.8.9 — 2026-10-14
+
+- The bundled third-party libraries are in four files over 1 MiB again, which the plugin directory's validator does not read, and TE Data's own code stays in files of at most 256 KiB, which it reads in full. The validator timed out on every attempt to validate 0.8.8, which stored every file under 256 KiB and so gave it about 7 MB of text to read, most of it library code. Nothing the server or panel does changed:
+  - The server bundle is stored as 5 ES modules in `server/` instead of 15: TE Data's code in `tedata-server-01-tedata.mjs`, `tedata-server-03-tedata.mjs` and `tedata-server.mjs`, and the libraries in `tedata-server-02-vendor-mcp.mjs` (ajv, zod, the MCP SDK and MCP Apps) and `tedata-server-04-vendor-vega.mjs` (Vega, Vega-Lite and d3). Three import statements of TE Data's server (`node:fs/promises`, `node:path`, `node:url`) that esbuild placed between ajv and zod stay in the first library file; `tedata-server.mjs` quotes them. The parts still run in the bundle's order and, without their import and export lines, join to the bundle byte for byte. The release test checks this, that undoing the listed edits gives 0.8.7's server exactly, and that TE Data's files hold no library module and the library files no TE Data module except those three imports.
+  - The panel is stored as 5 files in `panel/` instead of 13: TE Data's page and code in `panel-01-tedata.html`, `panel-03-tedata.html` and `panel-05-tedata.html`, and the libraries in `panel-02-vendor-mcp.html` (after the licence notice the panel shows) and `panel-04-vendor-vega.html`. The server joins them into the same page as 0.8.8's, byte for byte. The list of files it joins, with its comment, and the version are the only changes to TE Data's server code.
+  - The licence inventory is one file again, `THIRD-PARTY-LICENSES.txt`, as in 0.8.7: 0.8.8's four licence files joined, byte for byte. The `licenses` folder is removed. The validator reads the file up to 256 KiB.
+  - tools/list, resources/list, the panel page and the README's Try it calls give byte-identical results to 0.8.8's, and the server starts as fast.
+- README: Verifying a release says why the layout changed, what each of the ten server and panel files holds (TE Data's modules by name, each library by npm name and version) and how to check the large files; "What it runs, writes and sends" answers the directory's "couldn't inspect" hold.
+- The layout tests check the new files; 50 tests, as in 0.8.8. Everything else in 0.8.8 is unchanged: deduplicate order, UTC CSV times, the licence inventory naming TE Data, the renamed variables, PRIVACY.md, the skills, the commands and the watcher.
+
 ## 0.8.8 — 2026-10-14
 
 - Every file of the plugin can now be read in full: no file is larger than 256 KiB. The plugin directory's validator reads text files only up to 256 KiB and held three files for review: the server and panel bundles (over its 1 MiB read limit) and the licence inventory. Nothing they do changed:

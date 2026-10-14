@@ -52,11 +52,11 @@ Restart Claude Code after updating.
 
 ## Verifying a release
 
-The 0.8.8 release includes `toolsenabled-data-0.8.8.tar.gz` and its SHA-256 sidecar. Download both from the [release page](https://github.com/ToolsEnabled/toolsenabled-data-claude-plugin/releases/tag/toolsenabled-data--v0.8.8), then run:
+The 0.8.9 release includes `toolsenabled-data-0.8.9.tar.gz` and its SHA-256 sidecar. Download both from the [release page](https://github.com/ToolsEnabled/toolsenabled-data-claude-plugin/releases/tag/toolsenabled-data--v0.8.9), then run:
 
 ```sh
-sha256sum -c toolsenabled-data-0.8.8.tar.gz.sha256
-tar -xzf toolsenabled-data-0.8.8.tar.gz
+sha256sum -c toolsenabled-data-0.8.9.tar.gz.sha256
+tar -xzf toolsenabled-data-0.8.9.tar.gz
 cd toolsenabled-data
 node tools/verify-release.mjs
 node --test test/*.test.mjs

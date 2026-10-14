@@ -159,7 +159,7 @@ const SERVER_EDITS_SINCE_087 = [
  // A local variable in TE Data's evidence code renamed from secret to problem (@@ stands for the name).
  ["problem", "secret"].map(name => '@@ = credentialTextProblem(text4);\n      if (@@) throw new Error(`TE Data does not return this document: ${@@}. '.replaceAll('@@', name)),
  // The version this server reports.
- ['var VERSION = "0.8.8", uri = ', 'var VERSION = "0.8.7", uri = '],
+ ['var VERSION = "0.8.9", uri = ', 'var VERSION = "0.8.7", uri = '],
 ];
 // The only lines of TE Data's own server code in a library file: three import statements of plugin-server.mjs that
 // esbuild placed between ajv and zod (tedata-server.mjs quotes them in its opening comment).
