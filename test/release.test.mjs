@@ -124,20 +124,17 @@ test('the watcher names its run fields plainly and build-release runs one fixed 
  assert.doesNotMatch(build, /`/);
 });
 
-test('the licence inventory is in files the directory can read in full, and no text was lost', async () => {
- const index = await readFile(join(root, 'THIRD-PARTY-LICENSES.txt'), 'utf8');
- const parts = [...index.matchAll(/^- (licenses\/[a-z0-9-]+\.txt): /gm)].map(match => match[1]);
- assert.deepEqual(parts, ['licenses/javascript-1.txt', 'licenses/javascript-2.txt', 'licenses/duckdb.txt']);
- assert.deepEqual((await readdir(join(root, 'licenses'))).sort(), ['duckdb.txt', 'javascript-1.txt', 'javascript-2.txt']);
- const texts = [index, ...await Promise.all(parts.map(path => readFile(join(root, path), 'utf8')))];
- for (const text of texts) assert.ok(Buffer.byteLength(text) <= 256 * 1024, Buffer.byteLength(text) + ' bytes');
- // The index's first six lines and the parts, joined, are THIRD-PARTY-LICENSES.txt as one file: 0.8.7's text with
- // TE Data named in place of Bench and no other byte changed (457,672 bytes). The licence texts of json-schema-typed
- // and tslib keep their CRLF line ends, as in 0.8.7: 68 carriage returns.
- const joined = index.split('\n').slice(0, 6).join('\n') + '\n' + texts.slice(1).join('');
- assert.equal(joined.split('\r').length - 1, 68, 'carriage returns');
- assert.equal(Buffer.byteLength(joined), 457672);
- assert.equal(createHash('sha256').update(joined).digest('hex'), '16ad26acad685d5e85ecf5c0bb476dc291513e80000333f45c03bd9c80beee6e');
+test('the licence inventory is one file again, with no text lost', async () => {
+ // 0.8.8 stored it as an index and three files under licenses/; 0.8.9 keeps it in one file, as 0.8.7 did (the
+ // directory's validator reads it up to 256 KiB).
+ await assert.rejects(readdir(join(root, 'licenses')), {code: 'ENOENT'});
+ const inventory = await readFile(join(root, 'THIRD-PARTY-LICENSES.txt'));
+ // 0.8.7's text with TE Data named in place of Bench and no other byte changed (457,672 bytes); 0.8.8's four files
+ // joined give the same bytes. The licence texts of json-schema-typed and tslib keep their CRLF line ends, as in
+ // 0.8.7: 68 carriage returns.
+ assert.equal(inventory.toString('utf8').split('\r').length - 1, 68, 'carriage returns');
+ assert.equal(inventory.length, 457672);
+ assert.equal(createHash('sha256').update(inventory).digest('hex'), '16ad26acad685d5e85ecf5c0bb476dc291513e80000333f45c03bd9c80beee6e');
 });
 
 // The bundled server's text changes since 0.8.7, each as [text now, text in 0.8.7]. Undoing them must give 0.8.7's
@@ -201,9 +198,9 @@ test('the server keeps TE Data\'s code in modules the directory reads in full an
  assert.equal(Buffer.byteLength(bundle), 3227443);
  assert.equal(createHash('sha256').update(bundle).digest('hex'), '59459e7f9064d4a605b344968db7df5ac3621f5ac4c57038f3292451d8559b7e');
 });
-// The files over 256 KiB: only third-party code, which the directory's validator does not read. It reads every other
-// file in full.
-const LARGE_FILES = ['panel/panel-02-vendor-mcp.html', 'panel/panel-04-vendor-vega.html', 'server/tedata-server-02-vendor-mcp.mjs', 'server/tedata-server-04-vendor-vega.mjs'];
+// The files over 256 KiB: the third-party code, over 1 MiB, which the directory's validator does not read, and the
+// licence inventory, which it reads up to 256 KiB. It reads every other file in full.
+const LARGE_FILES = ['THIRD-PARTY-LICENSES.txt', 'panel/panel-02-vendor-mcp.html', 'panel/panel-04-vendor-vega.html', 'server/tedata-server-02-vendor-mcp.mjs', 'server/tedata-server-04-vendor-vega.mjs'];
 test('every file larger than 256 KiB is a listed third-party file, so the directory reads every other file in full', async () => {
  const large = [];
  async function walk(directory, prefix = '') {
@@ -231,7 +228,7 @@ test('the README says what TE Data runs, sends and is, in the section the direct
  // The in-payload server changes are listed per version in CHANGELOG.md, not up to one version in the README.
  assert.doesNotMatch(readme, /0\.8\.4: its reported version/);
  assert.match(readme, /CHANGELOG\.md lists for each later version/);
- assert.match(readme, /\[THIRD-PARTY-LICENSES\.txt\]\(THIRD-PARTY-LICENSES\.txt\) and the \[licenses\]\(licenses\) folder/);
+ assert.match(readme, /\[THIRD-PARTY-LICENSES\.txt\]\(THIRD-PARTY-LICENSES\.txt\) for bundled software licenses/);
  // 0.8.8 renames one local variable in the panel (test/server.test.mjs undoes it), so the README must not call it unchanged.
  assert.doesNotMatch(readme, /The panel is unchanged/);
  assert.match(readme, /The panel is the 0\.8\.3 build with one local variable renamed in 0\.8\.8 \(see CHANGELOG\.md\), and the Python workers are unchanged from 0\.8\.3 except the deduplicate step \(0\.8\.8\)\./);
