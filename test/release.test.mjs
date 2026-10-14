@@ -139,3 +139,59 @@ test('the licence inventory is in files the directory can read in full, and no t
  assert.equal(Buffer.byteLength(joined), 457672);
  assert.equal(createHash('sha256').update(joined).digest('hex'), '16ad26acad685d5e85ecf5c0bb476dc291513e80000333f45c03bd9c80beee6e');
 });
+
+// The bundled server's text changes since 0.8.7, each as [text now, text in 0.8.7]. Undoing them must give 0.8.7's
+// server/tedata-server.mjs exactly, so the readable parts are that bundle plus these edits and nothing else.
+const SERVER_EDITS_SINCE_087 = [
+ [".describe(\"Remove identical complete rows, keeping the first of each in source order. Takes no columns or orderBy.\")",
+  ".describe(\"Remove identical complete rows. Takes no columns or orderBy.\")"],
+ [".describe(\"Keep the first or last row of each key; the rows kept stay in source order.\")",
+  ".describe(\"Keep the first or last row of each key.\")"],
+ ["keep first/last keeps one row per key and needs columns and orderBy; either way the rows kept stay in source order. Transform name defaults",
+  "keep first/last keeps one row per key and needs columns and orderBy. Transform name defaults"],
+ ["lines.push(step.keep === \"unique\" ? \"Remove exact duplicate rows, keeping the first of each in source order.\" :",
+  "lines.push(step.keep === \"unique\" ? \"Remove exact duplicate rows.\" :"],
+ ["fields.map((_, index4) => index4 === 0 && chart.temporal && point8[0] != null ? time5(point8[0]) : point8[index4])",
+  "fields.map((_, index4) => point8[index4])"],
+ ["// paths.mjs\n// The plugin stores the panel as panel/panel-01.html to panel-13.html, each under 256 KiB so that it can be read in\n// full; joined in order they are the one HTML document (panelFile) that the panel resource serves.\n",
+  "// paths.mjs\n"],
+ [", panelParts = packaged ? [\"panel-01.html\", \"panel-02.html\", \"panel-03.html\", \"panel-04.html\", \"panel-05.html\", \"panel-06.html\", \"panel-07.html\", \"panel-08.html\", \"panel-09.html\", \"panel-10.html\", \"panel-11.html\", \"panel-12.html\", \"panel-13.html\"].map((name2) => join8(pluginRoot, \"panel\", name2)) : [panelFile], requirementsFile",
+  ", requirementsFile"],
+ ["text: (await Promise.all(panelParts.map((part) => readFile7(part, \"utf8\")))).join(\"\"), _meta",
+  "text: await readFile7(panelFile, \"utf8\"), _meta"],
+];
+test('the server is stored in ES modules the directory can read in full, and they join to the bundle', async () => {
+ const server = join(root, 'server'), entry = 'tedata-server.mjs';
+ const parts = [...(await readdir(server)).filter(name => /^tedata-server-\d\d-[a-z-]+\.mjs$/.test(name)).sort(), entry];
+ assert.ok(parts.length > 1, parts.join(' '));
+ let bundle = '';
+ for (const [index, name] of parts.entries()) {
+  const source = await readFile(join(server, name), 'utf8'), label = `part ${index + 1} of ${parts.length}`;
+  assert.ok(Buffer.byteLength(source) <= 256 * 1024, name);
+  const begin = `// Bundle text, ${label}\n`, end = `// End of bundle text, ${label}\n`;
+  const from = source.indexOf(begin), to = source.lastIndexOf(end);
+  assert.ok(from > 0 && to >= from + begin.length, name);
+  // Outside the bundle text a part has only comments, imports of other parts and one export list.
+  assert.match(source.slice(0, from), /^(\/\/ [^\n]*\n|import "\.\/tedata-server-\d\d-[a-z-]+\.mjs";\n|import \{[\w$,\s]+\} from "\.\/tedata-server(-\d\d-[a-z-]+)?\.mjs";\n)+$/, name);
+  assert.match(source.slice(to + end.length), /^(export \{[\w$,\s]+\};\n)?$/, name);
+  if (index > 0) assert.ok(source.includes(`\nimport "./${parts[index - 1]}";\n`), `${name} first loads the part before it`);
+  bundle += source.slice(from + begin.length, to);
+ }
+ for (const [now, before] of SERVER_EDITS_SINCE_087) { assert.equal(bundle.split(now).length, 2, now); bundle = bundle.replace(now, before); }
+ // 0.8.7's server/tedata-server.mjs: 3,227,443 bytes.
+ assert.equal(Buffer.byteLength(bundle), 3227443);
+ assert.equal(createHash('sha256').update(bundle).digest('hex'), '59459e7f9064d4a605b344968db7df5ac3621f5ac4c57038f3292451d8559b7e');
+});
+test('no file in the plugin is larger than 256 KiB, so the directory can read every file in full', async () => {
+ const large = [];
+ async function walk(directory, prefix = '') {
+  for (const item of await readdir(directory, {withFileTypes: true})) {
+   if (prefix === '' && item.name === '.git') continue;
+   const path = join(directory, item.name);
+   if (item.isDirectory()) await walk(path, prefix + item.name + '/');
+   else if ((await readFile(path)).length > 256 * 1024) large.push(prefix + item.name);
+  }
+ }
+ await walk(root);
+ assert.deepEqual(large, []);
+});
