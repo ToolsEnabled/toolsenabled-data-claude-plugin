@@ -5,6 +5,7 @@ import {mkdtemp, mkdir, writeFile, readdir, readFile} from 'node:fs/promises';
 import {join} from 'node:path';
 import {tmpdir} from 'node:os';
 import {fileURLToPath} from 'node:url';
+import {createHash} from 'node:crypto';
 const root = fileURLToPath(new URL('../', import.meta.url));
 const watch = join(root, 'server/tedata-watch.mjs');
 const scratch = await mkdtemp(join(tmpdir(), 'tedata-release-test-'));
@@ -121,4 +122,20 @@ test('the watcher names its run fields plainly and build-release runs one fixed 
  // build-release runs one command, git archive, written in full as fixed text, and builds no string at run time.
  assert.deepEqual(build.match(/execFileSync\([^)]*\)/g), ["execFileSync('git',['archive','--format=tar','--prefix=toolsenabled-data/','HEAD'],{cwd:root,maxBuffer:32*1024*1024})"]);
  assert.doesNotMatch(build, /`/);
+});
+
+test('the licence inventory is in files the directory can read in full, and no text was lost', async () => {
+ const index = await readFile(join(root, 'THIRD-PARTY-LICENSES.txt'), 'utf8');
+ const parts = [...index.matchAll(/^- (licenses\/[a-z0-9-]+\.txt): /gm)].map(match => match[1]);
+ assert.deepEqual(parts, ['licenses/javascript-1.txt', 'licenses/javascript-2.txt', 'licenses/duckdb.txt']);
+ assert.deepEqual((await readdir(join(root, 'licenses'))).sort(), ['duckdb.txt', 'javascript-1.txt', 'javascript-2.txt']);
+ const texts = [index, ...await Promise.all(parts.map(path => readFile(join(root, path), 'utf8')))];
+ for (const text of texts) assert.ok(Buffer.byteLength(text) <= 256 * 1024, Buffer.byteLength(text) + ' bytes');
+ // The index's first six lines and the parts, joined, are THIRD-PARTY-LICENSES.txt as one file: 0.8.7's text with
+ // TE Data named in place of Bench and no other byte changed (457,672 bytes). The licence texts of json-schema-typed
+ // and tslib keep their CRLF line ends, as in 0.8.7: 68 carriage returns.
+ const joined = index.split('\n').slice(0, 6).join('\n') + '\n' + texts.slice(1).join('');
+ assert.equal(joined.split('\r').length - 1, 68, 'carriage returns');
+ assert.equal(Buffer.byteLength(joined), 457672);
+ assert.equal(createHash('sha256').update(joined).digest('hex'), '16ad26acad685d5e85ecf5c0bb476dc291513e80000333f45c03bd9c80beee6e');
 });
