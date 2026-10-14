@@ -257,3 +257,43 @@ test('the export description says that only plot blocks also get a PNG', async (
   assert.match(tools.find(t => t.name === 'tedata_export').description, /plot block[^.]*PNG/);
  } finally { await s.close(); }
 });
+
+test('the deduplicate schema itself refuses key columns with unique and names the missing field for first/last', async () => {
+ const s = await start();
+ try {
+  await s.initialize();
+  const {tools} = (await s.request('tools/list')).result;
+  const forms = [];
+  (function walk(node) {
+   if (!node || typeof node !== 'object') return;
+   if (Array.isArray(node)) { node.forEach(walk); return; }
+   if (node.properties?.op?.const === 'deduplicate') forms.push(node);
+   for (const value of Object.values(node)) walk(value);
+  })(tools.find(t => t.name === 'tedata_data').inputSchema);
+  // Two distinct forms (the recipe schema appears once per action that takes one), so a reader of the
+  // schema sees the rule the validator applies.
+  assert.ok(forms.length >= 2, JSON.stringify(forms));
+  assert.equal(new Set(forms.map(f => JSON.stringify(f))).size, 2, JSON.stringify(forms));
+  const unique = forms.find(f => f.properties.keep.const === 'unique'), keyed = forms.find(f => Array.isArray(f.properties.keep.enum));
+  assert.ok(unique && keyed, JSON.stringify(forms));
+  assert.equal(unique.properties.keep.default, 'unique');
+  assert.deepEqual(Object.keys(unique.properties).sort(), ['keep', 'op']);
+  assert.deepEqual(keyed.properties.keep.enum, ['first', 'last']);
+  for (const field of ['columns', 'orderBy']) assert.ok(keyed.required.includes(field), `${field} is optional for first/last`);
+  // The validator agrees with the schema, and a refusal names the field and the step.
+  const fileId = 'a'.repeat(24), fingerprint = 'sha256:' + 'b'.repeat(64);
+  const derive = steps => s.call('tedata_data', {request: {action: 'preview_derive', fileId, fingerprint, revision: 0, recipe: {version: 1, basis: 'raw', steps}}});
+  // The server answers an invalid call as a tool error whose text starts with the -32602 code.
+  const refused = (response, detail) => { assert.equal(response.result?.isError, true, text(response)); assert.match(text(response), /^MCP error -32602: /); assert.match(text(response), detail); };
+  refused(await derive([{op: 'deduplicate', columns: ['date', 'city'], keep: 'unique'}]), /"columns" at request\.recipe\.steps\[0\]/);
+  refused(await derive([{op: 'deduplicate', columns: ['date', 'city'], keep: 'first'}]), /at request\.recipe\.steps\[0\]\.orderBy/);
+  // Both valid forms pass the schema; with no such file connected the server then answers in its own words.
+  for (const steps of [[{op: 'deduplicate'}], [{op: 'deduplicate', keep: 'unique'}], [{op: 'deduplicate', keep: 'last', columns: ['date'], orderBy: [{column: 'city'}]}]]) {
+   const accepted = await derive(steps);
+   assert.doesNotMatch(text(accepted), /-32602/);
+   assert.match(text(accepted), /Choose a connected CSV, TSV, or ZIP file/);
+  }
+  // An unknown action is refused with the list of actions, not "Invalid input".
+  refused(await s.call('tedata_data', {request: {action: 'nope'}}), /'catalog'.*'evidence_catalog'.*at request\.action/);
+ } finally { await s.close(); }
+});
