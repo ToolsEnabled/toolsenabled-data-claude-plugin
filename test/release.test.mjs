@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {spawn, spawnSync} from 'node:child_process';
-import {mkdtemp, mkdir, writeFile, readdir} from 'node:fs/promises';
+import {mkdtemp, mkdir, writeFile, readdir, readFile} from 'node:fs/promises';
 import {join} from 'node:path';
 import {tmpdir} from 'node:os';
 import {fileURLToPath} from 'node:url';
@@ -94,4 +94,11 @@ test('MCP initialize reports plugin version and tools/list returns eleven tools'
   assert.equal(result.tools.length,11);
   for(const name of ['tedata_data','tedata_sources','tedata_setup']) assert.ok(result.tools.some(tool=>tool.name===name));
  } finally {child.stdin.end();child.kill('SIGTERM');await new Promise(accept=>child.once('close',accept));}
+});
+
+test('SECURITY.md cites this repository\'s LICENSE for "as is", not the website terms', async () => {
+ const security = await readFile(join(root, 'SECURITY.md'), 'utf8');
+ const sentence = security.split('\n').find(line => line.includes('"as is"'));
+ assert.match(sentence, /as this repository's \[LICENSE\]\(LICENSE\) \(MIT\) says/);
+ assert.doesNotMatch(sentence, /toolsenabled\.ai\/terms/);
 });
