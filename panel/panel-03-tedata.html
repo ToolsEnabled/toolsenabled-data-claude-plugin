@@ -1,0 +1,305 @@
+// plot-spec.mjs
+var FORBIDDEN = /* @__PURE__ */ new Map([
+  ["url", "loading data from a URL"],
+  ["href", "links"],
+  ["datasets", "named datasets"],
+  ["sequence", "generated sequences"],
+  ["graticule", "generated geographic data"],
+  ["sphere", "generated geographic data"],
+  ["element", "binding controls to page elements"],
+  ["loader", "custom loaders"]
+]), CAPS = { steps: 1e3, maxbins: 1e3, maxsteps: 1e3 }, INLINE_LIMIT = 200;
+function plotSpecProblem(spec) {
+  if (!spec || typeof spec != "object" || Array.isArray(spec)) return "The plot spec must be a Vega-Lite JSON object.";
+  let text4;
+  try {
+    text4 = JSON.stringify(spec);
+  } catch {
+    return "The plot spec must be plain JSON.";
+  }
+  if (text4.length > 3e4) return `Keep the plot spec under ${3e4.toLocaleString("en-US")} characters.`;
+  if ("data" in spec) return "Leave out top-level data: TE Data supplies the rows from this block's data query. Inline values are allowed only inside layers, for annotations.";
+  let walk = (node2, path3, depth) => {
+    if (depth > 40) return "The plot spec is nested too deeply.";
+    if (Array.isArray(node2)) {
+      for (let [index4, value3] of node2.entries()) {
+        let problem = walk(value3, `${path3}[${index4}]`, depth + 1);
+        if (problem) return problem;
+      }
+      return null;
+    }
+    if (!node2 || typeof node2 != "object") return null;
+    for (let [key2, value3] of Object.entries(node2)) {
+      let at = `${path3}.${key2}`;
+      if (FORBIDDEN.has(key2)) return `${at} is not allowed (${FORBIDDEN.get(key2)}): plots draw only the rows TE Data returns.`;
+      if (key2 === "mark" && (value3 === "image" || value3?.type === "image")) return `${at}: image marks are not available.`;
+      if (key2 in CAPS && typeof value3 == "number" && value3 > CAPS[key2]) return `${at} may be at most ${CAPS[key2]}.`;
+      if (key2 === "keyvals" && value3 && !Array.isArray(value3)) return `${at}: list impute key values explicitly (up to ${INLINE_LIMIT}).`;
+      if (key2 === "data" && depth > 0) {
+        let forbidden = value3 && typeof value3 == "object" ? Object.keys(value3).find((k2) => FORBIDDEN.has(k2)) : null;
+        if (forbidden) return `${at}.${forbidden} is not allowed (${FORBIDDEN.get(forbidden)}): plots draw only the rows TE Data returns.`;
+        if (!value3 || typeof value3 != "object" || Object.keys(value3).some((k2) => !["values", "format"].includes(k2)) || !Array.isArray(value3.values))
+          return `${at}: layers may only carry inline values (for annotations), for example {"values":[{"date":"2024-06-10","label":"10:1 split"}]}.`;
+        if (value3.values.length > INLINE_LIMIT) return `${at}: inline values hold up to ${INLINE_LIMIT} rows.`;
+      }
+      let problem = walk(value3, at, depth + 1);
+      if (problem) return problem;
+    }
+    return null;
+  };
+  return walk(spec, "spec", 0);
+}
+var finite = (value3) => typeof value3 == "number" && Number.isFinite(value3), round = (value3) => finite(value3) ? Number(value3.toPrecision(6)) : value3;
+function range(values3) {
+  let present = values3.filter((value3) => value3 != null);
+  if (!present.length) return { present: 0 };
+  if (present.every(finite)) {
+    let min4 = present[0], max4 = present[0];
+    for (let value3 of present)
+      value3 < min4 && (min4 = value3), value3 > max4 && (max4 = value3);
+    return { present: present.length, min: round(min4), max: round(max4), first: round(present[0]), last: round(present.at(-1)) };
+  }
+  let text4 = present.map(String), sorted = [...text4].sort();
+  return { present: present.length, distinct: new Set(text4).size, min: sorted[0], max: sorted.at(-1), first: text4[0], last: text4.at(-1) };
+}
+function describeGrouped(grouped, { sampleRows = 8, maxSeries = 12 } = {}) {
+  if (!grouped) return null;
+  let fields = grouped.fields || [], rows = grouped.rows || [], column = (index4) => rows.map((row) => row[index4]), description2 = {
+    rows: rows.length,
+    truncated: !!grouped.truncated,
+    note: grouped.note,
+    fields: fields.map((field9, index4) => ({ name: field9.name, role: field9.role, type: field9.type, ...field9.op ? { op: field9.op } : {}, ...field9.column ? { column: field9.column } : {}, ...field9.unit ? { unit: field9.unit } : {}, ...field9.interval ? { interval: field9.interval, timezone: field9.timezone } : {}, ...range(column(index4)) })),
+    sample: rows.slice(0, sampleRows).map((row) => Object.fromEntries(fields.map((field9, index4) => [field9.name, row[index4]])))
+  }, series = fields.findIndex((field9) => field9.role === "key" && field9.type === "nominal");
+  if (series >= 0) {
+    let measures = fields.map((field9, index4) => [field9, index4]).filter(([field9]) => field9.role === "measure" && field9.type === "quantitative").slice(0, 3), groups = /* @__PURE__ */ new Map();
+    for (let row of rows) {
+      let key2 = String(row[series]);
+      groups.has(key2) || groups.set(key2, []), groups.get(key2).push(row);
+    }
+    description2.bySeries = { field: fields[series].name, groups: groups.size, shown: [...groups.entries()].slice(0, maxSeries).map(([name2, members2]) => ({ name: name2, rows: members2.length, ...Object.fromEntries(measures.map(([field9, index4]) => [field9.name, range(members2.map((row) => row[index4]))])) })) };
+  }
+  return description2;
+}
+function plotShapeProblem(spec) {
+  let check2 = (node2, path3, top) => {
+    if (!node2 || typeof node2 != "object" || Array.isArray(node2)) return null;
+    if ("mark" in node2 && "layer" in node2) return `${path3} has both mark and layer; a view has one mark, or a layer list of views.`;
+    if (top && ("facet" in node2 || "repeat" in node2) && !("spec" in node2)) return `${path3} uses top-level ${"facet" in node2 ? "facet" : "repeat"}: put the view under spec, for example {"facet":{"row":{"field":"symbol"}},"spec":{"layer":[...]}}. For one mark, encoding row or column also works.`;
+    if ("spec" in node2 && !("facet" in node2 || "repeat" in node2)) return `${path3}.spec only goes with facet or repeat.`;
+    for (let [index4, layer] of (Array.isArray(node2.layer) ? node2.layer : []).entries()) {
+      if (["row", "column", "facet"].some((key2) => layer?.encoding?.[key2])) return `${path3}.layer[${index4}] encodes row/column/facet; layers cannot facet. Use top-level facet with spec:{layer:[...]} instead.`;
+      let problem = check2(layer, `${path3}.layer[${index4}]`, !1);
+      if (problem) return problem;
+    }
+    for (let key2 of ["spec"]) if (node2[key2]) {
+      let problem = check2(node2[key2], `${path3}.${key2}`, !1);
+      if (problem) return problem;
+    }
+    for (let key2 of ["hconcat", "vconcat", "concat"]) for (let [index4, view2] of (Array.isArray(node2[key2]) ? node2[key2] : []).entries()) {
+      let problem = check2(view2, `${path3}.${key2}[${index4}]`, !0);
+      if (problem) return problem;
+    }
+    return null;
+  };
+  return check2(spec, "spec", !0);
+}
+
+// chart-theme.mjs
+var HUES = {
+  light: { blue: "#2a78d6", orange: "#eb6834", aqua: "#1baf7a", yellow: "#eda100", magenta: "#e87ba4", green: "#008300", violet: "#4a3aa7", red: "#e34948" },
+  dark: { blue: "#3987e5", orange: "#d95926", aqua: "#199e70", yellow: "#c98500", magenta: "#d55181", green: "#1f9a1f", violet: "#9085e9", red: "#e66767" }
+}, THEMES = {
+  standard: ["blue", "orange", "aqua", "yellow", "magenta", "green", "violet", "red"],
+  distinct: ["blue", "green", "magenta", "yellow", "aqua", "orange", "violet", "red"],
+  warm: ["orange", "aqua", "blue", "yellow", "magenta", "green", "violet", "red"],
+  cool: ["green", "blue", "magenta", "yellow", "aqua", "orange", "violet", "red"],
+  vivid: ["magenta", "green", "blue", "orange", "aqua", "yellow", "violet", "red"]
+}, RAMPS = {
+  blue: { 100: "#cde2fb", 150: "#b7d3f6", 200: "#9ec5f4", 250: "#86b6ef", 300: "#6da7ec", 350: "#5598e7", 400: "#3987e5", 450: "#2a78d6", 500: "#256abf", 550: "#1c5cab", 600: "#184f95", 650: "#104281", 700: "#0d366b" },
+  orange: { 100: "#fbd7ca", 150: "#f5c4b2", 200: "#f2b098", 250: "#eb9c7f", 300: "#e68764", 350: "#df7249", 400: "#d95923", 450: "#c94908", 500: "#b44005", 550: "#9f3600", 600: "#8a2e00", 650: "#742702", 700: "#611e00" },
+  aqua: { 100: "#cce8d9", 150: "#b4dbc6", 200: "#9ad0b4", 250: "#80c3a2", 300: "#62b890", 350: "#43ac7f", 400: "#039f6d", 450: "#058f62", 500: "#077f57", 550: "#016f4b", 600: "#046041", 650: "#045136", 700: "#02432c" },
+  violet: { 100: "#dbddfc", 150: "#cbccf7", 200: "#babbf5", 250: "#aaaaf0", 300: "#9a99ed", 350: "#8b88e8", 400: "#7c75e6", 450: "#6f66d7", 500: "#625abf", 550: "#564dab", 600: "#4a4295", 650: "#3e3681", 700: "#322c6b" },
+  red: { 100: "#fed4d0", 150: "#fac0ba", 200: "#f8aaa3", 250: "#f2958e", 300: "#ee7e77", 350: "#e76762", 400: "#e24a48", 450: "#d2383a", 500: "#bb3032", 550: "#a72528", 600: "#911e22", 650: "#7e1519", 700: "#681014" },
+  magenta: { 100: "#f5d6e0", 150: "#edc3d0", 200: "#e7b0c2", 250: "#df9cb3", 300: "#d888a4", 350: "#cf7596", 400: "#c75f87", 450: "#b85079", 500: "#a4466c", 550: "#913b5e", 600: "#7e3251", 650: "#6c2844", 700: "#5a2038" },
+  green: { 100: "#cfe8cc", 150: "#b9dcb5", 200: "#a1d09d", 250: "#8ac485", 300: "#71b86b", 350: "#58ac52", 400: "#35a030", 450: "#20911c", 500: "#1a8117", 550: "#0d720b", 600: "#096207", 650: "#005400", 700: "#014501" }
+}, STATUS = { good: "#0ca30c", warning: "#fab219", serious: "#ec835a", critical: "#d03b3b" }, NEUTRAL = { light: "#f0efec", dark: "#383835" }, THEME_NAMES = Object.keys(THEMES), RAMP_NAMES = Object.keys(RAMPS), INK = {
+  light: { text: "#1f1e1d", text2: "#5e5d59", text3: "#8a8880", grid: "#ecebe6", axis: "#d6d4cc", surface: "#ffffff", overflow: "#a3a29b" },
+  dark: { text: "#f5f4ef", text2: "#bfbdb4", text3: "#8f8d85", grid: "#383836", axis: "#4a4946", surface: "#2a2a28", overflow: "#6d6c66" }
+}, SEQUENTIAL = { light: [100, 200, 300, 400, 500, 600, 700], dark: [700, 600, 500, 400, 300, 200, 100] }, ORDINAL = { light: [250, 350, 450, 550, 650], dark: [550, 450, 350, 250, 150] };
+function themeColors(theme2 = {}, dark = !1, ink = {}) {
+  let mode = dark ? "dark" : "light", hues = HUES[mode], order = THEMES[theme2.categorical] || THEMES.standard, hue2 = RAMPS[theme2.sequential] ? theme2.sequential : "blue", ramp = (name2) => SEQUENTIAL[mode].map((step) => RAMPS[name2][step]), ordinal2 = (name2) => ORDINAL[mode].map((step) => RAMPS[name2][step]), arm = dark ? [200, 400, 600] : [700, 500, 300];
+  return {
+    name: THEMES[theme2.categorical] ? theme2.categorical : "standard",
+    sequential: hue2,
+    category: order.map((name2) => hues[name2]),
+    ramp: ramp(hue2),
+    ordinal: ordinal2(hue2),
+    diverging: [...arm.map((step) => RAMPS.blue[step]), NEUTRAL[mode], ...[...arm].reverse().map((step) => RAMPS.red[step])],
+    hues,
+    ramps: Object.fromEntries(RAMP_NAMES.map((name2) => [name2, ramp(name2)])),
+    ordinals: Object.fromEntries(RAMP_NAMES.map((name2) => [name2, ordinal2(name2)])),
+    neutral: NEUTRAL[mode],
+    status: STATUS,
+    ink: { ...INK[mode], ...ink }
+  };
+}
+function colorTokens(colors2) {
+  let tokens = { "te:accent": colors2.category[0], "te:neutral": colors2.neutral, "te:ramp": colors2.ramp, "te:ordinal": colors2.ordinal, "te:diverging": colors2.diverging };
+  colors2.category.forEach((value3, index4) => {
+    tokens[`te:series-${index4 + 1}`] = value3;
+  });
+  for (let [name2, value3] of Object.entries(colors2.hues)) tokens[`te:${name2}`] = value3;
+  for (let [name2, steps] of Object.entries(RAMPS)) {
+    for (let [step, value3] of Object.entries(steps)) tokens[`te:${name2}-${step}`] = value3;
+    tokens[`te:ramp-${name2}`] = colors2.ramps[name2], tokens[`te:ordinal-${name2}`] = colors2.ordinals[name2];
+  }
+  for (let [name2, value3] of Object.entries(colors2.status)) tokens[`te:${name2}`] = value3;
+  for (let [token, key2] of [["te:ink", "text"], ["te:ink-2", "text2"], ["te:muted", "text3"], ["te:grid", "grid"], ["te:surface", "surface"]]) colors2.ink?.[key2] && (tokens[token] = colors2.ink[key2]);
+  return tokens;
+}
+function resolveColorTokens(spec, colors2) {
+  let tokens = colorTokens(colors2), visit3 = (node2) => {
+    if (typeof node2 == "string" && node2.startsWith("te:")) {
+      if (!(node2 in tokens)) throw new Error(`Unknown colour token ${node2}. Use te:series-1..8, te:accent, te:<hue> (${Object.keys(colors2.hues).join(", ")}), te:<hue>-100..700 (${RAMP_NAMES.join(", ")}), te:ramp, te:ramp-<hue>, te:ordinal, te:diverging, te:neutral, te:good, te:warning, te:serious, te:critical, te:ink, te:ink-2, te:muted, te:grid or te:surface.`);
+      return Array.isArray(tokens[node2]) ? [...tokens[node2]] : tokens[node2];
+    }
+    return Array.isArray(node2) ? node2.map(visit3) : node2 && typeof node2 == "object" ? Object.fromEntries(Object.entries(node2).map(([key2, value3]) => [key2, visit3(value3)])) : node2;
+  };
+  return visit3(spec);
+}
+
+// data-schema.mjs
+var name = external_exports.string().min(1).max(200), readerSettings = external_exports.object({ header: external_exports.boolean().optional(), delimiter: external_exports.string().length(1).refine((v2) => !["\0", `
+`, "\r", '"'].includes(v2), "Choose a single delimiter character.").optional(), member: external_exports.string().min(1).max(500).optional() }).strict(), blockBase = { id: external_exports.string().regex(/^[a-zA-Z][a-zA-Z0-9_-]{0,47}$/), title: external_exports.string().max(160).optional(), span: external_exports.enum(["full", "half"]).optional() }, chartSettings = external_exports.object({ x: name, y: name, series: name.optional(), chartType: external_exports.enum(["auto", "line", "bar", "scatter"]).optional(), aggregate: external_exports.enum(["mean", "sum", "min", "max", "count"]).optional() }).strict(), summaryMetric = external_exports.object({ label: external_exports.string().min(1).max(100), op: external_exports.enum(["rows", "count", "min", "max", "mean", "sum"]), column: name.optional() }).strict().superRefine((v2, c2) => {
+  v2.op !== "rows" && !v2.column && c2.addIssue({ code: "custom", message: "A summary measure needs a column." });
+}), filterRule = external_exports.object({ column: name, op: external_exports.enum(["eq", "ne", "lt", "lte", "gt", "gte", "contains", "missing"]), value: external_exports.string().max(500).optional(), otherColumn: name.optional() }).strict().superRefine((v2, c2) => {
+  v2.op === "missing" ? (v2.value !== void 0 || v2.otherColumn !== void 0) && c2.addIssue({ code: "custom", message: "Missing filters do not take an operand." }) : v2.value !== void 0 == (v2.otherColumn !== void 0) && c2.addIssue({ code: "custom", message: "Choose exactly one value or otherColumn." }), v2.op === "contains" && v2.otherColumn && c2.addIssue({ code: "custom", message: "Contains requires a fixed value." });
+}), fieldName = external_exports.string().regex(/^[A-Za-z_][A-Za-z0-9_ -]{0,63}$/, "Output field names use letters, digits, spaces, _ or - and start with a letter or _ (no dots or brackets)."), summaryKey = external_exports.object({
+  column: name,
+  as: fieldName.optional(),
+  interval: external_exports.enum(["second", "minute", "hour", "day", "week", "month", "quarter", "year"]).optional().describe("Datetime keys: calendar bucket. Day, week (Monday start), month and so on follow the timezone wall clock."),
+  every: external_exports.number().int().min(1).max(1e3).optional().describe("Bucket multiple, for example 15 with minute."),
+  timezone: external_exports.string().min(1).max(64).optional().describe("IANA zone for datetime keys, for example America/New_York. Default UTC. Output times are wall-clock ISO strings in this zone."),
+  bins: external_exports.number().int().min(2).max(200).optional().describe("Numeric keys: equal-width bins over the matching range. Adds a <name>_end field."),
+  binWidth: external_exports.number().finite().positive().optional().describe("Numeric keys: bins of this width aligned to multiples of it. Adds a <name>_end field.")
+}).strict().superRefine((v2, c2) => {
+  v2.every !== void 0 && !v2.interval && c2.addIssue({ code: "custom", message: "every needs an interval." }), v2.bins !== void 0 && v2.binWidth !== void 0 && c2.addIssue({ code: "custom", message: "Use bins or binWidth, not both." }), (v2.bins !== void 0 || v2.binWidth !== void 0) && (v2.interval || v2.timezone) && c2.addIssue({ code: "custom", message: "Bins apply to numeric keys; interval and timezone to datetime keys." });
+}), summaryMeasure = external_exports.object({
+  op: external_exports.enum(["count", "distinct", "sum", "mean", "median", "min", "max", "stddev", "quantile", "first", "last"]),
+  column: name.optional(),
+  as: fieldName,
+  orderBy: name.optional().describe("first/last: the numeric or datetime column that orders rows in each group (usually time). last of close ordered by time is the closing value."),
+  p: external_exports.number().gt(0).lt(1).optional().describe("quantile: probability, for example 0.9.")
+}).strict().superRefine((v2, c2) => {
+  v2.op !== "count" && !v2.column && c2.addIssue({ code: "custom", message: `${v2.op} needs a column.` }), ["first", "last"].includes(v2.op) && !v2.orderBy && c2.addIssue({ code: "custom", message: `${v2.op} needs orderBy, the column that orders rows (usually time).` }), v2.op !== "quantile" && v2.p !== void 0 && c2.addIssue({ code: "custom", message: "p applies to quantile only." }), v2.op === "quantile" && v2.p === void 0 && c2.addIssue({ code: "custom", message: "quantile needs p, for example 0.9." });
+}), summaryQuery = external_exports.object({
+  groupBy: external_exports.array(summaryKey).max(3).optional(),
+  measures: external_exports.array(summaryMeasure).min(1).max(8),
+  filters: external_exports.array(filterRule).max(8).optional().describe("Extra filters for this summary, combined with the view filters."),
+  sort: external_exports.array(external_exports.object({ field: fieldName, descending: external_exports.boolean().optional() }).strict()).max(3).optional().describe("Order by output fields; keys complete the order."),
+  limit: external_exports.number().int().min(1).max(2e4).optional().describe("Rows returned, default 5,000, at most 20,000. With sort this is a top-N.")
+}).strict().superRefine((v2, c2) => {
+  let names = [...(v2.groupBy || []).flatMap((k2) => [k2.as || k2.column, ...k2.bins !== void 0 || k2.binWidth !== void 0 ? [(k2.as || k2.column) + "_end"] : []]), ...v2.measures.map((m2) => m2.as)];
+  new Set(names).size !== names.length && c2.addIssue({ code: "custom", message: "Output field names (group keys, bin ends and measures) must be unique; set as." });
+  for (let rule4 of v2.sort || []) names.includes(rule4.field) || c2.addIssue({ code: "custom", message: `Sort field ${rule4.field} is not an output field.` });
+}).describe("Grouped summary computed by TE Data over all rows matching the view filters (never SQL). Keys: a column value, a calendar time bucket in a time zone, or numeric bins. Measures: count, distinct, sum, mean, median, min, max, stddev, quantile, first, last. Returns up to limit rows of output fields."), plotSpec = external_exports.record(external_exports.string(), external_exports.unknown()).superRefine((v2, c2) => {
+  let problem = plotSpecProblem(v2);
+  problem && c2.addIssue({ code: "custom", message: problem });
+}).describe("Vega-Lite v5 specification without top-level data: TE Data supplies the summary rows, theme, size and tooltips. Use field names from the data query. Allowed: marks, encodings, layers (inline values for annotation rules and text), transforms, facet/row/column, repeat, concat, resolve, params. Not allowed: URLs, links, images, generated sequences."), layoutBlock = external_exports.discriminatedUnion("type", [
+  external_exports.object({ ...blockBase, type: external_exports.literal("table") }).strict(),
+  external_exports.object({ ...blockBase, type: external_exports.literal("filters") }).strict(),
+  external_exports.object({ ...blockBase, type: external_exports.literal("quality") }).strict(),
+  external_exports.object({ ...blockBase, type: external_exports.literal("note"), text: external_exports.string().max(4e3) }).strict(),
+  external_exports.object({ ...blockBase, type: external_exports.literal("chart"), chart: chartSettings.optional() }).strict(),
+  external_exports.object({ ...blockBase, type: external_exports.literal("summary"), metrics: external_exports.array(summaryMetric).min(1).max(8) }).strict(),
+  external_exports.object({ ...blockBase, type: external_exports.literal("plot"), description: external_exports.string().max(600).optional().describe("One or two sentences on what the plot shows and how to read it."), data: summaryQuery, spec: plotSpec }).strict(),
+  external_exports.object({ ...blockBase, type: external_exports.literal("grouped"), description: external_exports.string().max(600).optional(), data: summaryQuery }).strict()
+]), layoutTheme = external_exports.object({ categorical: external_exports.enum(THEME_NAMES).optional().describe("Series colour order for the whole workspace: standard (blue first), distinct (blue, green, magenta: best for scatter and small multiples), warm (orange first), cool (green first), vivid (magenta first)."), sequential: external_exports.enum(RAMP_NAMES).optional().describe("Hue of magnitude scales (heatmaps, continuous colour): blue default.") }).strict().describe("One colour theme per workspace; every chart and plot uses it. Plots name colours with te: tokens."), workspaceLayout = external_exports.object({ version: external_exports.literal(1), title: external_exports.string().max(160).optional(), description: external_exports.string().max(2e3).optional(), theme: layoutTheme.optional(), sections: external_exports.array(external_exports.object({ title: external_exports.string().max(160).optional(), columns: external_exports.union([external_exports.literal(1), external_exports.literal(2)]).default(1), blocks: external_exports.array(layoutBlock).min(1).max(10) }).strict()).min(1).max(6) }).strict().superRefine((v2, c2) => {
+  let blocks = v2.sections.flatMap((s) => s.blocks);
+  blocks.length > 20 && c2.addIssue({ code: "custom", message: "Use up to 20 layout blocks." }), new Set(blocks.map((b10) => b10.id)).size !== blocks.length && c2.addIssue({ code: "custom", message: "Layout block IDs must be unique." });
+  for (let [type3, max4] of [["table", 1], ["filters", 1], ["chart", 3], ["summary", 3], ["plot", 6], ["grouped", 3]]) blocks.filter((b10) => b10.type === type3).length > max4 && c2.addIssue({ code: "custom", message: `Use up to ${max4} ${type3} blocks.` });
+  blocks.filter((b10) => ["chart", "plot"].includes(b10.type)).length > 8 && c2.addIssue({ code: "custom", message: "Use up to 8 chart and plot blocks together." });
+}).describe("Declarative workspace: ordered sections and reusable blocks. TE Data renders these components; no HTML, JavaScript, CSS or external URLs. Chart: a quick x/y chart. Plot: a Vega-Lite spec over a grouped summary (small multiples, layers, annotations, log scales, heatmaps, histograms). Grouped: a table of a grouped summary. Charts, plots and summaries use the current filtered dataset; quality uses the whole source."), comparisonOps = external_exports.enum(["eq", "ne", "lt", "lte", "gt", "gte"]), dataFilter = filterRule, ruleBase = { id: external_exports.string().regex(/^[a-zA-Z][a-zA-Z0-9_-]{0,47}$/), label: external_exports.string().max(160).optional(), column: name }, validationRule = external_exports.discriminatedUnion("kind", [
+  external_exports.object({ ...ruleBase, kind: external_exports.literal("compare"), op: comparisonOps, value: external_exports.string().max(500).optional(), otherColumn: name.optional() }).strict(),
+  external_exports.object({ ...ruleBase, kind: external_exports.literal("missing") }).strict(),
+  external_exports.object({ id: ruleBase.id, label: ruleBase.label, kind: external_exports.literal("duplicate"), columns: external_exports.array(name).min(1).max(16) }).strict(),
+  external_exports.object({ ...ruleBase, kind: external_exports.literal("change"), orderBy: name, partitionBy: external_exports.array(name).max(8), tieBreakers: external_exports.array(name).max(8).optional(), mode: external_exports.enum(["absolute", "relative"]), threshold: external_exports.number().finite().min(0), maxGapSeconds: external_exports.number().finite().positive().optional() }).strict()
+]).superRefine((v2, c2) => {
+  v2.kind === "compare" && v2.value !== void 0 == (v2.otherColumn !== void 0) && c2.addIssue({ code: "custom", message: "Choose exactly one value or otherColumn." });
+}), viewTransform = external_exports.object({ column: name, name, op: external_exports.enum(["trim", "lower", "upper", "number", "scale", "fill", "datetime", "time_of_day", "date", "extract"]), value: external_exports.string().max(500).describe("Transformation parameter. For datetime, use strptime directives such as %Y%m%d %H:%M or %Y-%m-%d; yyyyMMdd and other Java/.NET date tokens are not supported. For time_of_day and date, an IANA time zone. For extract, a pattern with one capture group.").optional() }).strict(), queryView = external_exports.object({
+  layout: workspaceLayout.optional(),
+  filters: external_exports.array(dataFilter).max(8).optional(),
+  columns: external_exports.array(name).min(1).max(128).optional(),
+  sort: name.optional(),
+  descending: external_exports.boolean().optional(),
+  offset: external_exports.number().int().min(0).max(1e7).optional(),
+  limit: external_exports.number().int().min(1).max(200).optional(),
+  x: name.optional(),
+  y: name.optional(),
+  series: name.optional(),
+  chartType: external_exports.enum(["auto", "line", "bar", "scatter"]).optional(),
+  aggregate: external_exports.enum(["mean", "sum", "min", "max", "count"]).optional(),
+  summarize: summaryQuery.optional(),
+  transforms: external_exports.array(viewTransform).max(8).optional()
+}).strict(), sourceConfiguration = external_exports.object({
+  reader: readerSettings.extend({ header: external_exports.boolean() }),
+  columns: external_exports.array(external_exports.object({ source: name, name, type: external_exports.enum(["text", "number", "datetime"]), unit: external_exports.string().max(100).optional(), description: external_exports.string().max(2e3).optional(), format: external_exports.string().min(1).max(100).describe("Explicit strptime date format. Example: source 20240308 00:00 uses %Y%m%d %H:%M; source 2024-03-08 uses %Y-%m-%d. Translate source-documentation tokens such as yyyyMMdd HH:mm into strptime syntax; Java/.NET date tokens are not supported.").optional(), timezone: external_exports.string().min(1).max(100).optional(), scale: external_exports.number().finite().optional() }).strict()).min(1).max(128),
+  notes: external_exports.string().max(1e4).optional()
+}).strict().superRefine((v2, ctx) => {
+  (new Set(v2.columns.map((c2) => c2.source)).size !== v2.columns.length || new Set(v2.columns.map((c2) => c2.name)).size !== v2.columns.length) && ctx.addIssue({ code: "custom", message: "Column sources and names must be unique." });
+  for (let c2 of v2.columns)
+    c2.format && c2.type !== "datetime" && ctx.addIssue({ code: "custom", message: "A date format requires datetime type." }), c2.timezone && c2.type !== "datetime" && ctx.addIssue({ code: "custom", message: "A timezone requires datetime type." }), c2.timezone && c2.format && /%[zZ]/.test(c2.format) && ctx.addIssue({ code: "custom", message: "Use either an offset in the date format or a separate timezone." }), c2.scale !== void 0 && c2.type !== "number" && ctx.addIssue({ code: "custom", message: "A scale multiplier requires number type." });
+}), derivationRecipe = external_exports.object({
+  version: external_exports.literal(1),
+  basis: external_exports.enum(["raw", "interpreted"]),
+  outputInterpretation: external_exports.enum(["source", "text"]).optional().describe("Raw basis only. source (default): columns passed through unchanged keep the source file's saved interpretation in the copy, so later checks compare numbers as numbers. text: every column of the copy is plain text, for review copies that keep malformed tokens."),
+  steps: external_exports.array(external_exports.discriminatedUnion("op", [
+    external_exports.object({ op: external_exports.literal("filter"), filters: external_exports.array(dataFilter).min(1).max(8) }).strict(),
+    external_exports.object({ op: external_exports.literal("exclude"), filters: external_exports.array(dataFilter).min(1).max(8) }).strict(),
+    external_exports.object({ op: external_exports.literal("flag"), name, filters: external_exports.array(dataFilter).min(1).max(8) }).strict(),
+    external_exports.object({ op: external_exports.literal("transform"), column: name, name: name.optional(), method: external_exports.enum(["trim", "lower", "upper", "number", "scale", "fill", "datetime", "replace", "time_of_day", "date", "extract"]), value: external_exports.string().max(500).optional(), replacement: external_exports.string().max(500).optional(), onInvalid: external_exports.enum(["error", "null"]).default("error") }).strict(),
+    external_exports.object({ op: external_exports.literal("lookup"), file: external_exports.string().regex(/^[a-f0-9]{24}$/).describe("fileId of another connected dataset, for example the underlying stock bars."), transforms: external_exports.array(viewTransform).max(8).optional().describe("Derived columns on that file before summarizing, for example its New York time of day or date."), summarize: summaryQuery.describe("Grouped summary of that file: one row per key. Keys from day or coarser time buckets match YYYY-MM-DD dates."), match: external_exports.array(external_exports.object({ column: name, field: fieldName }).strict()).min(1).max(3).describe("This dataset's column = the summary's key field, compared as text."), fields: external_exports.array(external_exports.object({ field: fieldName, as: name.optional() }).strict()).min(1).max(8), onMissing: external_exports.enum(["error", "null"]).default("error") }).strict(),
+    external_exports.object({ op: external_exports.literal("drop_missing"), columns: external_exports.array(name).min(1).max(128), mode: external_exports.enum(["any", "all"]).default("any") }).strict(),
+    external_exports.object({ op: external_exports.literal("deduplicate"), columns: external_exports.array(name).min(1).max(128).optional(), keep: external_exports.enum(["unique", "first", "last"]).default("unique"), orderBy: external_exports.array(external_exports.object({ column: name, descending: external_exports.boolean().default(!1) }).strict()).min(1).max(8).optional() }).strict(),
+    external_exports.object({ op: external_exports.literal("select"), columns: external_exports.array(external_exports.object({ column: name, name: name.optional() }).strict()).min(1).max(128) }).strict()
+  ])).min(1).max(24)
+}).strict().superRefine((v2, c2) => {
+  v2.outputInterpretation && v2.basis !== "raw" && c2.addIssue({ code: "custom", path: ["outputInterpretation"], message: "outputInterpretation applies to the raw basis only." });
+  for (let [i2, s] of v2.steps.entries()) {
+    if (s.op === "deduplicate" && s.keep === "unique" && (s.columns || s.orderBy) && c2.addIssue({ code: "custom", path: ["steps", i2], message: "Unique removes identical complete rows. Use first/last with explicit key columns and unique ordering to select representatives." }), s.op === "deduplicate" && s.keep !== "unique" && (!s.columns || !s.orderBy) && c2.addIssue({ code: "custom", path: ["steps", i2], message: "First/last requires key columns and explicit unique ordering." }), s.op === "transform" && ["scale", "fill", "datetime", "replace", "time_of_day", "date", "extract"].includes(s.method) && s.value === void 0 && c2.addIssue({ code: "custom", path: ["steps", i2], message: "This transformation needs a value (factor, fill value, date format, exact match, time zone or pattern)." }), s.op === "lookup") {
+      let keys4 = new Set((s.summarize.groupBy || []).map((k2) => k2.as || k2.column));
+      for (let m2 of s.match) keys4.has(m2.field) || c2.addIssue({ code: "custom", path: ["steps", i2], message: `Lookup match field ${m2.field} must be a groupBy key of its summary.` });
+    }
+    s.op === "transform" && s.method === "replace" && s.replacement === void 0 && c2.addIssue({ code: "custom", path: ["steps", i2], message: "Replace needs a replacement string." });
+  }
+}).describe("Ordered generic operations, no code or SQL. Preview all rows before saving a separate derived dataset. Raw preserves source strings; interpreted explicitly uses the saved configuration. Filters keep matching rows; exclude removes rows matching every condition and keeps rows where a compared value is missing; flag keeps every row and adds a true/false text column (true when every condition matches; a missing compared value gives false). Unique removes identical rows. First/last deduplication requires deterministic ordering. Transform name defaults to replacing that column in the copy only. Numeric transformations use floating point; retain exact identifiers as text."), dataRequest = external_exports.object({
+  action: external_exports.enum(["catalog", "profile", "query", "poll", "state", "configure", "save_view", "prepare_view", "validate", "preview_derive", "save_derived"]),
+  recipe: derivationRecipe.optional(),
+  previewId: external_exports.string().uuid().optional(),
+  name: external_exports.string().trim().min(1).max(120).optional(),
+  fileId: external_exports.string().regex(/^[a-f0-9]{24}$/).optional(),
+  jobId: external_exports.string().uuid().optional(),
+  fingerprint: external_exports.string().regex(/^sha256:[a-f0-9]{64}$/).optional(),
+  revision: external_exports.number().int().min(0).optional(),
+  raw: external_exports.boolean().optional(),
+  search: external_exports.string().max(200).optional(),
+  checks: external_exports.array(validationRule).min(1).max(20).optional(),
+  sampleLimit: external_exports.number().int().min(1).max(100).optional(),
+  configuration: sourceConfiguration.optional(),
+  view: queryView.optional(),
+  reader: readerSettings.optional(),
+  ...queryView.shape
+}).strict().superRefine((v2, ctx) => {
+  if (["preview_derive", "save_derived"].includes(v2.action)) {
+    let allowed = new Set(v2.action === "preview_derive" ? ["action", "fileId", "fingerprint", "revision", "reader", "recipe"] : ["action", "fileId", "fingerprint", "revision", "previewId", "name"]);
+    for (let key2 of Object.keys(v2)) v2[key2] !== void 0 && !allowed.has(key2) && ctx.addIssue({ code: "custom", path: [key2], message: "Derived datasets use an explicit recipe preview, then save its previewId. Other query or configuration fields are not applied." });
+    (!v2.fileId || !v2.fingerprint || v2.revision === void 0) && ctx.addIssue({ code: "custom", message: "Inspect the source and supply its fileId, fingerprint and revision." }), v2.action === "preview_derive" && !v2.recipe && ctx.addIssue({ code: "custom", message: "A derivation recipe is required." }), v2.action === "save_derived" && (!v2.previewId || !v2.name) && ctx.addIssue({ code: "custom", message: "Save requires a completed previewId and a dataset name." });
+  } else for (let key2 of ["recipe", "previewId", "name"]) v2[key2] !== void 0 && ctx.addIssue({ code: "custom", path: [key2], message: "This field is only available for derived datasets." });
+  if (v2.action === "validate" && !v2.checks && ctx.addIssue({ code: "custom", message: "Validation checks are required." }), v2.action === "validate") {
+    let allowed = /* @__PURE__ */ new Set(["action", "fileId", "fingerprint", "revision", "reader", "checks", "sampleLimit", "filters", "transforms"]);
+    for (let field9 of Object.keys(v2)) v2[field9] !== void 0 && !allowed.has(field9) && ctx.addIssue({ code: "custom", path: [field9], message: "Validation does not accept " + field9 + ". Use top-level filters and transforms to scope all matching records, and sampleLimit to bound examples. It uses the saved interpretation (or inferred types with explicit reader settings); save configuration separately if needed." });
+  }
+  v2.checks && new Set(v2.checks.map((r) => r.id)).size !== v2.checks.length && ctx.addIssue({ code: "custom", message: "Check IDs must be unique." }), ["configure", "save_view", "prepare_view"].includes(v2.action) && (!v2.fingerprint || v2.revision === void 0) && ctx.addIssue({ code: "custom", message: "Use the fingerprint and revision returned by profile or state." }), v2.action === "configure" && !v2.configuration && ctx.addIssue({ code: "custom", message: "Configuration is required." }), ["save_view", "prepare_view"].includes(v2.action) && !v2.view && ctx.addIssue({ code: "custom", message: "View is required." }), v2.raw && !["profile", "query"].includes(v2.action) && ctx.addIssue({ code: "custom", message: "Raw mode is available only for inspection and queries." }), v2.raw && (v2.x || v2.y || v2.series || v2.transforms?.length || v2.configuration || v2.view || v2.layout) && ctx.addIssue({ code: "custom", message: "Raw mode cannot apply a saved interpretation, derived columns, or a chart." });
+});
+

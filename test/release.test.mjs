@@ -153,9 +153,9 @@ const SERVER_EDITS_SINCE_087 = [
   "lines.push(step.keep === \"unique\" ? \"Remove exact duplicate rows.\" :"],
  ["fields.map((_, index4) => index4 === 0 && chart.temporal && point8[0] != null ? time5(point8[0]) : point8[index4])",
   "fields.map((_, index4) => point8[index4])"],
- ["// paths.mjs\n// The plugin stores the panel as panel/panel-01.html to panel-13.html, each under 256 KiB so that it can be read in\n// full; joined in order they are the one HTML document (panelFile) that the panel resource serves.\n",
+ ["// paths.mjs\n// The plugin stores the panel as five files: TE Data's page and code in panel/panel-01-tedata.html, panel-03-tedata.html\n// and panel-05-tedata.html, and the bundled libraries in panel-02-vendor-mcp.html and panel-04-vendor-vega.html. Joined\n// in order, they are the one HTML document (panelFile) that the panel resource serves.\n",
   "// paths.mjs\n"],
- [", panelParts = packaged ? [\"panel-01.html\", \"panel-02.html\", \"panel-03.html\", \"panel-04.html\", \"panel-05.html\", \"panel-06.html\", \"panel-07.html\", \"panel-08.html\", \"panel-09.html\", \"panel-10.html\", \"panel-11.html\", \"panel-12.html\", \"panel-13.html\"].map((name2) => join8(pluginRoot, \"panel\", name2)) : [panelFile], requirementsFile",
+ [", panelParts = packaged ? [\"panel-01-tedata.html\", \"panel-02-vendor-mcp.html\", \"panel-03-tedata.html\", \"panel-04-vendor-vega.html\", \"panel-05-tedata.html\"].map((name2) => join8(pluginRoot, \"panel\", name2)) : [panelFile], requirementsFile",
   ", requirementsFile"],
  ["text: (await Promise.all(panelParts.map((part) => readFile7(part, \"utf8\")))).join(\"\"), _meta",
   "text: await readFile7(panelFile, \"utf8\"), _meta"],
@@ -203,7 +203,7 @@ test('the server keeps TE Data\'s code in modules the directory reads in full an
 });
 // The files over 256 KiB: only third-party code, which the directory's validator does not read. It reads every other
 // file in full.
-const LARGE_FILES = ['server/tedata-server-02-vendor-mcp.mjs', 'server/tedata-server-04-vendor-vega.mjs'];
+const LARGE_FILES = ['panel/panel-02-vendor-mcp.html', 'panel/panel-04-vendor-vega.html', 'server/tedata-server-02-vendor-mcp.mjs', 'server/tedata-server-04-vendor-vega.mjs'];
 test('every file larger than 256 KiB is a listed third-party file, so the directory reads every other file in full', async () => {
  const large = [];
  async function walk(directory, prefix = '') {
@@ -242,7 +242,7 @@ test("TE Data's own code in the server and panel interpolates no variable named 
  // Third-party code (esbuild's "// node_modules/..." regions) is left as its authors wrote it.
  const names = /\$\{\s*(key|keys|token|tokens|secret|secrets|password|passwd|pass|cookie|cookies|credential|credentials|auth|apikey|api_key)\s*\}/i, found = [];
  for (const folder of ['server', 'panel']) {
-  const files = (await readdir(join(root, folder))).filter(name => /^(tedata-server.*\.mjs|panel-\d\d\.html)$/.test(name)).sort();
+  const files = (await readdir(join(root, folder))).filter(name => /^(tedata-server.*\.mjs|panel-\d\d-[a-z-]+\.html)$/.test(name)).sort();
   let own = false;
   for (const name of files) (await readFile(join(root, folder, name), 'utf8')).split('\n').forEach((line, index) => {
    const region = /^\s*\/\/ (node_modules\/|[\w.-]+\.m?[jt]sx?$)/.exec(line); if (region) own = region[1] !== 'node_modules/';

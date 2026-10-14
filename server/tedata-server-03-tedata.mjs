@@ -2075,12 +2075,13 @@ import { readFileSync as readFileSync3, realpathSync as realpathSync2 } from "no
 import { writeFile as writeFile8, unlink as unlink6 } from "node:fs/promises";
 
 // paths.mjs
-// The plugin stores the panel as panel/panel-01.html to panel-13.html, each under 256 KiB so that it can be read in
-// full; joined in order they are the one HTML document (panelFile) that the panel resource serves.
+// The plugin stores the panel as five files: TE Data's page and code in panel/panel-01-tedata.html, panel-03-tedata.html
+// and panel-05-tedata.html, and the bundled libraries in panel-02-vendor-mcp.html and panel-04-vendor-vega.html. Joined
+// in order, they are the one HTML document (panelFile) that the panel resource serves.
 import { existsSync } from "node:fs";
 import { dirname as dirname3, join as join8 } from "node:path";
 import { fileURLToPath } from "node:url";
-var here = dirname3(fileURLToPath(import.meta.url)), packaged = !existsSync(join8(here, "data_worker.py")), pluginRoot = packaged ? dirname3(here) : here, workerDirectory = packaged ? join8(pluginRoot, "worker") : here, panelFile = packaged ? join8(pluginRoot, "panel", "panel.html") : join8(here, "dist", "panel.html"), panelParts = packaged ? ["panel-01.html", "panel-02.html", "panel-03.html", "panel-04.html", "panel-05.html", "panel-06.html", "panel-07.html", "panel-08.html", "panel-09.html", "panel-10.html", "panel-11.html", "panel-12.html", "panel-13.html"].map((name2) => join8(pluginRoot, "panel", name2)) : [panelFile], requirementsFile = join8(workerDirectory, "requirements.lock");
+var here = dirname3(fileURLToPath(import.meta.url)), packaged = !existsSync(join8(here, "data_worker.py")), pluginRoot = packaged ? dirname3(here) : here, workerDirectory = packaged ? join8(pluginRoot, "worker") : here, panelFile = packaged ? join8(pluginRoot, "panel", "panel.html") : join8(here, "dist", "panel.html"), panelParts = packaged ? ["panel-01-tedata.html", "panel-02-vendor-mcp.html", "panel-03-tedata.html", "panel-04-vendor-vega.html", "panel-05-tedata.html"].map((name2) => join8(pluginRoot, "panel", name2)) : [panelFile], requirementsFile = join8(workerDirectory, "requirements.lock");
 
 // python-env.mjs
 import { spawn } from "node:child_process";

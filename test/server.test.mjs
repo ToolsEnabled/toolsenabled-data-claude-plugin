@@ -334,10 +334,19 @@ test('tedata_derive says that a preview lives only in the running server', async
  } finally { await s.close(); }
 });
 
-test('the panel is stored in files the directory can read in full and served as 0.8.7 built it', async () => {
+test('the panel keeps TE Data\'s page and code in files the directory reads in full, and is served as 0.8.7 built it', async () => {
  const panel = fileURLToPath(new URL('../panel/', import.meta.url)), names = (await readdir(panel)).sort();
- assert.deepEqual(names, Array.from({length: 13}, (_, index) => `panel-${String(index + 1).padStart(2, '0')}.html`));
- for (const name of names) assert.ok((await stat(join(panel, name))).size <= 256 * 1024, name);
+ assert.deepEqual(names, ['panel-01-tedata.html', 'panel-02-vendor-mcp.html', 'panel-03-tedata.html', 'panel-04-vendor-vega.html', 'panel-05-tedata.html']);
+ for (const name of names) {
+  // esbuild opens each bundled module with a line naming it: "// node_modules/<package>/..." for third-party code,
+  // "// <file>.js" or ".mjs" for TE Data's own modules. The library files are over 1 MiB, so the directory's
+  // validator does not read them (a file of up to 1 MiB is read up to 256 KiB); TE Data's files are read in full.
+  const text = await readFile(join(panel, name), 'utf8'), size = (await stat(join(panel, name))).size;
+  const regions = [...text.matchAll(/^\/\/ (node_modules\/\S+|[\w.-]+\.m?js)$/gm)].map(match => match[1]);
+  const library = name.includes('-vendor-');
+  assert.ok(library ? size > 1024 * 1024 : size <= 256 * 1024, `${name}: ${size} bytes`);
+  assert.deepEqual(regions.filter(region => region.startsWith('node_modules/') !== library), [], name);
+ }
  const s = await start();
  try {
   await s.initialize();
