@@ -63,7 +63,7 @@ async function scan(first){
   if(only&&run.ids.runId!==only)continue;
   const record=await json(run.path);if(!record)continue;
   const previous=seen.get(run.path),label=`TE Data ${run.kind} "${run.name}" ${record.phase||''} run`.replace(/\s+/g,' ');
-  const ids=Object.entries(run.ids).map(([key,value])=>`${key} ${value}`).join(', ');
+  const ids=Object.entries(run.ids).map(([field,value])=>`${field} ${value}`).join(', ');
   const total=record.total,completed=record.completed||0,step=total?Math.floor(completed/total*10):0;
   const idle=Date.now()-(await stat(run.path).catch(()=>({mtimeMs:Date.now()}))).mtimeMs;
   seen.set(run.path,{state:record.state,step:Math.max(step,previous?.step??0),stalled:record.state==='running'&&idle>stallMs});

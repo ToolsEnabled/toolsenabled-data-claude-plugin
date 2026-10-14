@@ -111,3 +111,14 @@ test('the third-party licence inventory names TE Data, never another product', a
  assert.match(text, /^ToolsEnabled Data \(TE Data\)'s original code is licensed under MIT; see LICENSE\.$/m);
  assert.match(text, /under TE Data's MIT license\./);
 });
+
+test('the watcher names its run fields plainly and build-release runs one fixed command', async () => {
+ const watcher = await readFile(watch, 'utf8'), build = await readFile(join(root, 'tools/build-release.mjs'), 'utf8');
+ // The directory's scanner reads an interpolated variable called key as the installer's key; the watcher's
+ // run summary calls it field.
+ assert.doesNotMatch(watcher, /\bkey\b/);
+ assert.match(watcher, /\(\[field,value\]\)=>/);
+ // build-release runs one command, git archive, written in full as fixed text, and builds no string at run time.
+ assert.deepEqual(build.match(/execFileSync\([^)]*\)/g), ["execFileSync('git',['archive','--format=tar','--prefix=toolsenabled-data/','HEAD'],{cwd:root,maxBuffer:32*1024*1024})"]);
+ assert.doesNotMatch(build, /`/);
+});
