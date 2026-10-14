@@ -243,8 +243,14 @@ def derive(db, request, columns):
                 query = 'SELECT ' + ','.join(items) + ' FROM ' + relation
             elif op == 'deduplicate':
                 keep = step.get('keep', 'unique')
+                # Number the rows in their current order first, so that the rows kept stay in that order
+                # (SELECT DISTINCT and a window partition both return rows in hash order).
+                rn = '__bench_rn'
+                while rn in columns: rn += '_'
+                numbered = '(SELECT *, row_number() OVER () AS ' + rn + ' FROM ' + relation + ')'
                 if keep == 'unique':
-                    query = 'SELECT DISTINCT * FROM ' + relation
+                    # The first of each set of identical rows; NULLs compare equal, as in SELECT DISTINCT.
+                    query = 'SELECT * EXCLUDE (' + rn + ') FROM (SELECT * EXCLUDE (' + rn + '), min(' + rn + ') AS ' + rn + ' FROM ' + numbered + ' GROUP BY ALL) ORDER BY ' + rn
                 else:
                     keys = step.get('columns', []); ordering = step.get('orderBy', [])
                     if not keys or not ordering: raise ValueError('Choose key columns and explicit ordering for first/last deduplication.')
@@ -261,7 +267,7 @@ def derive(db, request, columns):
                     if db.execute(f'SELECT 1 FROM {relation} GROUP BY '+','.join(key_exprs+order_exprs)+' HAVING count(*)>1 LIMIT 1').fetchone():
                         raise ValueError('Deduplication order is ambiguous within a key. Add a tie-breaker order column.')
                     order_sql = ','.join(e + (' DESC' if bool(o.get('descending')) != (keep == 'last') else ' ASC') for e, o in zip(order_exprs, ordering))
-                    query += ' QUALIFY row_number() OVER (PARTITION BY ' + ','.join(key_exprs) + ' ORDER BY ' + order_sql + ')=1'
+                    query = 'SELECT * EXCLUDE (' + rn + ') FROM ' + numbered + ' QUALIFY row_number() OVER (PARTITION BY ' + ','.join(key_exprs) + ' ORDER BY ' + order_sql + ')=1 ORDER BY ' + rn
             else: raise ValueError('Unknown recipe operation.')
             if len(columns) > 128: raise ValueError('A derived dataset supports up to 128 columns.')
             view = '__bench_derived_step_' + str(index)
@@ -281,7 +287,7 @@ def derive(db, request, columns):
                   'steps': effects,
                   'notes': ['Counts cover the complete dataset; examples are limited to 20 rows and 128 KiB per sample. Omitted example rows are counted; retained values are exact.',
                             'Raw basis preserves original source strings until an explicit transformation. Interpreted basis uses the saved configuration.',
-                            'Filtering keeps matching rows; operations run in the displayed order. Exact duplicate removal compares all emitted columns.',
+                            'Filtering keeps matching rows; operations run in the displayed order. Exact duplicate removal compares all emitted columns; deduplication keeps rows in their source order.',
                             'Type conversion and scaling use floating point. Keep exact identifiers as text. Unzoned date formats are interpreted as UTC.',
                             'A derived dataset is not a quality verdict. Validate it for the intended use.']}
         if request['action'] == 'save_derived':
