@@ -248,3 +248,12 @@ test('setup is offered only with the user\'s agreement and names what uv may dow
   assert.match(command, /uv may also download a Python interpreter/);
  } finally { await s.close(); }
 });
+
+test('the export description says that only plot blocks also get a PNG', async () => {
+ const s = await start();
+ try {
+  await s.initialize();
+  const {tools} = (await s.request('tools/list')).result;
+  assert.match(tools.find(t => t.name === 'tedata_export').description, /plot block[^.]*PNG/);
+ } finally { await s.close(); }
+});

@@ -87,7 +87,7 @@ Layouts combine summaries, tables, filters and notes with:
 - **One colour theme per workspace:** five validated series orders (standard, distinct, warm, cool, vivid) and seven magnitude ramps, all checked for colour-blind readers in light and dark mode. Claude names colours by role (`te:series-2`, `te:orange`, `te:muted`), so every chart follows the theme.
 - **A check before saving:** before a layout is saved, every plot is drawn once. Claude gets each plot's preview image, the values it actually draws and any warnings, and fixes problems before you see them. Previews are drawn on your computer with an installed system font; nothing is sent anywhere.
 
-Exports include every plot as SVG, PNG, its Vega-Lite spec and its data.
+Exports include every plot block as SVG and PNG with its Vega-Lite spec and its data. A chart block (the simple chart of the main view) is exported as SVG with its Vega-Lite spec and data, without a PNG.
 
 ## Cleaning steps
 
