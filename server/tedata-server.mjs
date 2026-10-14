@@ -30389,10 +30389,12 @@ import { readFileSync as readFileSync3, realpathSync as realpathSync2 } from "no
 import { writeFile as writeFile8, unlink as unlink6 } from "node:fs/promises";
 
 // paths.mjs
+// The plugin stores the panel as panel/panel-01.html to panel-13.html, each under 256 KiB so that it can be read in
+// full; joined in order they are the one HTML document (panelFile) that the panel resource serves.
 import { existsSync } from "node:fs";
 import { dirname as dirname3, join as join8 } from "node:path";
 import { fileURLToPath } from "node:url";
-var here = dirname3(fileURLToPath(import.meta.url)), packaged = !existsSync(join8(here, "data_worker.py")), pluginRoot = packaged ? dirname3(here) : here, workerDirectory = packaged ? join8(pluginRoot, "worker") : here, panelFile = packaged ? join8(pluginRoot, "panel", "panel.html") : join8(here, "dist", "panel.html"), requirementsFile = join8(workerDirectory, "requirements.lock");
+var here = dirname3(fileURLToPath(import.meta.url)), packaged = !existsSync(join8(here, "data_worker.py")), pluginRoot = packaged ? dirname3(here) : here, workerDirectory = packaged ? join8(pluginRoot, "worker") : here, panelFile = packaged ? join8(pluginRoot, "panel", "panel.html") : join8(here, "dist", "panel.html"), panelParts = packaged ? ["panel-01.html", "panel-02.html", "panel-03.html", "panel-04.html", "panel-05.html", "panel-06.html", "panel-07.html", "panel-08.html", "panel-09.html", "panel-10.html", "panel-11.html", "panel-12.html", "panel-13.html"].map((name2) => join8(pluginRoot, "panel", name2)) : [panelFile], requirementsFile = join8(workerDirectory, "requirements.lock");
 
 // python-env.mjs
 import { spawn } from "node:child_process";
@@ -70045,7 +70047,7 @@ tool("tedata_setup", { title: "Set up TE Data on this computer", description: `O
   let value3 = action === "status" ? await pythonStatus() : await setup({ force }), reply = { ...value3, dataDirectory: dataDirectory(), ...value3.ready ? { next: "TE Data is ready. Open it with /tedata." } : {} };
   return { content: [{ type: "text", text: JSON.stringify(reply) }], structuredContent: reply };
 });
-G(mcp, "TE Data panel", uri, { mimeType: L }, async () => ({ contents: [{ uri, mimeType: L, text: await readFile7(panelFile, "utf8"), _meta: { ui: { prefersBorder: !0, csp: { connectDomains: [], resourceDomains: [] } } } }] }));
+G(mcp, "TE Data panel", uri, { mimeType: L }, async () => ({ contents: [{ uri, mimeType: L, text: (await Promise.all(panelParts.map((part) => readFile7(part, "utf8")))).join(""), _meta: { ui: { prefersBorder: !0, csp: { connectDomains: [], resourceDomains: [] } } } }] }));
 mcp.server.oninitialized = () => {
   hostShowsPanels() || (previewModule && (preview = previewModule.createPreview({ panelFile, call: (name2, args) => handlers[name2]?.(args) })), refreshTool.disable());
 };

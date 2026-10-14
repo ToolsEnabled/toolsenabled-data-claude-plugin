@@ -3,7 +3,7 @@
 import test, {after} from 'node:test';
 import assert from 'node:assert/strict';
 import {spawn} from 'node:child_process';
-import {mkdtemp, mkdir, writeFile, symlink, readFile, rm} from 'node:fs/promises';
+import {mkdtemp, mkdir, writeFile, symlink, readFile, rm, readdir, stat} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {join, dirname} from 'node:path';
 import {tmpdir} from 'node:os';
@@ -331,5 +331,21 @@ test('tedata_derive says that a preview lives only in the running server', async
   await s.initialize();
   const {tools} = (await s.request('tools/list')).result;
   assert.match(tools.find(t => t.name === 'tedata_derive').description, /restart[^.]*preview/i);
+ } finally { await s.close(); }
+});
+
+test('the panel is stored in files the directory can read in full and served exactly as 0.8.7 built it', async () => {
+ const panel = fileURLToPath(new URL('../panel/', import.meta.url)), names = (await readdir(panel)).sort();
+ assert.deepEqual(names, Array.from({length: 13}, (_, index) => `panel-${String(index + 1).padStart(2, '0')}.html`));
+ for (const name of names) assert.ok((await stat(join(panel, name))).size <= 256 * 1024, name);
+ const s = await start();
+ try {
+  await s.initialize();
+  const {contents} = (await s.request('resources/read', {uri: 'ui://toolsenabled-data/panel-v1.html'})).result;
+  assert.equal(contents.length, 1);
+  // 0.8.7's panel/panel.html: 2,969,612 bytes, unchanged since 0.8.3.
+  assert.equal(Buffer.byteLength(contents[0].text), 2969612);
+  assert.equal(createHash('sha256').update(contents[0].text).digest('hex'), '8d5247e20020f36017d533e81900bdff8ca545f8434d31909e96c67fecfe748a');
+  assert.deepEqual(contents[0]._meta.ui.csp, {connectDomains: [], resourceDomains: []});
  } finally { await s.close(); }
 });
