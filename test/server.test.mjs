@@ -4,6 +4,7 @@ import test, {after} from 'node:test';
 import assert from 'node:assert/strict';
 import {spawn} from 'node:child_process';
 import {mkdtemp, mkdir, writeFile, symlink, readFile, rm} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
 import {join, dirname} from 'node:path';
 import {tmpdir} from 'node:os';
 import {fileURLToPath, pathToFileURL} from 'node:url';
@@ -295,5 +296,31 @@ test('the deduplicate schema itself refuses key columns with unique and names th
   }
   // An unknown action is refused with the list of actions, not "Invalid input".
   refused(await s.call('tedata_data', {request: {action: 'nope'}}), /'catalog'.*'evidence_catalog'.*at request\.action/);
+ } finally { await s.close(); }
+});
+
+test('a layout saved before a column interpretation names the configure action', async () => {
+ // A profile cache record written by this test stands in for the Python worker, which no test runs.
+ const s = await start();
+ try {
+  await s.initialize();
+  const csv = await file(join(s.project, 'data', 'measurements.csv'), 'date,city,high\n2026-10-01,Oslo,5\n2026-10-02,Oslo,7\n');
+  const added = await s.call('tedata_sources', {action: 'add', kind: 'source', path: csv});
+  assert.notEqual(added.result.isError, true, text(added));
+  const fileId = JSON.parse(text(await s.call('tedata_data', {request: {action: 'catalog'}}))).files[0].id;
+  const {fingerprint, revision} = JSON.parse(text(await s.call('tedata_data', {request: {action: 'state', fileId}})));
+  const workerText = [];
+  for (const name of ['data_worker.py', 'summary_worker.py', 'validation_worker.py', 'derivation_worker.py']) workerText.push(await readFile(fileURLToPath(new URL(`../worker/${name}`, import.meta.url)), 'utf8'));
+  const worker = createHash('sha256').update(workerText.join('\0')).digest('hex'), key = `${fileId}:${fingerprint}:null:undefined`;
+  const record = `${worker.slice(0, 12)}-${createHash('sha256').update(JSON.stringify({version: 1, worker, key})).digest('hex')}.json`;
+  const profile = {kind: 'profile', fileId, fingerprint, revision, rows: 2, rawColumns: ['date', 'city', 'high'], rawRows: [['2026-10-01', 'Oslo', '5']],
+   columns: ['date', 'city', 'high'].map(name => ({name, source: name, type: 'text', missing: 0, invalid: 0}))};
+  await file(join(s.project, '.tedata', 'cache', 'profiles', record), JSON.stringify({version: 1, worker, key, profile}));
+  const poll = async response => { let job = JSON.parse(text(response)); while (job.state === 'running') job = JSON.parse(text(await s.call('tedata_data', {request: {action: 'poll', jobId: job.jobId}}))); return job; };
+  assert.equal((await poll(await s.call('tedata_data', {request: {action: 'profile', fileId}}))).kind, 'profile');
+  const layout = {version: 1, title: 'Highs', sections: [{title: 'Highs', blocks: [{id: 'highs', type: 'chart', title: 'High by date', chart: {x: 'date', y: 'high', series: 'city', chartType: 'line'}}, {id: 'rows', type: 'table'}]}]};
+  const job = await poll(await s.call('tedata_data', {request: {action: 'save_view', fileId, fingerprint, revision, view: {layout}}}));
+  assert.equal(job.state, 'error', JSON.stringify(job));
+  assert.match(job.error, /^Save a column interpretation before composing a layout \(tedata_data action configure, or tedata_prepare with a configuration\)\.$/);
  } finally { await s.close(); }
 });

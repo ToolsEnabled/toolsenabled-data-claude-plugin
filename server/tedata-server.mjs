@@ -69474,7 +69474,7 @@ var DataService = class {
       let result = profile, view2;
       if (["query", "save_view", "prepare_view"].includes(request2.action)) {
         let explicit = Object.fromEntries(viewFields.filter((k) => request2[k] !== void 0).map((k) => [k, request2[k]]));
-        if (view2 = ["save_view", "prepare_view"].includes(request2.action) ? request2.view : request2.raw || Object.keys(explicit).length ? explicit : saved?.savedView || {}, view2.layout && !configuration) throw new Error("Save a column interpretation before composing a layout.");
+        if (view2 = ["save_view", "prepare_view"].includes(request2.action) ? request2.view : request2.raw || Object.keys(explicit).length ? explicit : saved?.savedView || {}, view2.layout && !configuration) throw new Error("Save a column interpretation before composing a layout (tedata_data action configure, or tedata_prepare with a configuration).");
         if (validateLayout(view2.layout, profile, view2), result = await this.runWorker({ ...view2, summaryMetrics: layoutMetrics(view2.layout), action: "query", path: file2.path, configuration, reader, profile }), result.error) throw new Error(result.error);
         if (view2.layout) {
           result.layoutCharts = {};
