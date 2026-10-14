@@ -1,5 +1,7 @@
-// ToolsEnabled Data server, part 3 of 5: TE Data's own code: its data services, schemas, workspace, preparation,
-// evidence and collection code (lines 28325-30532 of the bundle).
+// ToolsEnabled Data server, part 3 of 5: TE Data's own code: the modules data-service, plot-spec, chart-theme,
+// data-schema, evidence-schema, collection-schema, preparation-schema, preparation, interpretation-quality,
+// assessment-model, workspace, credential-guard, atomic-rename, evidence, collection, collection-export, data-state,
+// derived-data, layout, paths and python-env (lines 28325-30533 of the bundle).
 // The server is one esbuild bundle stored as 5 ES modules, cut between top-level statements: TE Data's own code in
 // parts 1, 3 and 5, each under 256 KiB so that it can be read in full, and the bundled third-party libraries in parts
 // 2 and 4 (README.md, "Verifying a release"). The import lines first load the previous part, so the parts run in the

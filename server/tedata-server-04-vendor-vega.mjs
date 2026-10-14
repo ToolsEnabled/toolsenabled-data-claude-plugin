@@ -9,7 +9,7 @@
 // vega-wordcloud@5.1.3, vega-crossfilter@5.1.3, d3-ease@3.0.1, vega-expression@6.2.2, vega-selections@6.1.5,
 // vega-functions@6.2.0, vega-runtime@7.1.3, vega-view@6.2.0, vega-event-selector@4.0.0, vega-parser@7.1.3,
 // vega@6.4.0, vega-expression@6.1.0 (vega-lite's own copy), vega-lite@6.4.3, vega-interpreter@2.3.2 (lines
-// 30533-68460 of the bundle).
+// 30534-68461 of the bundle).
 // The server is one esbuild bundle stored as 5 ES modules, cut between top-level statements: TE Data's own code in
 // parts 1, 3 and 5, each under 256 KiB so that it can be read in full, and the bundled third-party libraries in parts
 // 2 and 4 (README.md, "Verifying a release"). The import lines first load the previous part, so the parts run in the

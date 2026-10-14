@@ -1,5 +1,6 @@
-// ToolsEnabled Data server, part 5 of 5: TE Data's own code: the MCP server and its tools (lines 68461-70059 of the
-// bundle).
+// ToolsEnabled Data server, part 5 of 5: TE Data's own code: the modules chart, raster, font-outline, plot-image,
+// data-service, catalog, preparation-instructions, collection-instructions, durable-poll, view-export and
+// plugin-server, the MCP server and its tools (lines 68462-70060 of the bundle).
 // The server is one esbuild bundle stored as 5 ES modules, cut between top-level statements: TE Data's own code in
 // parts 1, 3 and 5, each under 256 KiB so that it can be read in full, and the bundled third-party libraries in parts
 // 2 and 4 (README.md, "Verifying a release"). The import lines first load the previous part, so the parts run in the
