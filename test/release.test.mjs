@@ -102,3 +102,12 @@ test('SECURITY.md cites this repository\'s LICENSE for "as is", not the website 
  assert.match(sentence, /as this repository's \[LICENSE\]\(LICENSE\) \(MIT\) says/);
  assert.doesNotMatch(sentence, /toolsenabled\.ai\/terms/);
 });
+
+test('the third-party licence inventory names TE Data, never another product', async () => {
+ const names = [join(root, 'THIRD-PARTY-LICENSES.txt')];
+ try { for (const name of await readdir(join(root, 'licenses'))) names.push(join(root, 'licenses', name)); } catch {}
+ const text = (await Promise.all(names.map(name => readFile(name, 'utf8')))).join('\n');
+ assert.doesNotMatch(text, /\bBench\b/);
+ assert.match(text, /^ToolsEnabled Data \(TE Data\)'s original code is licensed under MIT; see LICENSE\.$/m);
+ assert.match(text, /under TE Data's MIT license\./);
+});

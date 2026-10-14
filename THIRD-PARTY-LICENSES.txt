@@ -1,6 +1,6 @@
-Bench's original code is licensed under MIT; see LICENSE.
+ToolsEnabled Data (TE Data)'s original code is licensed under MIT; see LICENSE.
 Third-party components retain their own licenses below. They are not relicensed
-under Bench's MIT license. Preserve these texts when redistributing components.
+under TE Data's MIT license. Preserve these texts when redistributing components.
 This inventory covers the reviewed installed packages, including build tools.
 It does not license datasets, external services, or separately installed engines.
 
@@ -5950,7 +5950,7 @@ Metadata alone misses vendored license obligations.
 Source TPCH EULA is excluded from current standard Python build and actual loaded/installed extension set.
 Select Apache-2.0 licensing option for Mbed TLS; do not apply GPL alternative by default.
 Bison parser exception permits larger work under own terms; retain exception notice.
-Optional extension installation/autoload disabled by Bench worker. Future extensions and artifacts need review.
+Optional extension installation/autoload disabled by the TE Data worker. Future extensions and artifacts need review.
 Some source license files contain copied lists of non-shipped upstream test data or components; provenance scope must be preserved.
 
 --- duckdb/experimental/spark/LICENSE ---
@@ -6227,7 +6227,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 --- license-reviews/duckdb/NATIVE-NOTICES.txt ---
 DuckDB native notices for the reviewed Python build.
-Bench code remains MIT. Native components retain the terms below.
+TE Data code remains MIT. Native components retain the terms below.
 Mbed TLS: select the Apache-2.0 alternative.
 Generated SQL parser: preserve GPL-2.0-or-later WITH Bison exception, which permits a larger work under chosen terms.
 Notices are conservatively retained for relevant native source components; this is not a byte-level reproduction of the wheel build.
