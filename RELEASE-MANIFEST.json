@@ -1,11 +1,11 @@
 {
   "plugin": "toolsenabled-data",
-  "version": "0.8.8",
-  "sourceCommit": "f3d39390ab86de7374bd90e37679a8f242cc03d1",
+  "version": "0.8.9",
+  "sourceCommit": "226db6ef5b325fd5dd0cca915a9143e78cc81892",
   "sourceKind": "public-payload",
-  "payloadBaseCommit": "5b169e42308ac49bb3cb583bddaace393470a4e0",
+  "payloadBaseCommit": "15cb61398ad83a90bf7b6c7f37b494e7a3444277",
   "bundledSourceCommit": "4f61abcf3eeb9b7532e7bfe84a49a46ab6bf928a",
-  "bundledSourceAvailability": "Internal 0.8.3 build source; not distributed in this public repository. Since 0.8.4, public payload commits change the server bundle directly; since 0.8.8 it is stored as server/tedata-server.mjs and the 14 parts it imports, which join to the one bundle. CHANGELOG.md lists the changes.",
+  "bundledSourceAvailability": "Internal 0.8.3 build source; not distributed in this public repository. Since 0.8.4, public payload commits change the server bundle directly; since 0.8.8 it is stored as server/tedata-server.mjs and the parts it imports (4 parts since 0.8.9), which join to the one bundle. CHANGELOG.md lists the changes.",
   "files": [
     {
       "path": ".agents/plugins/marketplace.json",
@@ -15,12 +15,12 @@
     {
       "path": ".claude-plugin/marketplace.json",
       "bytes": 473,
-      "sha256": "76d81f4c9a32a9eceba4c02f8fa76af0da0159e7087a84baf86d7a9be3b22bd4"
+      "sha256": "283769f165f8d0aaf7d01b705674c5210d016710d0428f8052c0e4c67ce3af52"
     },
     {
       "path": ".claude-plugin/plugin.json",
       "bytes": 920,
-      "sha256": "fb7fc3aa99d162a5567342b397701ed4b9b7362c4c4a62735ab8c08c3eccc1e9"
+      "sha256": "c338ac5fd07b255b3af0cfa991199755bf4f3f344cffc25083eeb2bf97d9a770"
     },
     {
       "path": ".mcp.json",
@@ -29,8 +29,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 7690,
-      "sha256": "c807fde8436d417c97fe778f2f6ce212b5ad8a9417e2926972b417c9032b6512"
+      "bytes": 10359,
+      "sha256": "a23333dd3cab1171e32c9fa0a99a3e5d76444d36d0b136210195f009f5241a0f"
     },
     {
       "path": "LICENSE",
@@ -44,8 +44,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 16475,
-      "sha256": "7b0dbd75a87ae218c71745e9c09ea9a23fb3effd302c231ccd167e91e5df5f9c"
+      "bytes": 22354,
+      "sha256": "6efb238a7e0921c8bb572d09c15aeb7b99e1c350579a3d23eebe94135851c022"
     },
     {
       "path": "SECURITY.md",
@@ -54,8 +54,8 @@
     },
     {
       "path": "THIRD-PARTY-LICENSES.txt",
-      "bytes": 905,
-      "sha256": "417013a6c1fddfaa8dea784d8d068ebb13337f12009fbac425eb4087758a11ea"
+      "bytes": 457672,
+      "sha256": "16ad26acad685d5e85ecf5c0bb476dc291513e80000333f45c03bd9c80beee6e"
     },
     {
       "path": "commands/export.md",
@@ -78,159 +78,54 @@
       "sha256": "60b73f53d11d5071e11bb32b289bd93126f114d585cbad63267b3c53a24b832a"
     },
     {
-      "path": "licenses/duckdb.txt",
-      "bytes": 177916,
-      "sha256": "8099eab5971f28f1893f8114c5434f8e147d3fe6aadd854c394e948454d266de"
+      "path": "panel/panel-01-tedata.html",
+      "bytes": 26526,
+      "sha256": "810b73594cd40590446a79a9002a7d3a8d8071dcd4259adc7d5640548c09cc99"
     },
     {
-      "path": "licenses/javascript-1.txt",
-      "bytes": 140123,
-      "sha256": "470493f73fda6149827171c94453155984fb07adc22f066031481b7860c8147e"
+      "path": "panel/panel-02-vendor-mcp.html",
+      "bytes": 1115598,
+      "sha256": "c2b93809f426ec18d32b8b7bf56d714c0815381b8af87945df38453f80e8fc28"
     },
     {
-      "path": "licenses/javascript-2.txt",
-      "bytes": 139230,
-      "sha256": "999e767a4fa3b36b9f3fded59bd37ba4ddb1d83e9ea24b286ae1702d6e0bbf0c"
+      "path": "panel/panel-03-tedata.html",
+      "bytes": 36931,
+      "sha256": "1fedc50aa08f2c02b7b540737cd0942f333b8ddc2316757157dfd4d4fac9213f"
     },
     {
-      "path": "panel/panel-01.html",
-      "bytes": 228436,
-      "sha256": "5ed91be2acf74c78b8c5f42078f8b5fdd5411c7b9462be6e6db6b7ae3560db33"
+      "path": "panel/panel-04-vendor-vega.html",
+      "bytes": 1609088,
+      "sha256": "b29d98430050fdbf03a7255c48f06b75698d18c0d26dbaab2e1829b5d5cb837a"
     },
     {
-      "path": "panel/panel-02.html",
-      "bytes": 228597,
-      "sha256": "9190cd608032bc7f873cc4e370a6dae178e13825bd9f095726f491fd1784f770"
+      "path": "panel/panel-05-tedata.html",
+      "bytes": 181471,
+      "sha256": "00aea77def4c1c0fbb3d31a54a3632ced0839ddf1f5967a3036807cab49dce10"
     },
     {
-      "path": "panel/panel-03.html",
-      "bytes": 228316,
-      "sha256": "f854001c05fdce932bd86cda63583ce9ac7ae97d7fad1a834ca6dfaa89879d5f"
+      "path": "server/tedata-server-01-tedata.mjs",
+      "bytes": 2449,
+      "sha256": "caa371b68a2cb21904f8b68186a9cd881516abe3e7fbb4c702938589378d4b20"
     },
     {
-      "path": "panel/panel-04.html",
-      "bytes": 228380,
-      "sha256": "8eedede5099ac4d01a4fd7d5b273e9890a7079b3a6b53dbda7b4ff85c4cf9af1"
+      "path": "server/tedata-server-02-vendor-mcp.mjs",
+      "bytes": 1286786,
+      "sha256": "7d80ba143a1a33be674f89474f491d2c35c30a9cf0c34ab23165727f0bddef02"
     },
     {
-      "path": "panel/panel-05.html",
-      "bytes": 228454,
-      "sha256": "3306e1316b763e768de91cc4d4d581dc7335e27ebc727a2ca994fd125e11911b"
+      "path": "server/tedata-server-03-tedata.mjs",
+      "bytes": 207277,
+      "sha256": "cbdfe98968b3937000fdcaf1b6ddb22e62c5a48bbf435dad75c8027b61b633c2"
     },
     {
-      "path": "panel/panel-06.html",
-      "bytes": 228453,
-      "sha256": "7921f4645f9994273d6fe2ffc3db3d19671dc969494810faa2ec2802c10c3ad8"
-    },
-    {
-      "path": "panel/panel-07.html",
-      "bytes": 228471,
-      "sha256": "49e622f0b22f2d88969e1e87ffe77493db91207d16584ce3f0397b8d8043a21b"
-    },
-    {
-      "path": "panel/panel-08.html",
-      "bytes": 228363,
-      "sha256": "a76d02ef5af2a9326b8b27cd35afb80a7e54f8236058ecf1c76659cc8011983f"
-    },
-    {
-      "path": "panel/panel-09.html",
-      "bytes": 228420,
-      "sha256": "613f80deeeea45bf5b26b36056cc36fab7f942a5ddd6e6a7e3f24927daf5a0c9"
-    },
-    {
-      "path": "panel/panel-10.html",
-      "bytes": 228541,
-      "sha256": "c6d0d095e1941c57451a486d1ec5b23f8faf98bc65f4be92a9e6cf8e35107638"
-    },
-    {
-      "path": "panel/panel-11.html",
-      "bytes": 228329,
-      "sha256": "eef25a41f7cec3121d9279eeabbd4d66e100cf1385340791a662d8f675c57409"
-    },
-    {
-      "path": "panel/panel-12.html",
-      "bytes": 228459,
-      "sha256": "7e29cc5da1c7afcb9c939818b05fcefdcf8bade65751dcb8205472330c72f033"
-    },
-    {
-      "path": "panel/panel-13.html",
-      "bytes": 228395,
-      "sha256": "f78c3150df6aad68bb077193846489cd46a472335873115166a8ce5b4b60c91e"
-    },
-    {
-      "path": "server/tedata-server-01-ajv.mjs",
-      "bytes": 230939,
-      "sha256": "5dd43c2546ea4e558a3efa08270b2dc036356ba7dff73a212ccf29cdb7b7c21d"
-    },
-    {
-      "path": "server/tedata-server-02-zod.mjs",
-      "bytes": 235470,
-      "sha256": "eb226b5e09551122d30c11524bb92500196c1a82abf8439e9e7ffa182a3e5cc5"
-    },
-    {
-      "path": "server/tedata-server-03-zod.mjs",
-      "bytes": 230361,
-      "sha256": "0423cfe5206e1f37c55a94565946a03d7dec046c0e6799cde4c1ffd0a6143404"
-    },
-    {
-      "path": "server/tedata-server-04-zod.mjs",
-      "bytes": 231571,
-      "sha256": "4ad5eed0cea1b353c9d702bd9de2ad6d478f006f9f748dd22edab50665154070"
-    },
-    {
-      "path": "server/tedata-server-05-zod.mjs",
-      "bytes": 186685,
-      "sha256": "3fb1a8c16b5bb6e84cf93a9f7940c9600b7676af4a2ae8b2946dea9779bc0b93"
-    },
-    {
-      "path": "server/tedata-server-06-mcp-sdk.mjs",
-      "bytes": 190947,
-      "sha256": "a01fa8cae9d1b99ab55c965e4af41074996ab0078ce933828b1776adab575f26"
-    },
-    {
-      "path": "server/tedata-server-07-tedata.mjs",
-      "bytes": 206836,
-      "sha256": "d2165a0971cc77304a568d51c8cb0cc8ae675c467be29b4dc940b5bcdbf34200"
-    },
-    {
-      "path": "server/tedata-server-08-vega.mjs",
-      "bytes": 232051,
-      "sha256": "f2412049e128d764cdaacab621efc6e236e0fcb8eb0413290dba615e849eac77"
-    },
-    {
-      "path": "server/tedata-server-09-vega.mjs",
-      "bytes": 221241,
-      "sha256": "8faff203f45106d352cdd74b32114601c6e8ecfdb57fe43a0789bb1b463f4816"
-    },
-    {
-      "path": "server/tedata-server-10-vega.mjs",
-      "bytes": 232787,
-      "sha256": "08789b53878b4fc4c688d460349872110753c28006bd1b020cbfccf467a72a12"
-    },
-    {
-      "path": "server/tedata-server-11-vega.mjs",
-      "bytes": 231883,
-      "sha256": "0fbfe7e730ff8937c628f27ea1cd429318f5b247accd93237f7b31a9ea55c4f0"
-    },
-    {
-      "path": "server/tedata-server-12-vega-lite.mjs",
-      "bytes": 239244,
-      "sha256": "16ebd69efd5a3368c196aabc3ce1f5dafbf23b0e09ce807857eb98e5e63b28f1"
-    },
-    {
-      "path": "server/tedata-server-13-vega-lite.mjs",
-      "bytes": 237498,
-      "sha256": "f2127826d3a9da75621ed89b9c96a5fbcb5fccdf70c1d36baea1c1deade39b20"
-    },
-    {
-      "path": "server/tedata-server-14-vega-lite.mjs",
-      "bytes": 234404,
-      "sha256": "be3e58a5c7c44060bb6769f58de86152357aea3b0f62ad466e55943de546cabc"
+      "path": "server/tedata-server-04-vendor-vega.mjs",
+      "bytes": 1594804,
+      "sha256": "b7acd970041f3a8b3ad5bc3f2bf2079566d79ca5af33986c2cb23d2ab1f980a1"
     },
     {
       "path": "server/tedata-server.mjs",
-      "bytes": 145495,
-      "sha256": "74c92fc8e1ae41a8f6ffa7399ae0f7769235ce2cd5bd420b71b5ebe14a9d0037"
+      "bytes": 146080,
+      "sha256": "d2ed50da78050362506a0390a2431c523fab1ff920dfd50b403ea85d5e10fc9b"
     },
     {
       "path": "server/tedata-watch.mjs",
@@ -249,13 +144,13 @@
     },
     {
       "path": "test/release.test.mjs",
-      "bytes": 17806,
-      "sha256": "b55d1a459535145424426d2e8e954a1190548ee16d15675079ceab7f6b1c96e0"
+      "bytes": 19384,
+      "sha256": "f0e4fa9008d67b5f7392262a66fd3223e8af2a0cbb9ebe86c63ed041dab38d56"
     },
     {
       "path": "test/server.test.mjs",
-      "bytes": 25676,
-      "sha256": "942db702c8a96ca985ef83bb64b96680d1cefe76b332feff430c795ba70229aa"
+      "bytes": 26463,
+      "sha256": "a371b2dcb7d391130059635af9798363be8e0c1ba4195510c5ef9661bf901863"
     },
     {
       "path": "test/verify.test.mjs",
