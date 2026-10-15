@@ -60,3 +60,10 @@ The exact Windows TrustedInstaller service SID `S-1-5-80-956008885-3418522649-18
 Authored file-right masks use explicit numeric SDDL and assert the parsed raw ACE mask before testing policy. In particular FILE_DELETE_CHILD is0x00000040; directory-service mnemonic DC is not used as a file-right assertion. The real filesystem fixture tests both DELETE_CHILD and DELETE.
 
 The Codex entry requires a fully qualified ordinary local drive workspace on Windows; root-relative, drive-relative, UNC/device and stream spellings refuse before a filesystem lookup. Follow the native installer/private-folder requirements before selecting that workspace. The separate Codex guide records its Linux host proof; this Windows entry still needs final native/ordinary-user and owner host acceptance.
+
+The installer verifies a fixed local NTFS volume through one retained root
+handle. Its exact DOS name and complete native physical-volume root must
+agree; mapped or substituted directory roots refuse. This avoids relying on
+a drive-map query unavailable to some restricted ordinary-user tokens. The
+current candidate still requires measured native installer, ACL, alias and
+lifetime acceptance; a portable policy test is not Windows qualification.
