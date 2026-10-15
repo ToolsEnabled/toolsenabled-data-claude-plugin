@@ -1,7 +1,7 @@
 {
   "plugin": "toolsenabled-data",
   "version": "0.8.10",
-  "sourceCommit": "dc01ab0f530ae36260c1a595915721941db2b2ff",
+  "sourceCommit": "9a33773340ba200dc48b074be9f7e7f88bb34918",
   "sourceKind": "public-payload",
   "payloadBaseCommit": "7c6c53d985f718147c264dbddbd2977af0539095",
   "bundledSourceCommit": "4f61abcf3eeb9b7532e7bfe84a49a46ab6bf928a",
@@ -34,8 +34,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 11498,
-      "sha256": "c128411a318966efa02ceb7fff2e9988d8212f764a5e77f4a55518eab66367c5"
+      "bytes": 11872,
+      "sha256": "bf225d4d51ee9c8208d263d0109e163a520b3e7f0fbc54fedbdda4c2e9a8499c"
     },
     {
       "path": "LICENSE",
@@ -49,8 +49,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 22681,
-      "sha256": "cd8732dd9efa4a9666157a0e4d650494ff27e48c63966560ccf008dba47e8a7d"
+      "bytes": 23115,
+      "sha256": "7464f00e1a983ebab641d61606d555e93b63eda4c16f36ae731d80971b8c4aed"
     },
     {
       "path": "SECURITY.md",
@@ -79,8 +79,8 @@
     },
     {
       "path": "docs/WINDOWS.md",
-      "bytes": 6255,
-      "sha256": "b299e3016b2ab09ebe410a83081f040985883367327fcf5c7935db187489bc84"
+      "bytes": 7183,
+      "sha256": "871a5fa44931c24b44cb7d70e11b90decc382c75a158fff55294e801f704fdc0"
     },
     {
       "path": "examples/sample.csv",
@@ -94,8 +94,8 @@
     },
     {
       "path": "install.ps1",
-      "bytes": 9663,
-      "sha256": "b9f5feb415dd332838c47b45694e66aa2fe33b75ef75dbccaa1861761b9ec970"
+      "bytes": 10178,
+      "sha256": "10c587181362177f5d93b126953339808f773d2d4614bc68b71f351bf5e4ee9d"
     },
     {
       "path": "panel/panel-01-tedata.html",
@@ -123,6 +123,11 @@
       "sha256": "00aea77def4c1c0fbb3d31a54a3632ced0839ddf1f5967a3036807cab49dce10"
     },
     {
+      "path": "server/tedata-monitor.ps1",
+      "bytes": 855,
+      "sha256": "a4c957ab6e23200e7c287edb94fafe1cc5315ceb78ff60dddba367dacae434b6"
+    },
+    {
       "path": "server/tedata-server-01-tedata.mjs",
       "bytes": 2449,
       "sha256": "caa371b68a2cb21904f8b68186a9cd881516abe3e7fbb4c702938589378d4b20"
@@ -134,8 +139,8 @@
     },
     {
       "path": "server/tedata-server-03-tedata.mjs",
-      "bytes": 207852,
-      "sha256": "25eceb1e5e4cbdc67c6a95792d86a6f4775a78a244ce2c08e7aa147363eae555"
+      "bytes": 208039,
+      "sha256": "c8cfd1f7058b1c7bd82d95685b224d955101d5debb60bf3eabb8f7b595c521bf"
     },
     {
       "path": "server/tedata-server-04-vendor-vega.mjs",
@@ -153,6 +158,11 @@
       "sha256": "7b0acf3a78b5bd8eba14e682f8749f188f52d9af6c361ed4d9f4e58623690ac7"
     },
     {
+      "path": "server/windows-monitor-job.cs",
+      "bytes": 1875,
+      "sha256": "fb7666819346bd6e1230be84ac6fa1b4e968a5d5e1e9d693126cc443cc6965ac"
+    },
+    {
       "path": "skills/tedata/SKILL.md",
       "bytes": 31243,
       "sha256": "ce82d87f5555bbfd9e9b79f1720297cecfe376d48b54c7a1b0241671b2650370"
@@ -164,8 +174,8 @@
     },
     {
       "path": "test/release.test.mjs",
-      "bytes": 22159,
-      "sha256": "d216e6d3930444a0f51bbefe67491c1e0207496a09bb217da59f9172f7fbdec3"
+      "bytes": 22361,
+      "sha256": "7010e29341f288cd1dfad2927b107d91bac05c49f9149a7f3906d1107b0f594e"
     },
     {
       "path": "test/server.test.mjs",
@@ -174,8 +184,8 @@
     },
     {
       "path": "test/verify.test.mjs",
-      "bytes": 4543,
-      "sha256": "c89596d0d64dfc3b485a9b237f25461d211d613d055db2f3e3e0847aae38ac5f"
+      "bytes": 5215,
+      "sha256": "ee8405704b071aa4b513b8ac00dc6b569c9d4d86c880bf3025078c92f6448422"
     },
     {
       "path": "test/windows-install.test.ps1",
@@ -183,9 +193,24 @@
       "sha256": "be287371ec1b8ae853ee2d5df0107971e78ecc32f9e73ba19a9fa3ff956e6186"
     },
     {
+      "path": "test/windows-monitor-command.mjs",
+      "bytes": 148,
+      "sha256": "71081f774efc390fa441637f60e064af59f4446165db84a7e60f5cabeb743057"
+    },
+    {
+      "path": "test/windows-monitor-lifetime.test.ps1",
+      "bytes": 5072,
+      "sha256": "59e2687b4a9e16ab811f7a91e365424a365cdc7521299be19d6a9fc47386de0b"
+    },
+    {
+      "path": "test/windows-path.test.ps1",
+      "bytes": 1014,
+      "sha256": "d8bdb0c32a5df82cbefeef4d3c8afc1b3f4dc02c7d1596f216fba38afeafc11d"
+    },
+    {
       "path": "test/windows.test.mjs",
-      "bytes": 2810,
-      "sha256": "e7cc515821ab1dee433c4ea10f1fd66e1610fb463941182e046e161dff97b113"
+      "bytes": 4357,
+      "sha256": "0d403a2199d859126fceb87b8b0587c42abb683a14c2ac28ee9930c0862dab95"
     },
     {
       "path": "tools/build-release.mjs",
@@ -206,6 +231,11 @@
       "path": "tools/verify-release.mjs",
       "bytes": 2789,
       "sha256": "eebeaa9430f2da880e8eddd6ddd17ec5e05b9996c27dae9c10818ab2af797fa0"
+    },
+    {
+      "path": "tools/windows-volume.cs",
+      "bytes": 1350,
+      "sha256": "33b411d88970ace1164d2dbf775b6e4febe2aa495692933dc3e293f1ff12d5b5"
     },
     {
       "path": "worker/data_worker.py",
