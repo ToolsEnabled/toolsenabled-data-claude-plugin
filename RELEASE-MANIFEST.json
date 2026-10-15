@@ -1,7 +1,7 @@
 {
   "plugin": "toolsenabled-data",
   "version": "0.8.10",
-  "sourceCommit": "69671a7537e99a2505f0dfa66a42c80e00311b7f",
+  "sourceCommit": "e19f23af631b8079e9c449e3be201f6f92eaf4c4",
   "sourceKind": "public-payload",
   "payloadBaseCommit": "7c6c53d985f718147c264dbddbd2977af0539095",
   "bundledSourceCommit": "4f61abcf3eeb9b7532e7bfe84a49a46ab6bf928a",
@@ -224,8 +224,8 @@
     },
     {
       "path": "test/windows-filesystem.test.ps1",
-      "bytes": 3622,
-      "sha256": "208cb6e990dd6a23a3555b2f8a9fc9c7c95dd3691a7af586a5296ba03dcb48e3"
+      "bytes": 4193,
+      "sha256": "6b8fdfb4478efc8789d8831b0428e6bdd02a5ffa090c4df5f208f0d839179e30"
     },
     {
       "path": "test/windows-install.test.ps1",
