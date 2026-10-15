@@ -2,6 +2,8 @@
 
 ## 0.8.10 — native Windows candidate (unpublished)
 
+- Accept the exact measured Windows TrustedInstaller service SID only as an existing ancestor owner. Keep outside writer grants and non-current private owners refused; add authored owner-versus-writer regression cases.
+
 - Extend native acceptance with real NTFS/ACL/junction checks and Monitor startup-cancellation/job-quiescence cases; all remain unqualified until measured under elevated and ordinary-user tokens.
 
 - Follow-up: retain a native Windows Monitor lifetime job before Node starts; use a fixed absolute PowerShell entry and verify normal completion/abrupt wrapper death with an owned fixture. Native proof remains pending.

@@ -42,7 +42,7 @@ test('native installer refuses foreign owners and dangerous ancestor ACLs', {ski
  const powershell = join(process.env.SystemRoot || 'C:\\Windows', 'System32', 'WindowsPowerShell', 'v1.0', 'powershell.exe');
  const result = spawnSync(powershell, ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', fileURLToPath(new URL('./windows-install.test.ps1', import.meta.url))], {encoding: 'utf8', timeout: 10000});
  assert.equal(result.status, 0, result.error?.message || result.stderr);
- assert.match(result.stdout, /WINDOWS_INSTALL_ACL_CASES_PASS 10/);
+ assert.match(result.stdout, /WINDOWS_INSTALL_ACL_CASES_PASS 13/);
 });
 
 test('installer rejects ambiguous raw Windows spelling before normalization',{skip:process.platform!=='win32'?'native PowerShell path fixture':false},()=>{
