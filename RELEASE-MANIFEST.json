@@ -1,7 +1,7 @@
 {
   "plugin": "toolsenabled-data",
   "version": "0.8.10",
-  "sourceCommit": "3f1208cda11a6559127a14fe86b568bf75bdcbb1",
+  "sourceCommit": "dc01ab0f530ae36260c1a595915721941db2b2ff",
   "sourceKind": "public-payload",
   "payloadBaseCommit": "7c6c53d985f718147c264dbddbd2977af0539095",
   "bundledSourceCommit": "4f61abcf3eeb9b7532e7bfe84a49a46ab6bf928a",
@@ -34,8 +34,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 11313,
-      "sha256": "fa279855a62bf6973d2d08da447715f0c62bfa6619b2b775bea906e87d805ef7"
+      "bytes": 11498,
+      "sha256": "c128411a318966efa02ceb7fff2e9988d8212f764a5e77f4a55518eab66367c5"
     },
     {
       "path": "LICENSE",
@@ -79,8 +79,8 @@
     },
     {
       "path": "docs/WINDOWS.md",
-      "bytes": 5992,
-      "sha256": "36b9db8634032eb2c70f17cf5f38879e4bce4cb48b0319a777cbe5f693813b0c"
+      "bytes": 6255,
+      "sha256": "b299e3016b2ab09ebe410a83081f040985883367327fcf5c7935db187489bc84"
     },
     {
       "path": "examples/sample.csv",
@@ -94,8 +94,8 @@
     },
     {
       "path": "install.ps1",
-      "bytes": 9006,
-      "sha256": "3d9384f4523b3b8bbb666433eee804ac3571a57e5e5a2d79e246b97ded60af22"
+      "bytes": 9663,
+      "sha256": "b9f5feb415dd332838c47b45694e66aa2fe33b75ef75dbccaa1861761b9ec970"
     },
     {
       "path": "panel/panel-01-tedata.html",
@@ -178,9 +178,14 @@
       "sha256": "c89596d0d64dfc3b485a9b237f25461d211d613d055db2f3e3e0847aae38ac5f"
     },
     {
+      "path": "test/windows-install.test.ps1",
+      "bytes": 2656,
+      "sha256": "be287371ec1b8ae853ee2d5df0107971e78ecc32f9e73ba19a9fa3ff956e6186"
+    },
+    {
       "path": "test/windows.test.mjs",
-      "bytes": 2121,
-      "sha256": "8a91e635ec7fe405e669bddd82573c0aa7d648670a81373ba7a4f44192c42c81"
+      "bytes": 2810,
+      "sha256": "e7cc515821ab1dee433c4ea10f1fd66e1610fb463941182e046e161dff97b113"
     },
     {
       "path": "tools/build-release.mjs",
