@@ -1,7 +1,7 @@
 {
   "plugin": "toolsenabled-data",
   "version": "0.8.10",
-  "sourceCommit": "e5f938ce4c60a209d11d0f019839cd6edc45edb8",
+  "sourceCommit": "350f7719a8daeafd5f56fe1099b75d95883d4e94",
   "sourceKind": "public-payload",
   "payloadBaseCommit": "7c6c53d985f718147c264dbddbd2977af0539095",
   "bundledSourceCommit": "4f61abcf3eeb9b7532e7bfe84a49a46ab6bf928a",
@@ -44,8 +44,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 12522,
-      "sha256": "b49ae4aa1ebc1011bd0cbfd701b215dee438ff7d692b439263c7f7056790f1d8"
+      "bytes": 12737,
+      "sha256": "668b4da0ed3b82fd6523b1cd275b84db679c84000e7ed545529e9c9b007cb505"
     },
     {
       "path": "LICENSE",
@@ -99,8 +99,8 @@
     },
     {
       "path": "docs/WINDOWS.md",
-      "bytes": 9594,
-      "sha256": "2ac95027ed67699802aac59548127f48930a25165665f04e3aeac09e6effee68"
+      "bytes": 9857,
+      "sha256": "a64d3217d45d1834874219315597b318a46428f928175dd50e4b2c4768c1a1ec"
     },
     {
       "path": "examples/sample.csv",
@@ -154,8 +154,8 @@
     },
     {
       "path": "server/tedata-monitor.ps1",
-      "bytes": 855,
-      "sha256": "a4c957ab6e23200e7c287edb94fafe1cc5315ceb78ff60dddba367dacae434b6"
+      "bytes": 927,
+      "sha256": "66080f357898a99c0c06a314651b2ddcfecffa7a6bfafb167ef59cfe8ae927f8"
     },
     {
       "path": "server/tedata-server-01-tedata.mjs",
@@ -169,8 +169,8 @@
     },
     {
       "path": "server/tedata-server-03-tedata.mjs",
-      "bytes": 208039,
-      "sha256": "c8cfd1f7058b1c7bd82d95685b224d955101d5debb60bf3eabb8f7b595c521bf"
+      "bytes": 208383,
+      "sha256": "f6bdd154b8d98d72304111dabd9d58427e0c94233ec9506e8fc7fd73e24d640b"
     },
     {
       "path": "server/tedata-server-04-vendor-vega.mjs",
@@ -189,8 +189,8 @@
     },
     {
       "path": "server/windows-monitor-job.cs",
-      "bytes": 1875,
-      "sha256": "fb7666819346bd6e1230be84ac6fa1b4e968a5d5e1e9d693126cc443cc6965ac"
+      "bytes": 3302,
+      "sha256": "9c400cc089f62510dda38f87cb40715c4ad4b2583e23578b51876287bdfdc23d"
     },
     {
       "path": "skills/tedata/SKILL.md",
@@ -249,8 +249,8 @@
     },
     {
       "path": "test/windows.test.mjs",
-      "bytes": 4934,
-      "sha256": "8a22718c7ffe369c4be1f3fdbcdc0e62d5fa30d34a1b8f993480a628b800d16a"
+      "bytes": 8195,
+      "sha256": "748ee15d8897db29bfadff99c48b22e0a7c99df4250cef5b13eaa8394ee56f1e"
     },
     {
       "path": "tools/build-release.mjs",
