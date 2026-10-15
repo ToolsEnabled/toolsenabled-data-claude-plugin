@@ -2,6 +2,8 @@
 
 ## 0.8.10 — native Windows candidate (unpublished)
 
+- Extend native acceptance with real NTFS/ACL/junction checks and Monitor startup-cancellation/job-quiescence cases; all remain unqualified until measured under elevated and ordinary-user tokens.
+
 - Follow-up: retain a native Windows Monitor lifetime job before Node starts; use a fixed absolute PowerShell entry and verify normal completion/abrupt wrapper death with an owned fixture. Native proof remains pending.
 
 - Follow-up: reject ambiguous raw installer paths and non-fixed/nonlocal/non-NTFS drive aliases before writes; native volume acceptance remains pending.

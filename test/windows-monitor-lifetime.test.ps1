@@ -7,15 +7,18 @@ $ownerJob=[DataMonitorJob]::Retain()
 Add-Type @'
 using System;using System.Runtime.InteropServices;
 public static class MonitorLifetimeProbe {
+ [StructLayout(LayoutKind.Sequential)] struct Accounting {public long a,b,c,d;public uint faults,total,active,terminated;}
+ [DllImport("kernel32.dll",SetLastError=true)] static extern bool QueryInformationJobObject(IntPtr job,int kind,out Accounting info,uint bytes,IntPtr returned);
  [DllImport("kernel32.dll",SetLastError=true)] public static extern bool IsProcessInJob(IntPtr process,IntPtr job,out bool member);
  [DllImport("kernel32.dll")] public static extern uint WaitForSingleObject(IntPtr handle,uint milliseconds);
  [DllImport("kernel32.dll",SetLastError=true)] public static extern bool TerminateProcess(IntPtr process,uint exitCode);
+ public static uint Active(IntPtr job){Accounting info;if(!QueryInformationJobObject(job,1,out info,(uint)Marshal.SizeOf(typeof(Accounting)),IntPtr.Zero))throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());return info.active;}
 }
 '@
-$root=Join-Path ([IO.Path]::GetTempPath()) ("tedata monitor's résumé "+[guid]::NewGuid().ToString('N'))
+$root=Join-Path ([IO.Path]::GetTempPath()) ("tedata monitor's r$([char]0xe9)sum$([char]0xe9) "+[guid]::NewGuid().ToString('N'))
 [IO.Directory]::CreateDirectory($root)|Out-Null
 $results=@()
-foreach($case in @('completion-after-stdin-EOF','abrupt-wrapper-death')){
+foreach($case in @('completion-after-stdin-EOF','abrupt-wrapper-death','startup-cancel-50','startup-cancel-500','startup-cancel-1000')){
  $folder=Join-Path $root $case;[IO.Directory]::CreateDirectory($folder)|Out-Null
  foreach($name in @('tedata-monitor.ps1','windows-monitor-job.cs')){Copy-Item -LiteralPath (Join-Path $sourceRoot ('server\'+$name)) -Destination (Join-Path $folder $name)}
  $run=Join-Path $folder '.tedata\collections\project\collection\runs\run-native';[IO.Directory]::CreateDirectory($run)|Out-Null
@@ -37,6 +40,17 @@ foreach($case in @('completion-after-stdin-EOF','abrupt-wrapper-death')){
   $wrapper=[Diagnostics.Process]::Start($start)
   $stdout=$wrapper.StandardOutput.ReadToEndAsync();$stderr=$wrapper.StandardError.ReadToEndAsync()
   $wrapper.StandardInput.Close() # A monitor can start with stdin already at EOF; that is not cancellation.
+  if($case.StartsWith('startup-cancel-')){
+   Start-Sleep -Milliseconds ([int]$case.Substring('startup-cancel-'.Length))
+   if($wrapper.HasExited){throw 'Running synthetic watch ended before startup cancellation'}
+   $wrapper.Kill();if(-not$wrapper.WaitForExit(10000)){throw 'Startup-cancelled wrapper did not exit'}
+   $until=[DateTime]::UtcNow.AddSeconds(10)
+   while([MonitorLifetimeProbe]::Active($ownerJob)-ne1-and[DateTime]::UtcNow-lt$until){Start-Sleep -Milliseconds 25}
+   if([MonitorLifetimeProbe]::Active($ownerJob)-ne1){throw 'A startup-cancelled wrapper left a process in the fixture job'}
+   [IO.File]::WriteAllText((Join-Path $folder 'stdout.log'),$stdout.GetAwaiter().GetResult());[IO.File]::WriteAllText((Join-Path $folder 'stderr.log'),$stderr.GetAwaiter().GetResult())
+   $results+=@{case=$case;pass=$true;wrapperExit=$wrapper.ExitCode;watcherStarted=[IO.File]::Exists((Join-Path $folder 'watcher.json'));ownedJobActive=1}
+   continue
+  }
   $receipt=Join-Path $folder 'watcher.json';$until=[DateTime]::UtcNow.AddSeconds(12)
   while(-not [IO.File]::Exists($receipt)-and[DateTime]::UtcNow-lt$until-and-not$wrapper.HasExited){Start-Sleep -Milliseconds 25}
   if(-not[IO.File]::Exists($receipt)){throw 'Watcher did not start'}
@@ -50,6 +64,7 @@ foreach($case in @('completion-after-stdin-EOF','abrupt-wrapper-death')){
   if(-not$wrapper.WaitForExit(10000)){throw 'Wrapper did not exit'}
   if([MonitorLifetimeProbe]::WaitForSingleObject($handle,5000)-ne0){throw 'Watcher survived its wrapper'}
   if($case-eq'completion-after-stdin-EOF'-and$wrapper.ExitCode-ne0){throw 'Completed wrapper returned failure'}
+  if([MonitorLifetimeProbe]::Active($ownerJob)-ne1){throw 'Completed native Monitor job is not quiescent'}
   [IO.File]::WriteAllText((Join-Path $folder 'stdout.log'),$stdout.GetAwaiter().GetResult())
   [IO.File]::WriteAllText((Join-Path $folder 'stderr.log'),$stderr.GetAwaiter().GetResult())
   $results+=@{case=$case;pass=$true;wrapperExit=$wrapper.ExitCode;watcherPid=$watchPid}

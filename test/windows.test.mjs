@@ -52,6 +52,11 @@ test('installer rejects ambiguous raw Windows spelling before normalization',{sk
 });
 test('native Monitor retains its watcher until completion and ends it on wrapper death',{skip:process.platform!=='win32'?'native Job Object lifetime fixture':false},()=>{
  const powershell=join(process.env.SystemRoot||'C:\\Windows','System32/WindowsPowerShell/v1.0/powershell.exe');
- const r=spawnSync(powershell,['-NoProfile','-ExecutionPolicy','Bypass','-File',fileURLToPath(new URL('./windows-monitor-lifetime.test.ps1',import.meta.url)),'-NodeExecutable',process.execPath],{encoding:'utf8',timeout:45000});
- assert.equal(r.status,0,r.stdout+r.stderr);assert.match(r.stdout,/WINDOWS_MONITOR_LIFETIME_PASS 2/);
+ const r=spawnSync(powershell,['-NoProfile','-ExecutionPolicy','Bypass','-File',fileURLToPath(new URL('./windows-monitor-lifetime.test.ps1',import.meta.url)),'-NodeExecutable',process.execPath],{encoding:'utf8',timeout:90000});
+ assert.equal(r.status,0,r.stdout+r.stderr);assert.match(r.stdout,/WINDOWS_MONITOR_LIFETIME_PASS 5/);
+});
+test('native filesystem validates the volume and refuses unsafe real ACLs and junctions',{skip:process.platform!=='win32'?'native NTFS/security API fixture':false},()=>{
+ const powershell=join(process.env.SystemRoot||'C:\\Windows','System32/WindowsPowerShell/v1.0/powershell.exe');
+ const r=spawnSync(powershell,['-NoProfile','-ExecutionPolicy','Bypass','-File',fileURLToPath(new URL('./windows-filesystem.test.ps1',import.meta.url))],{encoding:'utf8',timeout:30000});
+ assert.equal(r.status,0,r.stdout+r.stderr);assert.match(r.stdout,/NATIVE_INSTALL_FILESYSTEM_PASS 10/);
 });
