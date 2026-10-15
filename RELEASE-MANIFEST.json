@@ -1,7 +1,7 @@
 {
   "plugin": "toolsenabled-data",
   "version": "0.8.10",
-  "sourceCommit": "3c5d127f42e3f893d106558c35671e92bc633cc3",
+  "sourceCommit": "c268c971891dccb20caa22126b9f2c92e6c47bd3",
   "sourceKind": "public-payload",
   "payloadBaseCommit": "7c6c53d985f718147c264dbddbd2977af0539095",
   "bundledSourceCommit": "4f61abcf3eeb9b7532e7bfe84a49a46ab6bf928a",
@@ -34,8 +34,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 12069,
-      "sha256": "7c5cf3d6c97ea2ea520c535092f6598482a2fc90b648b104bdd8eddacc5ab836"
+      "bytes": 12289,
+      "sha256": "55573146d8e78b6bb04c199f6bc518745c1ebf103a98169bc6a1c433132f2a43"
     },
     {
       "path": "LICENSE",
@@ -79,8 +79,8 @@
     },
     {
       "path": "docs/WINDOWS.md",
-      "bytes": 7945,
-      "sha256": "3b52a382f06709f39730d833a4cd03390ba6fc8a2bc8881a6a0fa39a1aebafbd"
+      "bytes": 8306,
+      "sha256": "5e83bd8300f8d646268e0ab4c88eb9da3eb958c7dd72f45521048cc1bf058cf2"
     },
     {
       "path": "examples/sample.csv",
@@ -94,8 +94,8 @@
     },
     {
       "path": "install.ps1",
-      "bytes": 10208,
-      "sha256": "4881448a16c70ae34ce5ab8f5fa9735b76fbb8aabbc4d802e459eda60bed6011"
+      "bytes": 10450,
+      "sha256": "79ab07a2638249e3a3bac3f4a95e2bf18513912a89bf8eb1b3d58759f5c45976"
     },
     {
       "path": "panel/panel-01-tedata.html",
@@ -189,13 +189,13 @@
     },
     {
       "path": "test/windows-filesystem.test.ps1",
-      "bytes": 3480,
-      "sha256": "9a799e5c7a3b95637322a5cca12371c8891934e7d5cc28ee8dd19fc59f0ae7d3"
+      "bytes": 3576,
+      "sha256": "980285198ae7513b3e703d5882a7f213e0f6dc6efae2ebcec38c2b24d105e066"
     },
     {
       "path": "test/windows-install.test.ps1",
-      "bytes": 2656,
-      "sha256": "be287371ec1b8ae853ee2d5df0107971e78ecc32f9e73ba19a9fa3ff956e6186"
+      "bytes": 3092,
+      "sha256": "cb202055e32c2f5f9cb2a3a31df13146ca74fac56f799ba778ff53a269856f3e"
     },
     {
       "path": "test/windows-monitor-command.mjs",
@@ -215,7 +215,7 @@
     {
       "path": "test/windows.test.mjs",
       "bytes": 4934,
-      "sha256": "7f34054e1b45cd845dace0eebc85a6c827a6464e94ca9f0997478b2464d6e12b"
+      "sha256": "5aab14b7f697bc5e1429e78af2b0114617e1f7636695742e86838453c3d73b42"
     },
     {
       "path": "tools/build-release.mjs",
