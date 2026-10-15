@@ -1,7 +1,7 @@
 {
   "plugin": "toolsenabled-data",
   "version": "0.8.10",
-  "sourceCommit": "8cc8548337b82e98cca197048d2d1712b08f6c13",
+  "sourceCommit": "1116a0b90817728c2a6623308939a2dfa8530465",
   "sourceKind": "public-payload",
   "payloadBaseCommit": "7c6c53d985f718147c264dbddbd2977af0539095",
   "bundledSourceCommit": "4f61abcf3eeb9b7532e7bfe84a49a46ab6bf928a",
@@ -24,8 +24,8 @@
     },
     {
       "path": ".codex-plugin/mcp.json",
-      "bytes": 165,
-      "sha256": "a39c56769fde7e96768bb1fbb9326594eea9f85945a13165706718cb275f30cf"
+      "bytes": 294,
+      "sha256": "609bd3faa186c2f0a98f6bf525a8666c37e6006682c91496d8260af5c2cf91f6"
     },
     {
       "path": ".codex-plugin/plugin.json",
@@ -54,8 +54,8 @@
     },
     {
       "path": "PRIVACY.md",
-      "bytes": 3933,
-      "sha256": "b5c92f6a117e06dd14499fbd728ff9d4aa52756281819951b6a9d3bc41cd0135"
+      "bytes": 4355,
+      "sha256": "fd4678451117ea5d05902815e484caf8acbd060d1088bad7d1d65d213ed3fac1"
     },
     {
       "path": "README.md",
@@ -74,8 +74,8 @@
     },
     {
       "path": "codex-skills/tedata/SKILL.md",
-      "bytes": 2911,
-      "sha256": "2d500feb620367c294e15891648061ab7d85a1039b3e935ba9f753d9d482c7ef"
+      "bytes": 3010,
+      "sha256": "9fc19f07e287c6b0998e159604ab200c452de0683a0863150445729d86149207"
     },
     {
       "path": "commands/export.md",
@@ -94,8 +94,8 @@
     },
     {
       "path": "docs/CODEX.md",
-      "bytes": 2422,
-      "sha256": "f56e9c12b199614daf274729434d66a2f5757d6df804b6b1414417168ed6571d"
+      "bytes": 2690,
+      "sha256": "ee1ce33fa86eaaa6c177940c0fd8cdeff5418fc0f2652cc710a90c5ef8afffdb"
     },
     {
       "path": "docs/WINDOWS.md",
@@ -141,6 +141,11 @@
       "path": "panel/panel-05-tedata.html",
       "bytes": 181471,
       "sha256": "00aea77def4c1c0fbb3d31a54a3632ced0839ddf1f5967a3036807cab49dce10"
+    },
+    {
+      "path": "server/tedata-codex.mjs",
+      "bytes": 1102,
+      "sha256": "5a94ff78093d4d0f29ed3ac42d3cb96c84de00347a88cf87d6bda1434a2f3934"
     },
     {
       "path": "server/tedata-monitor.ps1",
@@ -189,8 +194,8 @@
     },
     {
       "path": "test/codex.test.mjs",
-      "bytes": 3703,
-      "sha256": "1c329e808f1cd217fad35ef18f75c0e01ada382cc73bee61e21ec1d2fbe3aa5b"
+      "bytes": 4411,
+      "sha256": "772d7b84c0a3817a96c62ba19be3204fad41123fe5a689379ab0718e9626bca0"
     },
     {
       "path": "test/duckdb.test.mjs",
