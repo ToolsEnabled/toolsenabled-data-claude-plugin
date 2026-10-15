@@ -1,7 +1,7 @@
 {
   "plugin": "toolsenabled-data",
   "version": "0.8.10",
-  "sourceCommit": "d557000a9e681855b7be9c91d3f7e5d3793ead31",
+  "sourceCommit": "182a0915f1a3d38ff5b97ff921da920beddeba7c",
   "sourceKind": "public-payload",
   "payloadBaseCommit": "7c6c53d985f718147c264dbddbd2977af0539095",
   "bundledSourceCommit": "4f61abcf3eeb9b7532e7bfe84a49a46ab6bf928a",
@@ -244,8 +244,8 @@
     },
     {
       "path": "test/windows-path.test.ps1",
-      "bytes": 1014,
-      "sha256": "d8bdb0c32a5df82cbefeef4d3c8afc1b3f4dc02c7d1596f216fba38afeafc11d"
+      "bytes": 1017,
+      "sha256": "205bc7e9e8114b97d1489044b701fe0c4ab3ed71254ab121cc2ee35b8e459b73"
     },
     {
       "path": "test/windows.test.mjs",
