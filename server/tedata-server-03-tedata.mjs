@@ -2223,8 +2223,9 @@ async function setup({ force = !1 } = {}) {
 function monitorCommand(script, workspace, runId, platform = process.platform, node = process.execPath) {
   let argv = [node, script, "--workspace", workspace, "--run", runId];
   if (platform === "win32") {
-    let command = "& " + argv.map((value) => "'" + String(value).replaceAll("'", "''") + "'").join(" ");
-    return "powershell.exe -NoProfile -NonInteractive -EncodedCommand " + Buffer.from(command, "utf16le").toString("base64");
+    let guardian = String(script).replace(/[^\\/]+$/, "tedata-monitor.ps1");
+    let command = "& " + [guardian, node, script, workspace, runId].map((value) => "'" + String(value).replaceAll("'", "''") + "'").join(" ");
+    return "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -EncodedCommand " + Buffer.from(command, "utf16le").toString("base64");
   }
   return argv.map((value) => "'" + String(value).replaceAll("'", "'\\''") + "'").join(" ");
 }

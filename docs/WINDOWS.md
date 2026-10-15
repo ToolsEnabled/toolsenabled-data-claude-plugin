@@ -48,3 +48,7 @@ $env:TEDATA_PYTHON = 'C:\absolute\Data Runtime\python\Scripts\python.exe'
 ```
 
 For the full test suite, expand the `test\*.test.mjs` paths with PowerShell (`Get-ChildItem`) and pass those full paths to `node --test --test-concurrency=1`; Node22.14 does not expand that Windows wildcard itself. The two DuckDB tests must run rather than skip. Unit tests create their own temporary homes and workspaces and never start a Claude agent. File-symlink fixture tests require Windows symlink privilege; ordinary-user product proof uses the hard-link fallback and separate junction fixtures instead of changing machine policy.
+
+Installer path hardening follow-up: raw spelling is checked before normalization; dot/dotdot components, streams, reserved devices and trailing dots/spaces refuse. Native volume probing requires a fixed local NTFS hard-disk volume and rejects mapped/SUBST drive aliases. This new guard still needs exact-candidate Windows acceptance; local raw-string cases do not prove the native volume API.
+
+The Windows Monitor command uses the fixed C:\Windows PowerShell path and a shipped guardian that joins a KILL_ON_JOB_CLOSE Job Object before starting Node. This candidate supports Windows installed at C:\Windows. Wrapper termination closes the retained job; normal stdin EOF alone does not cancel a running watch, because monitors may start with stdin closed. Native cancellation/normal-completion and nested-job behavior remain unproved until `test/windows-monitor-lifetime.test.ps1` passes under both elevated and limited tokens.

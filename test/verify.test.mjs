@@ -37,8 +37,8 @@ test('an unlisted file is refused',async()=>{
 test('unsafe manifest traversal is refused',async()=>{
  const {root,manifest}=await fixture();manifest.files[0].path='../outside';await writeFile(join(root,'RELEASE-MANIFEST.json'),JSON.stringify(manifest));const result=run(root);assert.equal(result.status,1);assert.match(result.stderr,/Invalid manifest path/);
 });
-test('listed symbolic link is refused even if target bytes match',async()=>{
- const {root,manifest}=await fixture();await symlink('sample.txt',join(root,'linked.txt'));manifest.files.push({...manifest.files[2],path:'linked.txt'});await writeFile(join(root,'RELEASE-MANIFEST.json'),JSON.stringify(manifest));const result=run(root);assert.equal(result.status,1);assert.match(result.stderr,/Symbolic link refused: linked.txt/);
+test('listed symbolic link is refused even if target bytes match',async(t)=>{
+ const {root,manifest}=await fixture();try{await symlink('sample.txt',join(root,'linked.txt'));}catch(error){if(process.platform==='win32'&&['EPERM','EACCES'].includes(error.code)){t.skip('File symlink creation privilege unavailable; junction refusal remains covered');return;}throw error;}manifest.files.push({...manifest.files[2],path:'linked.txt'});await writeFile(join(root,'RELEASE-MANIFEST.json'),JSON.stringify(manifest));const result=run(root);assert.equal(result.status,1);assert.match(result.stderr,/Symbolic link refused: linked.txt/);
 });
 test('duplicate entries cannot inflate the verified file count',async()=>{
  const {root,manifest}=await fixture();manifest.files.push(manifest.files[2]);await writeFile(join(root,'RELEASE-MANIFEST.json'),JSON.stringify(manifest));const result=run(root);assert.equal(result.status,1);assert.match(result.stderr,/Repeated manifest file/);
@@ -52,4 +52,10 @@ test('the one listing image in .claude-plugin verifies unlisted; a second image,
  await writeFile(join(root,'.claude-plugin','second.png'),'png bytes');const two=run(root);assert.equal(two.status,1);assert.match(two.stderr,/Only one listing image/);
  const {root:other}=await fixture();await mkdir(join(other,'images'));await writeFile(join(other,'images','listing.png'),'png bytes');
  const elsewhere=run(other);assert.equal(elsewhere.status,1);assert.match(elsewhere.stderr,/Unlisted or non-regular file: images\/listing.png/);
+});
+
+test('a linked directory is refused without reading its target payload',async()=>{
+ const {root,manifest}=await fixture();await symlink(root,join(root,'linked-dir'),process.platform==='win32'?'junction':'dir');
+ manifest.files.push({...manifest.files[2],path:'linked-dir/sample.txt'});await writeFile(join(root,'RELEASE-MANIFEST.json'),JSON.stringify(manifest));
+ const r=run(root);assert.equal(r.status,1);assert.match(r.stderr,/Symbolic link refused: linked-dir/);
 });

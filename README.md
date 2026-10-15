@@ -165,3 +165,5 @@ TE Data reads these environment variables from the environment you start Claude 
 ## Support
 
 support@toolsenabled.ai. See [PRIVACY.md](PRIVACY.md) for the privacy notice, [THIRD-PARTY-LICENSES.txt](THIRD-PARTY-LICENSES.txt) for bundled software licenses, and [the security policy](https://toolsenabled.ai/security/) for private vulnerability reporting.
+
+Windows candidate Monitor custody: the generated command starts the shipped `server/tedata-monitor.ps1` and `server/windows-monitor-job.cs` through the fixed C:\Windows PowerShell executable. It retains a native Job Object before starting the read-only Node watcher, so wrapper termination can end its descendants. Normal stdin EOF is not cancellation. Native lifetime and limited-token evidence remain pending; see docs/WINDOWS.md.
