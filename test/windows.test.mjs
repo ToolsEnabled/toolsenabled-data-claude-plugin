@@ -90,3 +90,16 @@ test('the actual native watcher runner passes literal argv through direct proces
  const r=spawnSync(portablePowerShell,['-NoLogo','-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-EncodedCommand',Buffer.from(code,'utf16le').toString('base64')],{encoding:'utf8',timeout:10000});
  assert.equal(r.status,0,r.error?.message||r.stderr);assert.deepEqual(JSON.parse(r.stdout.trim()),values);
 });
+test('the actual native watcher runner concurrently forwards exact raw stdout and stderr and closes stdin',{skip:!powerShellAvailable?'PowerShell/C# raw-stream seam; native Monitor lifetime proof remains required':false},async()=>{
+ const base=await mkdtemp(join(tmpdir(),'tedata-raw-'));const script=join(base,'raw.mjs');
+ // Both streams exceed a pipe buffer, include invalid UTF-8 and NUL, and must
+ // survive without line events, PowerShell recoding or sequential-drain deadlock.
+ const stdout=Buffer.concat([Buffer.from([0,255,194,13,162,10]),Buffer.from('stdout résumé 中文 🚀\r\n'),Buffer.alloc(131072,65)]);
+ const stderr=Buffer.concat([Buffer.from([254,0,128,13,10]),Buffer.from('stderr résumé 中文 🚀\n'),Buffer.alloc(131072,66)]);
+ await writeFile(script,`process.stdin.resume();process.stdin.once('end',()=>{process.stdout.write(Buffer.from('${stdout.toString('base64')}','base64'));process.stderr.write(Buffer.from('${stderr.toString('base64')}','base64'));process.exitCode=7;});\n`);
+ const source=fileURLToPath(new URL('../server/windows-monitor-job.cs',import.meta.url));
+ const code=`Add-Type -TypeDefinition ([IO.File]::ReadAllText(${psLiteral(source)}));if([Environment]::OSVersion.Platform-eq[PlatformID]::Win32NT){$null=[DataMonitorJob]::Retain()}else{[DataMonitorJob].GetField('retained',[Reflection.BindingFlags]'NonPublic,Static').SetValue($null,[IntPtr]1)};exit [DataMonitorJob]::Run(${psLiteral(process.execPath)},[string[]]@(${psLiteral(script)}))`;
+ const r=spawnSync(portablePowerShell,['-NoLogo','-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-EncodedCommand',Buffer.from(code,'utf16le').toString('base64')],{timeout:15000,maxBuffer:1024*1024});
+ assert.equal(r.status,7,r.error?.message||r.stderr.toString('utf8'));
+ assert.deepEqual(r.stdout,stdout);assert.deepEqual(r.stderr,stderr);
+});

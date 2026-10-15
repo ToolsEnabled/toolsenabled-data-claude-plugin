@@ -29,9 +29,13 @@ public static class DataMonitorJob {
     start.Arguments=string.Join(" ",arguments);start.UseShellExecute=false;start.CreateNoWindow=true;
     // Direct native process creation has no wildcard or shell command lookup.
     // The child inherits this process's retained Job; no extra shell is started.
+    start.RedirectStandardInput=true;start.RedirectStandardOutput=true;start.RedirectStandardError=true;
     using(var child=System.Diagnostics.Process.Start(start)){
       if(child==null)throw new InvalidOperationException("The watcher did not start.");
-      IntPtr identity=child.Handle;child.WaitForExit();return child.ExitCode;
+      IntPtr identity=child.Handle;child.StandardInput.Close();
+      var output=child.StandardOutput.BaseStream.CopyToAsync(Console.OpenStandardOutput());
+      var error=child.StandardError.BaseStream.CopyToAsync(Console.OpenStandardError());
+      child.WaitForExit();System.Threading.Tasks.Task.WaitAll(new[]{output,error});return child.ExitCode;
     }
   }
   public static IntPtr Retain() {
