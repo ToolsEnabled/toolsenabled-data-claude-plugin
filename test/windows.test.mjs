@@ -98,7 +98,10 @@ test('the actual native watcher runner concurrently forwards exact raw stdout an
  const stderr=Buffer.concat([Buffer.from([254,0,128,13,10]),Buffer.from('stderr résumé 中文 🚀\n'),Buffer.alloc(131072,66)]);
  await writeFile(script,`process.stdin.resume();process.stdin.once('end',()=>{process.stdout.write(Buffer.from('${stdout.toString('base64')}','base64'));process.stderr.write(Buffer.from('${stderr.toString('base64')}','base64'));process.exitCode=7;});\n`);
  const source=fileURLToPath(new URL('../server/windows-monitor-job.cs',import.meta.url));
- const code=`Add-Type -TypeDefinition ([IO.File]::ReadAllText(${psLiteral(source)}));if([Environment]::OSVersion.Platform-eq[PlatformID]::Win32NT){$null=[DataMonitorJob]::Retain()}else{[DataMonitorJob].GetField('retained',[Reflection.BindingFlags]'NonPublic,Static').SetValue($null,[IntPtr]1)};exit [DataMonitorJob]::Run(${psLiteral(process.execPath)},[string[]]@(${psLiteral(script)}))`;
+ // Cold Windows PowerShell emits its own module-preparation progress CLIXML
+ // for EncodedCommand. Silence only that test-wrapper stream; native stderr
+ // remains unfiltered and must still match every expected byte exactly.
+ const code=`$ProgressPreference='SilentlyContinue';Add-Type -TypeDefinition ([IO.File]::ReadAllText(${psLiteral(source)}));if([Environment]::OSVersion.Platform-eq[PlatformID]::Win32NT){$null=[DataMonitorJob]::Retain()}else{[DataMonitorJob].GetField('retained',[Reflection.BindingFlags]'NonPublic,Static').SetValue($null,[IntPtr]1)};exit [DataMonitorJob]::Run(${psLiteral(process.execPath)},[string[]]@(${psLiteral(script)}))`;
  const r=spawnSync(portablePowerShell,['-NoLogo','-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-EncodedCommand',Buffer.from(code,'utf16le').toString('base64')],{timeout:15000,maxBuffer:1024*1024});
  assert.equal(r.status,7,r.error?.message||r.stderr.toString('utf8'));
  assert.deepEqual(r.stdout,stdout);assert.deepEqual(r.stderr,stderr);
