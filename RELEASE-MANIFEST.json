@@ -13,11 +13,6 @@
       "sha256": "731510924641d6962e15ee44f75abad4759a0d285d1085a53233fe508d2fef3b"
     },
     {
-      "path": ".claude-plugin/icon.png",
-      "bytes": 24871,
-      "sha256": "7cc8d76e849b255fe15547c87ba3e9692c512bb0f019a156d347b3aa1ba3e8d7"
-    },
-    {
       "path": ".claude-plugin/marketplace.json",
       "bytes": 474,
       "sha256": "b612a743bdb499e8ed1b20451238cc5084900085a62697c1926ded11a774f6fe"
