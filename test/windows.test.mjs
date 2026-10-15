@@ -1,0 +1,37 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {mkdtemp, mkdir, writeFile} from 'node:fs/promises';
+import {join} from 'node:path';
+import {tmpdir} from 'node:os';
+import {spawnSync} from 'node:child_process';
+import {monitorCommand} from '../server/tedata-server-03-tedata.mjs';
+
+test('monitor commands preserve spaces, apostrophes, Unicode and shell metacharacters as literal arguments', async () => {
+ const base = await mkdtemp(join(tmpdir(), 'tedata-command-'));
+ const folder = join(base, "O'Brien & 音 []");
+ await mkdir(folder);
+ const script = join(folder, 'argv.mjs');
+ await writeFile(script, 'console.log(JSON.stringify(process.argv.slice(2)));\n');
+ const workspace = process.platform === 'win32' ? "C:\\Work\\O'Brien & 音 [1]" : "/Work/O'Brien & 音 [1]";
+ const run = "run-'& $(literal)";
+ const command = monitorCommand(script, workspace, run);
+ let result;
+ if (process.platform === 'win32') {
+  const prefix = 'powershell.exe -NoProfile -NonInteractive -EncodedCommand ';
+  assert.ok(command.startsWith(prefix));
+  const powershell = join(process.env.SystemRoot || 'C:\\Windows', 'System32', 'WindowsPowerShell', 'v1.0', 'powershell.exe');
+  result = spawnSync(powershell, ['-NoProfile', '-NonInteractive', '-EncodedCommand', command.slice(prefix.length)], {encoding: 'utf8', timeout: 10000});
+ } else {
+  result = spawnSync('/bin/sh', ['-c', command], {encoding: 'utf8', timeout: 10000});
+ }
+ assert.equal(result.status, 0, result.error?.message || result.stderr);
+ assert.deepEqual(JSON.parse(result.stdout.trim()), ['--workspace', workspace, '--run', run]);
+});
+
+test('Windows monitor command has only fixed switches and an encoded literal argv', () => {
+ const command = monitorCommand("C:\\TE\\watch.mjs", "C:\\O'Brien\\data & notes", 'run-1', 'win32', "C:\\Program Files\\nodejs\\node.exe");
+ assert.match(command, /^powershell\.exe -NoProfile -NonInteractive -EncodedCommand [A-Za-z0-9+/]+=*$/);
+ const decoded = Buffer.from(command.split(' ').at(-1), 'base64').toString('utf16le');
+ assert.match(decoded, /O''Brien/);
+ assert.doesNotMatch(decoded, /'\\''/);
+});

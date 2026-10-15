@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.8.10 — native Windows candidate (unpublished)
+
+- Added a ZIP and per-user PowerShell/cmd install route: verifies the public payload, creates new install/data/state folders with current-user and SYSTEM ACLs, leaves existing folders and MCP host settings unchanged, and offers an explicit DuckDB setup step.
+- Added an explicit `tools/setup-runtime.mjs --install|--status` helper that uses the same pinned setup path as the plugin and starts no MCP server or model.
+- Long-run Monitor commands use the current absolute Node executable. Windows uses an encoded PowerShell literal argument list, so spaces, apostrophes, Unicode and shell metacharacters in workspace paths are preserved. POSIX commands keep literal shell quoting.
+- Native Windows engineering validation and the outstanding ordinary-user/fresh-user checks are recorded in `docs/WINDOWS.md`; no Windows 11 claim is made. Linux behavior and the pinned DuckDB version remain unchanged.
+
+
 ## 0.8.9 — 2026-10-14
 
 - The bundled third-party libraries are in four files over 1 MiB again, which the plugin directory's validator does not read, and TE Data's own code stays in files of at most 256 KiB, which it reads in full. The validator timed out on every attempt to validate 0.8.8, which stored every file under 256 KiB and so gave it about 7 MB of text to read, most of it library code. Nothing the server or panel does changed:

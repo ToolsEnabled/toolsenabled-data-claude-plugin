@@ -41,6 +41,10 @@ Codex is not supported. This repository's Codex marketplace file, `.agents/plugi
 | "Make a copy of sample.csv without duplicate rows." | A new dataset of 28 rows (the 2 exact duplicate rows removed, the others in their original order) is saved under `.tedata/derived-data` and connected. `sample.csv` is unchanged. |
 | "Chart the daily high for each city and export a report." | A line chart with one line per city, 14 days each. The export folder holds `report.html` and the chart as SVG with its Vega-Lite spec and data; Claude gives you the path of `report.html`. |
 
+## Native Windows candidate
+
+The native Windows package is a 0.8.10 candidate. See [Windows installation](docs/WINDOWS.md) for the ZIP checksum check, per-user PowerShell/cmd installer, explicit DuckDB setup and exact qualification limits. The Claude Code marketplace remains the plugin route; Codex remains unsupported.
+
 ## Updating
 
 ```sh
@@ -52,11 +56,11 @@ Restart Claude Code after updating.
 
 ## Verifying a release
 
-The 0.8.9 release includes `toolsenabled-data-0.8.9.tar.gz` and its SHA-256 sidecar. Download both from the [release page](https://github.com/ToolsEnabled/toolsenabled-data-claude-plugin/releases/tag/toolsenabled-data--v0.8.9), then run:
+The 0.8.10 release includes `toolsenabled-data-0.8.10.tar.gz` and its SHA-256 sidecar. Download both from the [release page](https://github.com/ToolsEnabled/toolsenabled-data-claude-plugin/releases/tag/toolsenabled-data--v0.8.10), then run:
 
 ```sh
-sha256sum -c toolsenabled-data-0.8.9.tar.gz.sha256
-tar -xzf toolsenabled-data-0.8.9.tar.gz
+sha256sum -c toolsenabled-data-0.8.10.tar.gz.sha256
+tar -xzf toolsenabled-data-0.8.10.tar.gz
 cd toolsenabled-data
 node tools/verify-release.mjs
 node --test test/*.test.mjs

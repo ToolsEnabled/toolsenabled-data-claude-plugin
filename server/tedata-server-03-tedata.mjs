@@ -2219,11 +2219,20 @@ async function setup({ force = !1 } = {}) {
     });
   }
 }
+// monitor-command.mjs
+function monitorCommand(script, workspace, runId, platform = process.platform, node = process.execPath) {
+  let argv = [node, script, "--workspace", workspace, "--run", runId];
+  if (platform === "win32") {
+    let command = "& " + argv.map((value) => "'" + String(value).replaceAll("'", "''") + "'").join(" ");
+    return "powershell.exe -NoProfile -NonInteractive -EncodedCommand " + Buffer.from(command, "utf16le").toString("base64");
+  }
+  return argv.map((value) => "'" + String(value).replaceAll("'", "'\\''") + "'").join(" ");
+}
 // End of bundle text, part 3 of 5
 export { CollectionService, DERIVED_ADVICE, DUCKDB_VERSION, DataState, DerivedData, EvidenceService, INK,
   PreparationService, basename5, changeSources, createHash9, createReadStream, credentialPathProblem, dataDirectory,
   defaultLayout, describeGrouped, dirname4, ensureStateDirectory, join13, layoutBlocks, layoutMetrics, lstat6,
-  missingPlotFields, modelAssessmentResult, operationRequest, panelFile, panelParts, plotShapeProblem,
+  missingPlotFields, modelAssessmentResult, monitorCommand, operationRequest, panelFile, panelParts, plotShapeProblem,
   plotSpecProblem, plottedValues, pythonPath, pythonStatus, queryView, randomUUID7, readFile6, readFileSync3,
   readStateFile, readWorkspace, readdir5, realpath5, realpathSync2, replaceFile, resolve6, resolveColorTokens, setup,
   sourceConfiguration, spawn2, stateFile, stateRoot, temporalComparisonProblems, themeColors, themeWarnings, unlink6,
