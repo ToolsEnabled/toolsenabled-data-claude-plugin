@@ -1,3 +1,7 @@
+## Unreleased — Codex local plugin
+
+- Enable an explicit Codex compatibility manifest/marketplace and actual-MCP Codex skill, with empty hooks, setup consent and text results. Claude package and server boundaries remain in place.
+
 # Changelog
 
 ## 0.8.10 — native Windows candidate (unpublished)

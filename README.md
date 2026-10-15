@@ -4,7 +4,7 @@ ToolsEnabled Data (TE Data) is a local data workspace that runs on your computer
 
 Made and tested for Claude Code; not tested in Cowork; its tools do not load in claude.ai chat.
 
-Codex is not supported. This repository's Codex marketplace file, `.agents/plugins/marketplace.json`, lists TE Data as not available for installation.
+The unreleased `openai-plugin` branch also supports local Codex CLI use through its MCP server. See [Codex setup and limits](docs/CODEX.md); Codex CLI results are text, without relying on Claude commands, Monitor or panel support.
 
 ## Getting started
 
@@ -43,7 +43,7 @@ Codex is not supported. This repository's Codex marketplace file, `.agents/plugi
 
 ## Native Windows candidate
 
-The native Windows package is a 0.8.10 candidate. See [Windows installation](docs/WINDOWS.md) for the ZIP checksum check, per-user PowerShell/cmd installer, explicit DuckDB setup and exact qualification limits. The Claude Code marketplace remains the plugin route; Codex remains unsupported.
+The native Windows package is a 0.8.10 candidate. See [Windows installation](docs/WINDOWS.md) for the ZIP checksum check, per-user PowerShell/cmd installer, explicit DuckDB setup and exact qualification limits. The native installer and Claude Code marketplace remain separate from the local Codex plugin route described above.
 
 ## Updating
 

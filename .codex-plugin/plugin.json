@@ -1,0 +1,21 @@
+{
+  "name": "toolsenabled-data",
+  "version": "0.8.10",
+  "description": "Inspect and prepare local data",
+  "skills": "./codex-skills/",
+  "mcpServers": "./.codex-plugin/mcp.json",
+  "hooks": {},
+  "interface": {
+    "displayName": "ToolsEnabled Data",
+    "shortDescription": "Inspect and prepare local data",
+    "developerName": "ToolsEnabled, Inc.",
+    "category": "Productivity",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://toolsenabled.ai/data/",
+    "supportURL": "https://github.com/ToolsEnabled/toolsenabled-data-claude-plugin/issues",
+    "privacyPolicyURL": "https://github.com/ToolsEnabled/toolsenabled-data-claude-plugin/blob/openai-plugin/PRIVACY.md"
+  }
+}
