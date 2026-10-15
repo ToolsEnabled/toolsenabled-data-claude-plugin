@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "toolsenabled-data": {
+      "command": "node",
+      "args": [
+        "${CLAUDE_PLUGIN_ROOT}/server/tedata-server.mjs"
+      ]
+    }
+  }
+}
