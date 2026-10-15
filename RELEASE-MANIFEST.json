@@ -1,7 +1,7 @@
 {
   "plugin": "toolsenabled-data",
   "version": "0.8.10",
-  "sourceCommit": "418b7e428582e9aaf002ff37d7d604dcbec424d8",
+  "sourceCommit": "cfb7972da8bf36665ab38ddb45c29e8ca630d3b4",
   "sourceKind": "public-payload",
   "payloadBaseCommit": "7c6c53d985f718147c264dbddbd2977af0539095",
   "bundledSourceCommit": "4f61abcf3eeb9b7532e7bfe84a49a46ab6bf928a",
@@ -11,6 +11,11 @@
       "path": ".agents/plugins/marketplace.json",
       "bytes": 373,
       "sha256": "731510924641d6962e15ee44f75abad4759a0d285d1085a53233fe508d2fef3b"
+    },
+    {
+      "path": ".claude-plugin/icon.png",
+      "bytes": 24871,
+      "sha256": "7cc8d76e849b255fe15547c87ba3e9692c512bb0f019a156d347b3aa1ba3e8d7"
     },
     {
       "path": ".claude-plugin/marketplace.json",
@@ -44,8 +49,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 12899,
-      "sha256": "16432c2bc6b50346928ed40b83033bd1597ce46061b2725e61bd3535f707ee88"
+      "bytes": 13103,
+      "sha256": "15f26ef505521154fb8dec4e51058d9baa0a08de41e5c5f408408a35162c3ed2"
     },
     {
       "path": "LICENSE",
@@ -99,8 +104,8 @@
     },
     {
       "path": "docs/WINDOWS.md",
-      "bytes": 9857,
-      "sha256": "a64d3217d45d1834874219315597b318a46428f928175dd50e4b2c4768c1a1ec"
+      "bytes": 10210,
+      "sha256": "4edc6df393dee9b4182ac4c4e8618e3d12c2c422315018028d5068bea0fd484c"
     },
     {
       "path": "examples/sample.csv",
@@ -253,6 +258,11 @@
       "sha256": "c78fb7a0e8b6a4b14a0580beed7d29b5d9c0edf634b88bffab5af5bc68072faa"
     },
     {
+      "path": "test/worker-protocol.test.mjs",
+      "bytes": 4078,
+      "sha256": "9591add715e3dc420735812eeed3d8c04f49e38ab66dbaabba52c526e45c38b1"
+    },
+    {
       "path": "tools/build-release.mjs",
       "bytes": 1155,
       "sha256": "d9ab403a625aef50a600779ffbd8a1ff3e2d14496444a1073fac0b639781d84c"
@@ -279,8 +289,8 @@
     },
     {
       "path": "worker/data_worker.py",
-      "bytes": 33539,
-      "sha256": "de6baacaa34df94dddff284816ca851467c5812dcbccdfaa2d276cf434319ee0"
+      "bytes": 33922,
+      "sha256": "9cd6fcd4210347e8fcff3f1c63635851041bb774ccf25144e08f02d67ba3a781"
     },
     {
       "path": "worker/derivation_worker.py",
