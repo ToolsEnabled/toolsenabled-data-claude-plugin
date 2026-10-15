@@ -1,5 +1,7 @@
 ## Unreleased — Codex local plugin
 
+- Forward Windows Monitor stdout and stderr through concurrent raw byte streams, close its unused stdin, and preserve its exit status and retained Job lifetime.
+
 - Resolve Monitor guardians by literal file identity and launch Node directly inside their retained job, preserving bracket paths, Unicode, quotes and backslashes without PowerShell command-name wildcard matching.
 
 - Enable an explicit Codex compatibility manifest/marketplace and actual-MCP Codex skill, with empty hooks, setup consent and text results. Claude package and server boundaries remain in place.
