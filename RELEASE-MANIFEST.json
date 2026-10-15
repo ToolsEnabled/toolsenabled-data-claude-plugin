@@ -1,7 +1,7 @@
 {
   "plugin": "toolsenabled-data",
   "version": "0.8.10",
-  "sourceCommit": "182a0915f1a3d38ff5b97ff921da920beddeba7c",
+  "sourceCommit": "e5f938ce4c60a209d11d0f019839cd6edc45edb8",
   "sourceKind": "public-payload",
   "payloadBaseCommit": "7c6c53d985f718147c264dbddbd2977af0539095",
   "bundledSourceCommit": "4f61abcf3eeb9b7532e7bfe84a49a46ab6bf928a",
@@ -114,8 +114,8 @@
     },
     {
       "path": "install.ps1",
-      "bytes": 10450,
-      "sha256": "79ab07a2638249e3a3bac3f4a95e2bf18513912a89bf8eb1b3d58759f5c45976"
+      "bytes": 10414,
+      "sha256": "f09d8b5397bbe7213168f7a4d4b30efbdb0f260793b98396102ab0e5cf3c4e74"
     },
     {
       "path": "panel/panel-01-tedata.html",
@@ -229,8 +229,8 @@
     },
     {
       "path": "test/windows-install.test.ps1",
-      "bytes": 3474,
-      "sha256": "b273c4105d292c83e5e438052edfa5a52ad27cecffd8fcefc727bd5804489d39"
+      "bytes": 4421,
+      "sha256": "0ffdf884f09609b03402453081ab92619f6861dd5101244f2e0a62cb9637d3a8"
     },
     {
       "path": "test/windows-monitor-command.mjs",
