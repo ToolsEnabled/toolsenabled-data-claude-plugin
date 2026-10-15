@@ -2,7 +2,7 @@
 
 ## 0.8.10 — native Windows candidate (unpublished)
 
-- Added a ZIP and per-user PowerShell/cmd install route: verifies the public payload, creates new install/data/state folders with current-user and SYSTEM ACLs, leaves existing folders and MCP host settings unchanged, and offers an explicit DuckDB setup step.
+- Added a ZIP and per-user PowerShell/cmd install route: verifies the public payload, creates new install/data/state folders with current-user and SYSTEM ACLs, leaves existing folders and MCP host settings unchanged, and offers an explicit DuckDB setup step. Every existing path ancestor must have a trusted owner and no grants that let another account replace it or change its access; final private folders must belong to the current account.
 - Added an explicit `tools/setup-runtime.mjs --install|--status` helper that uses the same pinned setup path as the plugin and starts no MCP server or model.
 - Long-run Monitor commands use the current absolute Node executable. Windows uses an encoded PowerShell literal argument list, so spaces, apostrophes, Unicode and shell metacharacters in workspace paths are preserved. POSIX commands keep literal shell quoting.
 - Native Windows engineering validation and the outstanding ordinary-user/fresh-user checks are recorded in `docs/WINDOWS.md`; no Windows 11 claim is made. Linux behavior and the pinned DuckDB version remain unchanged.

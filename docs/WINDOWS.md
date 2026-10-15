@@ -6,7 +6,7 @@ The unchanged 0.8.9 payload passed 48 non-query tests and both query tests on Wi
 
 ## Verify and install
 
-Requirements: Windows10/11 x64, Node.js22+, and Python3.10+ (or uv) if installing DuckDB. A local NTFS workspace folder must already exist. The installer needs no administrator privileges, service, policy change, PATH change or reboot. It refuses an existing install/data folder, a junction/reparse path, overlapping install/data/workspace folders, a foreign-owned folder or an ancestor another ordinary account can write. Existing state is inspected and never chmodded or reset. New state is accessible to your current account and SYSTEM; administrators remain privileged under Windows.
+Requirements: Windows10/11 x64, Node.js22+, and Python3.10+ (or uv) if installing DuckDB. A local NTFS workspace folder must already exist. The installer needs no administrator privileges, service, policy change, PATH change or reboot. It refuses an existing install/data folder, a junction/reparse path, overlapping install/data/workspace folders, a foreign-owned folder or an ancestor another ordinary account can replace or reconfigure. It checks the owner and effective local grants of every existing ancestor, including the drive root; an untrusted ancestor owner is refused even with an apparently restrictive DACL. Create-only sibling grants on an existing ancestor are allowed. Existing state is inspected and never chmodded or reset. New state is accessible to your current account and SYSTEM; administrators remain privileged under Windows.
 
 Download `toolsenabled-data-0.8.10-windows-x64.zip` and its `.sha256` sidecar into one folder. In PowerShell, compare the ZIP hash with the sidecar before extracting:
 

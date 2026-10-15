@@ -28,21 +28,31 @@ function Inside([string]$Parent, [string]$Child) {
 }
 function Assert-DirectPath([string]$Value) {
     $cursor = [IO.Path]::GetPathRoot($Value)
+    Assert-AccountAccess $cursor $false
     foreach ($part in $Value.Substring($cursor.Length).Split('\')) {
         if (-not $part) { continue }
         $cursor = Join-Path $cursor $part
         if (-not (Test-Path -LiteralPath $cursor)) { break }
         $item = Get-Item -Force -LiteralPath $cursor
         if (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0 -or -not $item.PSIsContainer) { throw ('Path crosses a reparse point or file: ' + $cursor) }
+        Assert-AccountAccess $cursor $false
     }
 }
 function Assert-AccountAccess([string]$Value, [bool]$Private) {
     $acl = Get-Acl -LiteralPath $Value
     $ownerSid = $acl.GetOwner([Security.Principal.SecurityIdentifier]).Value
-    if ($trustedSids -notcontains $ownerSid) { throw ('Folder has a different owner: ' + $Value) }
-    $writeMask = [Security.AccessControl.FileSystemRights]::Write -bor [Security.AccessControl.FileSystemRights]::Delete -bor [Security.AccessControl.FileSystemRights]::DeleteSubdirectoriesAndFiles -bor [Security.AccessControl.FileSystemRights]::ChangePermissions -bor [Security.AccessControl.FileSystemRights]::TakeOwnership
+    if (($Private -and $ownerSid -ne $accountSid.Value) -or (-not $Private -and $trustedSids -notcontains $ownerSid)) { throw ('Folder has a different owner: ' + $Value) }
+    $raw = [Security.AccessControl.RawSecurityDescriptor]::new($acl.GetSecurityDescriptorBinaryForm(), 0)
+    if ($null -eq $raw.DiscretionaryAcl) { throw ('Folder has a null DACL: ' + $Value) }
+    foreach ($ace in $raw.DiscretionaryAcl) {
+        if ($ace.AceType -ne [Security.AccessControl.AceType]::AccessAllowed -and $ace.AceType -ne [Security.AccessControl.AceType]::AccessDenied) { throw ('Folder has an unrecognized ACL entry: ' + $Value) }
+    }
+    # Existing ancestors may allow sibling creation. They must not let another
+    # account replace/delete an existing path or change its attributes, owner or DACL.
+    $dangerous = [Security.AccessControl.FileSystemRights]0x500D0140
     foreach ($rule in $acl.GetAccessRules($true, $true, [Security.Principal.SecurityIdentifier])) {
-        if ($rule.AccessControlType -eq [Security.AccessControl.AccessControlType]::Allow -and $trustedSids -notcontains $rule.IdentityReference.Value -and ($Private -or (($rule.FileSystemRights -band $writeMask) -ne 0))) {
+        $appliesHere = ($rule.PropagationFlags -band [Security.AccessControl.PropagationFlags]::InheritOnly) -eq 0
+        if ($rule.AccessControlType -eq [Security.AccessControl.AccessControlType]::Allow -and $trustedSids -notcontains $rule.IdentityReference.Value -and ($Private -or ($appliesHere -and (($rule.FileSystemRights -band $dangerous) -ne 0)))) {
             throw ('Folder grants another account access incompatible with this install: ' + $Value)
         }
     }
