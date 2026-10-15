@@ -1,9 +1,9 @@
 {
   "plugin": "toolsenabled-data",
-  "version": "0.8.9",
-  "sourceCommit": "226db6ef5b325fd5dd0cca915a9143e78cc81892",
+  "version": "0.8.10",
+  "sourceCommit": "3f1208cda11a6559127a14fe86b568bf75bdcbb1",
   "sourceKind": "public-payload",
-  "payloadBaseCommit": "15cb61398ad83a90bf7b6c7f37b494e7a3444277",
+  "payloadBaseCommit": "7c6c53d985f718147c264dbddbd2977af0539095",
   "bundledSourceCommit": "4f61abcf3eeb9b7532e7bfe84a49a46ab6bf928a",
   "bundledSourceAvailability": "Internal 0.8.3 build source; not distributed in this public repository. Since 0.8.4, public payload commits change the server bundle directly; since 0.8.8 it is stored as server/tedata-server.mjs and the parts it imports (4 parts since 0.8.9), which join to the one bundle. CHANGELOG.md lists the changes.",
   "files": [
@@ -14,13 +14,18 @@
     },
     {
       "path": ".claude-plugin/marketplace.json",
-      "bytes": 473,
-      "sha256": "283769f165f8d0aaf7d01b705674c5210d016710d0428f8052c0e4c67ce3af52"
+      "bytes": 474,
+      "sha256": "b612a743bdb499e8ed1b20451238cc5084900085a62697c1926ded11a774f6fe"
     },
     {
       "path": ".claude-plugin/plugin.json",
-      "bytes": 920,
-      "sha256": "c338ac5fd07b255b3af0cfa991199755bf4f3f344cffc25083eeb2bf97d9a770"
+      "bytes": 921,
+      "sha256": "9567b4e00f743f91f6b4ae95995a496c998a8a57da81477a4c84acad4ec13264"
+    },
+    {
+      "path": ".gitattributes",
+      "bytes": 8,
+      "sha256": "705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da"
     },
     {
       "path": ".mcp.json",
@@ -29,8 +34,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 10359,
-      "sha256": "a23333dd3cab1171e32c9fa0a99a3e5d76444d36d0b136210195f009f5241a0f"
+      "bytes": 11313,
+      "sha256": "fa279855a62bf6973d2d08da447715f0c62bfa6619b2b775bea906e87d805ef7"
     },
     {
       "path": "LICENSE",
@@ -44,8 +49,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 22354,
-      "sha256": "6efb238a7e0921c8bb572d09c15aeb7b99e1c350579a3d23eebe94135851c022"
+      "bytes": 22681,
+      "sha256": "cd8732dd9efa4a9666157a0e4d650494ff27e48c63966560ccf008dba47e8a7d"
     },
     {
       "path": "SECURITY.md",
@@ -73,9 +78,24 @@
       "sha256": "47e90b6e606761ec71fcf3db0509f2eaa7b467f34b7c4abe74c0a5df8cb243da"
     },
     {
+      "path": "docs/WINDOWS.md",
+      "bytes": 5992,
+      "sha256": "36b9db8634032eb2c70f17cf5f38879e4bce4cb48b0319a777cbe5f693813b0c"
+    },
+    {
       "path": "examples/sample.csv",
       "bytes": 942,
       "sha256": "60b73f53d11d5071e11bb32b289bd93126f114d585cbad63267b3c53a24b832a"
+    },
+    {
+      "path": "install.cmd",
+      "bytes": 156,
+      "sha256": "b11a3104ca137feb509c4e9dc6b6873f08b1fa9c67d09618574a3e403b845d38"
+    },
+    {
+      "path": "install.ps1",
+      "bytes": 9006,
+      "sha256": "3d9384f4523b3b8bbb666433eee804ac3571a57e5e5a2d79e246b97ded60af22"
     },
     {
       "path": "panel/panel-01-tedata.html",
@@ -114,8 +134,8 @@
     },
     {
       "path": "server/tedata-server-03-tedata.mjs",
-      "bytes": 207277,
-      "sha256": "cbdfe98968b3937000fdcaf1b6ddb22e62c5a48bbf435dad75c8027b61b633c2"
+      "bytes": 207852,
+      "sha256": "25eceb1e5e4cbdc67c6a95792d86a6f4775a78a244ce2c08e7aa147363eae555"
     },
     {
       "path": "server/tedata-server-04-vendor-vega.mjs",
@@ -124,8 +144,8 @@
     },
     {
       "path": "server/tedata-server.mjs",
-      "bytes": 146080,
-      "sha256": "d2ed50da78050362506a0390a2431c523fab1ff920dfd50b403ea85d5e10fc9b"
+      "bytes": 145936,
+      "sha256": "d6c7b20b558c9a86cdc6c5c4139e04a96704f34d7ea6809407b9c213a73bc96b"
     },
     {
       "path": "server/tedata-watch.mjs",
@@ -144,8 +164,8 @@
     },
     {
       "path": "test/release.test.mjs",
-      "bytes": 19384,
-      "sha256": "f0e4fa9008d67b5f7392262a66fd3223e8af2a0cbb9ebe86c63ed041dab38d56"
+      "bytes": 22159,
+      "sha256": "d216e6d3930444a0f51bbefe67491c1e0207496a09bb217da59f9172f7fbdec3"
     },
     {
       "path": "test/server.test.mjs",
@@ -158,9 +178,24 @@
       "sha256": "c89596d0d64dfc3b485a9b237f25461d211d613d055db2f3e3e0847aae38ac5f"
     },
     {
+      "path": "test/windows.test.mjs",
+      "bytes": 2121,
+      "sha256": "8a91e635ec7fe405e669bddd82573c0aa7d648670a81373ba7a4f44192c42c81"
+    },
+    {
       "path": "tools/build-release.mjs",
       "bytes": 1155,
       "sha256": "d9ab403a625aef50a600779ffbd8a1ff3e2d14496444a1073fac0b639781d84c"
+    },
+    {
+      "path": "tools/build-windows-release.mjs",
+      "bytes": 1037,
+      "sha256": "6cfa1286cc6b565a97a8cd7dc56a55bde0038282689690684ba27bc13de3d44b"
+    },
+    {
+      "path": "tools/setup-runtime.mjs",
+      "bytes": 670,
+      "sha256": "20f3c40646f1ae8747693ab3b0d7766627cc780b32ab94f6d48f17d615d840a3"
     },
     {
       "path": "tools/verify-release.mjs",
