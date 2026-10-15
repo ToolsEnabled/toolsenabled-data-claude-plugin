@@ -3,7 +3,14 @@
     "toolsenabled-data": {
       "command": "node",
       "args": [
-        "${CLAUDE_PLUGIN_ROOT}/server/tedata-server.mjs"
+        "./server/absent-fixture.mjs"
+      ],
+      "cwd": ".",
+      "env_vars": [
+        "TEDATA_WORKSPACE",
+        "TEDATA_DATA_DIR",
+        "TEDATA_PYTHON",
+        "CODEX_HOME"
       ]
     }
   }

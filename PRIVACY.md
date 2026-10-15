@@ -22,3 +22,5 @@ Everything TE Data writes stays on your computer, and ToolsEnabled keeps nothing
 Uninstalling TE Data leaves `.tedata`, the derived copies and the exports where they are. `claude plugin uninstall` also removes the plugin data folder unless you add `--keep-data`; a data folder elsewhere stays. To remove everything, delete the project's `.tedata` folder, any derived-copy and export folders outside it, and TE Data's data folder. Setup can also leave files in pip's and uv's own folders: their download caches keep the DuckDB package (`pip cache purge` or `uv cache clean` empties them), and a Python interpreter that uv downloaded stays in uv's Python folder until you remove it with `uv python uninstall <version>`.
 
 Questions: support@toolsenabled.ai
+
+The Codex entry requires an explicitly chosen external TEDATA_WORKSPACE. Its manifest forwards only TEDATA_WORKSPACE, TEDATA_DATA_DIR, TEDATA_PYTHON and CODEX_HOME in addition to Codex standard process variables. CODEX_HOME identifies settings/history to refuse; no credential value is needed. The compatibility entry uses a relative program path with its plugin cwd; startup never copies data into the installed plugin.

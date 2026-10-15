@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {spawn} from 'node:child_process';
+import {spawn, spawnSync} from 'node:child_process';
 import {mkdtemp, mkdir, writeFile, readFile} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join, resolve} from 'node:path';
@@ -21,8 +21,10 @@ test('Codex manifest launches real MCP without Claude context; local sources wor
  await writeFile(join(project, 'sample.csv'), 'label,value\nowned,7\n');
  await writeFile(join(project, '.env'), 'EXAMPLE_FAKE_TOKEN=synthetic-fixture\n');
  const env = Object.fromEntries(Object.entries(process.env).filter(([key]) => !/^(CLAUDE|TEDATA|CODEX)_/.test(key)));
- Object.assign(env, {HOME:home, USERPROFILE:home, TEDATA_DATA_DIR:join(base, 'data'), CODEX_HOME:join(home, 'custom-codex')});
- const child = spawn(entry.command, entry.args.map(a => a.replaceAll('${CLAUDE_PLUGIN_ROOT}', root)), {cwd:project, env, stdio:['pipe','pipe','pipe']});
+ Object.assign(env, {HOME:home, USERPROFILE:home});
+ const chosen={TEDATA_WORKSPACE:project,TEDATA_DATA_DIR:join(base,'data'),CODEX_HOME:join(home,'custom-codex')};
+ for(const name of entry.env_vars||[])if(chosen[name])env[name]=chosen[name];
+ const child = spawn(entry.command, entry.args, {cwd:resolve(root,entry.cwd), env, stdio:['pipe','pipe','pipe']});
  let buffer='', stderr='', id=0; const pending=new Map();
  child.stderr.on('data', c => {stderr+=c;});
  child.stdout.on('data', c => {buffer+=c; let end; while((end=buffer.indexOf('\n'))>=0) {
@@ -44,4 +46,13 @@ test('Codex manifest launches real MCP without Claude context; local sources wor
   const refused=await call('tedata_sources',{action:'add',kind:'document',path:'.env'}); assert.equal(refused.result?.isError,true);
   assert.equal(await readFile(join(project,'sample.csv'),'utf8'),'label,value\nowned,7\n');
  } finally {child.stdin.end(); if(child.exitCode===null&&child.signalCode===null){const done=new Promise(r=>child.once('close',r));child.kill('SIGTERM');await done;}}
+});
+
+test('Codex entry refuses missing and overlapping project selection before serving', async () => {
+ const config=JSON.parse(await readFile(resolve(root,manifest.mcpServers),'utf8'));const entry=Object.values(config.mcpServers)[0];
+ for(const value of ['', 'relative-project', root]) {
+  const env=Object.fromEntries(Object.entries(process.env).filter(([key])=>!key.startsWith('TEDATA_'))); if(value)env.TEDATA_WORKSPACE=value;
+  const r=spawnSync(entry.command,entry.args,{cwd:resolve(root,entry.cwd),env,encoding:'utf8',timeout:10000});
+  assert.notEqual(r.status,0);assert.match(r.stderr,/TEDATA_WORKSPACE/);
+ }
 });

@@ -2,7 +2,7 @@
 name: tedata
 description: Inspect, validate and prepare connected local CSV/TSV datasets with ToolsEnabled Data MCP tools in Codex.
 ---
-Use the actual tedata_* MCP tools. If unavailable, say so and use ../../docs/CODEX.md to diagnose; never claim data loaded without a successful tool result. The current Codex project is the workspace. Keep source files unchanged and use the tools for data operations, rather than editing .tedata records or replacing a refused operation with shell access.
+Use the actual tedata_* MCP tools. If unavailable, say so and use ../../docs/CODEX.md to diagnose; never claim data loaded without a successful tool result. The explicitly selected TEDATA_WORKSPACE is the workspace; verify the returned workspace matches the requested project before connecting data. Keep source files unchanged and use the tools for data operations, rather than editing .tedata records or replacing a refused operation with shell access.
 
 Start with tedata_setup action status. Only call action install after the person explicitly agrees to the one-time DuckDB 1.5.6 setup and its download into TE Data's own data folder; uv may also download Python. Missing setup is a named pending gate, never a successful analysis. No Claude slash command, lifecycle hook, Monitor, browser or panel is required.
 
