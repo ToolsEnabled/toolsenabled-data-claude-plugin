@@ -71,6 +71,7 @@ foreach($case in @('completion-after-stdin-EOF','abrupt-wrapper-death','startup-
  }finally{
   if($wrapper-and-not$wrapper.HasExited){$wrapper.Kill();$null=$wrapper.WaitForExit(5000)}
   if($handle-ne[IntPtr]::Zero-and$member-and[MonitorLifetimeProbe]::WaitForSingleObject($handle,0)-eq258){$null=[MonitorLifetimeProbe]::TerminateProcess($handle,1)}
+  if($wrapper){if($stdout.IsCompleted){[IO.File]::WriteAllText((Join-Path $folder 'stdout.log'),$stdout.GetAwaiter().GetResult())};if($stderr.IsCompleted){[IO.File]::WriteAllText((Join-Path $folder 'stderr.log'),$stderr.GetAwaiter().GetResult())}}
   if($process){$process.Dispose()};if($wrapper){$wrapper.Dispose()}
  }
 }
