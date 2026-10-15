@@ -1,7 +1,7 @@
 {
   "plugin": "toolsenabled-data",
   "version": "0.8.10",
-  "sourceCommit": "9a33773340ba200dc48b074be9f7e7f88bb34918",
+  "sourceCommit": "8cc8548337b82e98cca197048d2d1712b08f6c13",
   "sourceKind": "public-payload",
   "payloadBaseCommit": "7c6c53d985f718147c264dbddbd2977af0539095",
   "bundledSourceCommit": "4f61abcf3eeb9b7532e7bfe84a49a46ab6bf928a",
@@ -9,8 +9,8 @@
   "files": [
     {
       "path": ".agents/plugins/marketplace.json",
-      "bytes": 377,
-      "sha256": "2e311209da787ee06b49d328655acdfbef403471eb00b5fbcfb0adec34ad0521"
+      "bytes": 373,
+      "sha256": "731510924641d6962e15ee44f75abad4759a0d285d1085a53233fe508d2fef3b"
     },
     {
       "path": ".claude-plugin/marketplace.json",
@@ -21,6 +21,16 @@
       "path": ".claude-plugin/plugin.json",
       "bytes": 921,
       "sha256": "9567b4e00f743f91f6b4ae95995a496c998a8a57da81477a4c84acad4ec13264"
+    },
+    {
+      "path": ".codex-plugin/mcp.json",
+      "bytes": 165,
+      "sha256": "a39c56769fde7e96768bb1fbb9326594eea9f85945a13165706718cb275f30cf"
+    },
+    {
+      "path": ".codex-plugin/plugin.json",
+      "bytes": 713,
+      "sha256": "4beedb1a4824593ec0dc97870397692cfda37b50513e4e8efc2f0ac948d6ec58"
     },
     {
       "path": ".gitattributes",
@@ -34,8 +44,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 11872,
-      "sha256": "bf225d4d51ee9c8208d263d0109e163a520b3e7f0fbc54fedbdda4c2e9a8499c"
+      "bytes": 12105,
+      "sha256": "9f38779a0eb864b2f59bb7c302960025992e46815158af2e46e33d29ce7903eb"
     },
     {
       "path": "LICENSE",
@@ -44,13 +54,13 @@
     },
     {
       "path": "PRIVACY.md",
-      "bytes": 3830,
-      "sha256": "a76ed33749bce61fbc3e29e404f6e5ea526b09088bee44d6f8f4c2be45b88b9d"
+      "bytes": 3933,
+      "sha256": "b5c92f6a117e06dd14499fbd728ff9d4aa52756281819951b6a9d3bc41cd0135"
     },
     {
       "path": "README.md",
-      "bytes": 23115,
-      "sha256": "7464f00e1a983ebab641d61606d555e93b63eda4c16f36ae731d80971b8c4aed"
+      "bytes": 23230,
+      "sha256": "ecb4aa6c1cee94fce880f602bd9ad586feba26866db4fe040497d76268e07a7a"
     },
     {
       "path": "SECURITY.md",
@@ -61,6 +71,11 @@
       "path": "THIRD-PARTY-LICENSES.txt",
       "bytes": 457672,
       "sha256": "16ad26acad685d5e85ecf5c0bb476dc291513e80000333f45c03bd9c80beee6e"
+    },
+    {
+      "path": "codex-skills/tedata/SKILL.md",
+      "bytes": 2911,
+      "sha256": "2d500feb620367c294e15891648061ab7d85a1039b3e935ba9f753d9d482c7ef"
     },
     {
       "path": "commands/export.md",
@@ -76,6 +91,11 @@
       "path": "commands/sources.md",
       "bytes": 660,
       "sha256": "47e90b6e606761ec71fcf3db0509f2eaa7b467f34b7c4abe74c0a5df8cb243da"
+    },
+    {
+      "path": "docs/CODEX.md",
+      "bytes": 2422,
+      "sha256": "f56e9c12b199614daf274729434d66a2f5757d6df804b6b1414417168ed6571d"
     },
     {
       "path": "docs/WINDOWS.md",
@@ -166,6 +186,11 @@
       "path": "skills/tedata/SKILL.md",
       "bytes": 31243,
       "sha256": "ce82d87f5555bbfd9e9b79f1720297cecfe376d48b54c7a1b0241671b2650370"
+    },
+    {
+      "path": "test/codex.test.mjs",
+      "bytes": 3703,
+      "sha256": "1c329e808f1cd217fad35ef18f75c0e01ada382cc73bee61e21ec1d2fbe3aa5b"
     },
     {
       "path": "test/duckdb.test.mjs",
