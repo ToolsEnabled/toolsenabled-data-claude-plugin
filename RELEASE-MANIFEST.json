@@ -1,7 +1,7 @@
 {
   "plugin": "toolsenabled-data",
   "version": "0.8.10",
-  "sourceCommit": "c268c971891dccb20caa22126b9f2c92e6c47bd3",
+  "sourceCommit": "69671a7537e99a2505f0dfa66a42c80e00311b7f",
   "sourceKind": "public-payload",
   "payloadBaseCommit": "7c6c53d985f718147c264dbddbd2977af0539095",
   "bundledSourceCommit": "4f61abcf3eeb9b7532e7bfe84a49a46ab6bf928a",
@@ -9,8 +9,8 @@
   "files": [
     {
       "path": ".agents/plugins/marketplace.json",
-      "bytes": 377,
-      "sha256": "2e311209da787ee06b49d328655acdfbef403471eb00b5fbcfb0adec34ad0521"
+      "bytes": 373,
+      "sha256": "731510924641d6962e15ee44f75abad4759a0d285d1085a53233fe508d2fef3b"
     },
     {
       "path": ".claude-plugin/marketplace.json",
@@ -21,6 +21,16 @@
       "path": ".claude-plugin/plugin.json",
       "bytes": 921,
       "sha256": "9567b4e00f743f91f6b4ae95995a496c998a8a57da81477a4c84acad4ec13264"
+    },
+    {
+      "path": ".codex-plugin/mcp.json",
+      "bytes": 292,
+      "sha256": "8b62862a43798ae24d8064a0883be14587017cf47127d28c8c7bd028cc009a1a"
+    },
+    {
+      "path": ".codex-plugin/plugin.json",
+      "bytes": 713,
+      "sha256": "4beedb1a4824593ec0dc97870397692cfda37b50513e4e8efc2f0ac948d6ec58"
     },
     {
       "path": ".gitattributes",
@@ -34,8 +44,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 12289,
-      "sha256": "55573146d8e78b6bb04c199f6bc518745c1ebf103a98169bc6a1c433132f2a43"
+      "bytes": 12522,
+      "sha256": "b49ae4aa1ebc1011bd0cbfd701b215dee438ff7d692b439263c7f7056790f1d8"
     },
     {
       "path": "LICENSE",
@@ -44,13 +54,13 @@
     },
     {
       "path": "PRIVACY.md",
-      "bytes": 3830,
-      "sha256": "a76ed33749bce61fbc3e29e404f6e5ea526b09088bee44d6f8f4c2be45b88b9d"
+      "bytes": 4355,
+      "sha256": "fd4678451117ea5d05902815e484caf8acbd060d1088bad7d1d65d213ed3fac1"
     },
     {
       "path": "README.md",
-      "bytes": 23115,
-      "sha256": "7464f00e1a983ebab641d61606d555e93b63eda4c16f36ae731d80971b8c4aed"
+      "bytes": 23230,
+      "sha256": "ecb4aa6c1cee94fce880f602bd9ad586feba26866db4fe040497d76268e07a7a"
     },
     {
       "path": "SECURITY.md",
@@ -61,6 +71,11 @@
       "path": "THIRD-PARTY-LICENSES.txt",
       "bytes": 457672,
       "sha256": "16ad26acad685d5e85ecf5c0bb476dc291513e80000333f45c03bd9c80beee6e"
+    },
+    {
+      "path": "codex-skills/tedata/SKILL.md",
+      "bytes": 3010,
+      "sha256": "9fc19f07e287c6b0998e159604ab200c452de0683a0863150445729d86149207"
     },
     {
       "path": "commands/export.md",
@@ -78,9 +93,14 @@
       "sha256": "47e90b6e606761ec71fcf3db0509f2eaa7b467f34b7c4abe74c0a5df8cb243da"
     },
     {
+      "path": "docs/CODEX.md",
+      "bytes": 2690,
+      "sha256": "ee1ce33fa86eaaa6c177940c0fd8cdeff5418fc0f2652cc710a90c5ef8afffdb"
+    },
+    {
       "path": "docs/WINDOWS.md",
-      "bytes": 8306,
-      "sha256": "5e83bd8300f8d646268e0ab4c88eb9da3eb958c7dd72f45521048cc1bf058cf2"
+      "bytes": 9145,
+      "sha256": "8e9c1a06604d19b9f715a164af5280d14df3f5edc64aa417db7c77d3c70c2a1b"
     },
     {
       "path": "examples/sample.csv",
@@ -121,6 +141,16 @@
       "path": "panel/panel-05-tedata.html",
       "bytes": 181471,
       "sha256": "00aea77def4c1c0fbb3d31a54a3632ced0839ddf1f5967a3036807cab49dce10"
+    },
+    {
+      "path": "server/tedata-codex-path.mjs",
+      "bytes": 407,
+      "sha256": "414a610fe1d0f0e82b3d538b6336c568eb42e2486ded88e36fae9e9c01434d6f"
+    },
+    {
+      "path": "server/tedata-codex.mjs",
+      "bytes": 1194,
+      "sha256": "6c9cf16dbdf48542e08607131b392e65c3f932124f16ed21247552704c722b50"
     },
     {
       "path": "server/tedata-monitor.ps1",
@@ -168,6 +198,11 @@
       "sha256": "ce82d87f5555bbfd9e9b79f1720297cecfe376d48b54c7a1b0241671b2650370"
     },
     {
+      "path": "test/codex.test.mjs",
+      "bytes": 5078,
+      "sha256": "b262ffef751de0cb7fd0c635c25f61cc49edd41bdb6e8c8ae970871a407894b2"
+    },
+    {
       "path": "test/duckdb.test.mjs",
       "bytes": 8292,
       "sha256": "b2017b83bf5585265895a112a0d67506290fb0731b916042493102d5a4080072"
@@ -189,13 +224,13 @@
     },
     {
       "path": "test/windows-filesystem.test.ps1",
-      "bytes": 3576,
-      "sha256": "980285198ae7513b3e703d5882a7f213e0f6dc6efae2ebcec38c2b24d105e066"
+      "bytes": 3622,
+      "sha256": "208cb6e990dd6a23a3555b2f8a9fc9c7c95dd3691a7af586a5296ba03dcb48e3"
     },
     {
       "path": "test/windows-install.test.ps1",
-      "bytes": 3092,
-      "sha256": "cb202055e32c2f5f9cb2a3a31df13146ca74fac56f799ba778ff53a269856f3e"
+      "bytes": 3474,
+      "sha256": "b273c4105d292c83e5e438052edfa5a52ad27cecffd8fcefc727bd5804489d39"
     },
     {
       "path": "test/windows-monitor-command.mjs",
@@ -215,7 +250,7 @@
     {
       "path": "test/windows.test.mjs",
       "bytes": 4934,
-      "sha256": "5aab14b7f697bc5e1429e78af2b0114617e1f7636695742e86838453c3d73b42"
+      "sha256": "8a22718c7ffe369c4be1f3fdbcdc0e62d5fa30d34a1b8f993480a628b800d16a"
     },
     {
       "path": "tools/build-release.mjs",
