@@ -7,6 +7,7 @@ from derivation_worker import derive, datetime_loss_predicate, datetime_precisio
 from summary_worker import summarize
 
 MAX_ZIP_BYTES=128*1024*1024
+ZIP_BATCH_MEMORY=4*1024*1024
 WORKER_MEMORY_LIMIT='1GB'
 MAX_CACHE_SOURCE_BYTES=128*1024*1024
 PATTERN_CHARACTERS='*?[]'
@@ -198,14 +199,36 @@ def load_zip_table(db,source,reader):
     if any(len(n)>200 for n in names):raise ValueError('Column names must be at most 200 characters.')
     db.execute('CREATE TABLE cached_source ('+','.join(ident(n)+' VARCHAR' for n in names)+')')
     sql='INSERT INTO cached_source SELECT '+','.join('unnest(?::VARCHAR[])' for _ in names)
-    batch=[] if reader['header'] else [first]
+    json_sql='INSERT INTO cached_source SELECT '+','.join('r['+str(i+1)+']' for i in range(len(names)))+' FROM (SELECT unnest(?::JSON::VARCHAR[][]) AS r)'
+    batch=[]
+    batch_memory=0
     def flush():
-        if batch:db.execute(sql,[[row[i] if row[i]!='' else None for row in batch] for i in range(len(names))]);batch.clear()
+        nonlocal batch_memory
+        if batch:
+            if batch_memory>ZIP_BATCH_MEMORY:
+                # One intrinsically large valid record keeps the original binding
+                # path, without creating an expanded JSON representation of it.
+                db.execute(sql,[[row[i] if row[i]!='' else None for row in batch] for i in range(len(names))])
+            else:
+                payload=json.dumps([[value if value!='' else None for value in row] for row in batch],ensure_ascii=True,separators=(',',':'))
+                db.execute(json_sql,[payload])
+            batch.clear()
+        batch_memory=0
+    def append(row):
+        nonlocal batch_memory
+        # Worst-case ASCII JSON uses 12 characters per source character (an
+        # escaped surrogate pair). Reserve four such copies for encoder pieces,
+        # the joined text, encoded bytes and native binding, plus Python objects
+        # and parameter references. This bounds staging, not the Python heap.
+        size=sys.getsizeof(row)+sum(sys.getsizeof(value)+48*len(value)+128 for value in row)+32*len(row)+128
+        if batch and batch_memory+size>ZIP_BATCH_MEMORY:flush()
+        batch.append(row);batch_memory+=size
+        if len(batch)>=512 or batch_memory>=ZIP_BATCH_MEMORY:flush()
+    if not reader['header']:append(first)
     for row in records:
         if not row:continue
         if len(row)!=len(names):raise ValueError('ZIP member contains inconsistent row widths. Check the delimiter and header settings.')
-        batch.append(row)
-        if len(batch)>=512:flush()
+        append(row)
     flush()
     db.execute('CREATE VIEW input_source AS SELECT * FROM cached_source')
 
