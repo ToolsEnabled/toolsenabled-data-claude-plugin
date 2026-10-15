@@ -3,7 +3,7 @@
     "toolsenabled-data": {
       "command": "node",
       "args": [
-        "./server/absent-fixture.mjs"
+        "./server/tedata-codex.mjs"
       ],
       "cwd": ".",
       "env_vars": [
