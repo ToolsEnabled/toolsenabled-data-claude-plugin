@@ -22,6 +22,7 @@ public static class DataMonitorJob {
     text.Append('\\',slashes*2);text.Append('\"');return text.ToString();
   }
   public static int Run(string executable,string[] args) {
+    if(retained==IntPtr.Zero)throw new InvalidOperationException("Retain the lifetime Job before starting a watcher.");
     if(!System.IO.Path.IsPathRooted(executable)||!System.IO.File.Exists(executable))throw new ArgumentException("An existing absolute executable is required.");
     var start=new System.Diagnostics.ProcessStartInfo();start.FileName=executable;
     var arguments=new string[args.Length];for(int i=0;i<args.Length;i++)arguments[i]=QuoteArgument(args[i]);
