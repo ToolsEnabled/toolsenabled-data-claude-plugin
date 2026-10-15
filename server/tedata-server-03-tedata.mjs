@@ -2224,7 +2224,10 @@ function monitorCommand(script, workspace, runId, platform = process.platform, n
   let argv = [node, script, "--workspace", workspace, "--run", runId];
   if (platform === "win32") {
     let guardian = String(script).replace(/[^\\/]+$/, "tedata-monitor.ps1");
-    let command = "& " + [guardian, node, script, workspace, runId].map((value) => "'" + String(value).replaceAll("'", "''") + "'").join(" ");
+    const literal = (value) => "'" + String(value).replaceAll("'", "''") + "'";
+    // Parse the exact script file, retaining its file/PSScriptRoot identity.
+    // PowerShell command-name lookup treats even quoted [] as wildcards.
+    let command = "$e=$null;$a=[Management.Automation.Language.Parser]::ParseFile(" + literal(guardian) + ",[ref]$null,[ref]$e);if($e){throw 'Monitor script parse failed'};& $a.GetScriptBlock() " + [node, script, workspace, runId].map(literal).join(" ");
     return "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -EncodedCommand " + Buffer.from(command, "utf16le").toString("base64");
   }
   return argv.map((value) => "'" + String(value).replaceAll("'", "'\\''") + "'").join(" ");

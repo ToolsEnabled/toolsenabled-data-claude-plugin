@@ -5,8 +5,8 @@ $ErrorActionPreference='Stop'
 [Console]::OutputEncoding=New-Object Text.UTF8Encoding($false)
 try {
  foreach($file in @($NodeExecutable,$WatchScript)){if(-not [IO.Path]::IsPathRooted($file)-or-not [IO.File]::Exists($file)){throw 'Monitor executable and script must be existing absolute files'}}
- Add-Type -Path (Join-Path $PSScriptRoot 'windows-monitor-job.cs')
+ Add-Type -TypeDefinition ([IO.File]::ReadAllText((Join-Path $PSScriptRoot 'windows-monitor-job.cs')))
  $null=[DataMonitorJob]::Retain()
- & $NodeExecutable $WatchScript --workspace $Workspace --run $RunId
- exit $LASTEXITCODE
+ $code=[DataMonitorJob]::Run($NodeExecutable,[string[]]@($WatchScript,'--workspace',$Workspace,'--run',$RunId))
+ exit $code
 }catch{[Console]::Error.WriteLine('Native TE Data monitor failed before completion.');exit 1}

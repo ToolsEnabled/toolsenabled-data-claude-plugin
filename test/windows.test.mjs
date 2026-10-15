@@ -60,3 +60,33 @@ test('native filesystem validates the volume and refuses unsafe real ACLs and ju
  const r=spawnSync(powershell,['-NoProfile','-ExecutionPolicy','Bypass','-File',fileURLToPath(new URL('./windows-filesystem.test.ps1',import.meta.url))],{encoding:'utf8',timeout:30000});
  assert.equal(r.status,0,r.stdout+r.stderr);assert.match(r.stdout,/NATIVE_INSTALL_FILESYSTEM_PASS 11/);
 });
+
+const portablePowerShell=process.platform==='win32'?join(process.env.SystemRoot||'C:\\Windows','System32/WindowsPowerShell/v1.0/powershell.exe'):'pwsh';
+const powerShellAvailable=process.platform==='win32'||spawnSync(portablePowerShell,['-NoLogo','-NoProfile','-NonInteractive','-Command','exit 0'],{timeout:5000}).status===0;
+const psLiteral=value=>"'"+String(value).replaceAll("'","''")+"'";
+test('the actual encoded monitor command binds a literal script file and exact Unicode arguments in the same process',{skip:!powerShellAvailable?'PowerShell parser seam; full Windows command case remains required':false},async()=>{
+ const base=await mkdtemp(join(tmpdir(),'tedata-literal-'));
+ const folder=join(base,"O'Brien & 音 []");await mkdir(folder);
+ const script=join(folder,'watch.mjs');await writeFile(script,'');
+ // A protocol stub observes the actual production encoded command's script
+ // binding. It deliberately has no Job/native authority or watcher behavior.
+ await writeFile(join(folder,'tedata-monitor.ps1'),'\ufeffparam($NodeExecutable,$WatchScript,$Workspace,$RunId)\n[Console]::OutputEncoding=New-Object Text.UTF8Encoding($false)\n[Console]::Out.WriteLine((@($NodeExecutable,$WatchScript,$Workspace,$RunId,$PSScriptRoot)|ConvertTo-Json -Compress))\n');
+ const workspace="C:\\Work\\O'Brien & 音 [] 🚀";const run='run-\'& $(literal)';
+ const command=monitorCommand(script,workspace,run,'win32',process.execPath);
+ const encoded=command.split(' ').at(-1);const decoded=Buffer.from(encoded,'base64').toString('utf16le');
+ assert.ok(decoded.includes('音'));assert.ok(decoded.includes('🚀'));
+ const r=spawnSync(portablePowerShell,['-NoLogo','-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-EncodedCommand',encoded],{encoding:'utf8',timeout:10000});
+ assert.equal(r.status,0,r.error?.message||r.stderr);
+ assert.deepEqual(JSON.parse(r.stdout.trim()),[process.execPath,script,workspace,run,folder]);
+});
+test('the actual native watcher runner passes literal argv through direct process creation',{skip:!powerShellAvailable?'PowerShell/C# argv seam; native Monitor lifetime proof remains required':false},async()=>{
+ const base=await mkdtemp(join(tmpdir(),'tedata-run-'));const script=join(base,'argv.mjs');
+ await writeFile(script,'console.log(JSON.stringify(process.argv.slice(2)));\n');
+ const values=['',"O'Brien & 音 [] 🚀",'quoted "value"','trailing\\','before\\"quote','$(literal); & x'];
+ const source=fileURLToPath(new URL('../server/windows-monitor-job.cs',import.meta.url));
+ // Calls the production ProcessStartInfo/quoting method without Retain().
+ // This checks literal argv only; it does not claim Windows Job semantics.
+ const code='[Console]::OutputEncoding=New-Object Text.UTF8Encoding($false);Add-Type -TypeDefinition ([IO.File]::ReadAllText('+psLiteral(source)+'));exit [DataMonitorJob]::Run('+psLiteral(process.execPath)+',[string[]]@('+[script,...values].map(psLiteral).join(',')+'))';
+ const r=spawnSync(portablePowerShell,['-NoLogo','-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-EncodedCommand',Buffer.from(code,'utf16le').toString('base64')],{encoding:'utf8',timeout:10000});
+ assert.equal(r.status,0,r.error?.message||r.stderr);assert.deepEqual(JSON.parse(r.stdout.trim()),values);
+});

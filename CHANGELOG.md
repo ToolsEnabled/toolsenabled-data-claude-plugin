@@ -1,5 +1,7 @@
 ## Unreleased — Codex local plugin
 
+- Resolve Monitor guardians by literal file identity and launch Node directly inside their retained job, preserving bracket paths, Unicode, quotes and backslashes without PowerShell command-name wildcard matching.
+
 - Enable an explicit Codex compatibility manifest/marketplace and actual-MCP Codex skill, with empty hooks, setup consent and text results. Claude package and server boundaries remain in place.
 
 # Changelog
