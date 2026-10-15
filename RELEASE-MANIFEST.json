@@ -1,7 +1,7 @@
 {
   "plugin": "toolsenabled-data",
   "version": "0.8.10",
-  "sourceCommit": "d823e6dc5614202f91bb191c25e17675576a1c9f",
+  "sourceCommit": "3c5d127f42e3f893d106558c35671e92bc633cc3",
   "sourceKind": "public-payload",
   "payloadBaseCommit": "7c6c53d985f718147c264dbddbd2977af0539095",
   "bundledSourceCommit": "4f61abcf3eeb9b7532e7bfe84a49a46ab6bf928a",
@@ -94,8 +94,8 @@
     },
     {
       "path": "install.ps1",
-      "bytes": 10178,
-      "sha256": "10c587181362177f5d93b126953339808f773d2d4614bc68b71f351bf5e4ee9d"
+      "bytes": 10208,
+      "sha256": "4881448a16c70ae34ce5ab8f5fa9735b76fbb8aabbc4d802e459eda60bed6011"
     },
     {
       "path": "panel/panel-01-tedata.html",
@@ -204,8 +204,8 @@
     },
     {
       "path": "test/windows-monitor-lifetime.test.ps1",
-      "bytes": 6756,
-      "sha256": "b75bde197474f09477cccc513039a570a9fedea1c8c44904d6004c7ad1b00d03"
+      "bytes": 7004,
+      "sha256": "1db08a6a774833131f5a31ff6daf00efc9a0c60e1894194a5acf4c05e6063a40"
     },
     {
       "path": "test/windows-path.test.ps1",
