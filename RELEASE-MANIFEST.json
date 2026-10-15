@@ -1,7 +1,7 @@
 {
   "plugin": "toolsenabled-data",
   "version": "0.8.10",
-  "sourceCommit": "350f7719a8daeafd5f56fe1099b75d95883d4e94",
+  "sourceCommit": "a0f5e0be417de1a299674c1178fbb41091155f8a",
   "sourceKind": "public-payload",
   "payloadBaseCommit": "7c6c53d985f718147c264dbddbd2977af0539095",
   "bundledSourceCommit": "4f61abcf3eeb9b7532e7bfe84a49a46ab6bf928a",
@@ -189,8 +189,8 @@
     },
     {
       "path": "server/windows-monitor-job.cs",
-      "bytes": 3302,
-      "sha256": "9c400cc089f62510dda38f87cb40715c4ad4b2583e23578b51876287bdfdc23d"
+      "bytes": 3422,
+      "sha256": "01ee167be79f905cc00a0c3ea22681c37c949ce3f6cf796e89ca6e318cfd3f15"
     },
     {
       "path": "skills/tedata/SKILL.md",
@@ -209,8 +209,8 @@
     },
     {
       "path": "test/release.test.mjs",
-      "bytes": 22361,
-      "sha256": "7010e29341f288cd1dfad2927b107d91bac05c49f9149a7f3906d1107b0f594e"
+      "bytes": 22710,
+      "sha256": "680e76a86d9a26e7cec09b43c313398df5d2376cf8517882fe058d0850c12f6f"
     },
     {
       "path": "test/server.test.mjs",
@@ -249,8 +249,8 @@
     },
     {
       "path": "test/windows.test.mjs",
-      "bytes": 8195,
-      "sha256": "748ee15d8897db29bfadff99c48b22e0a7c99df4250cef5b13eaa8394ee56f1e"
+      "bytes": 8590,
+      "sha256": "899fa223ad21830f8b680c46cad89ce2615d1c06239a115bbb1b778f585e847d"
     },
     {
       "path": "tools/build-release.mjs",
