@@ -58,5 +58,5 @@ test('native Monitor retains its watcher until completion and ends it on wrapper
 test('native filesystem validates the volume and refuses unsafe real ACLs and junctions',{skip:process.platform!=='win32'?'native NTFS/security API fixture':false},()=>{
  const powershell=join(process.env.SystemRoot||'C:\\Windows','System32/WindowsPowerShell/v1.0/powershell.exe');
  const r=spawnSync(powershell,['-NoProfile','-ExecutionPolicy','Bypass','-File',fileURLToPath(new URL('./windows-filesystem.test.ps1',import.meta.url))],{encoding:'utf8',timeout:30000});
- assert.equal(r.status,0,r.stdout+r.stderr);assert.match(r.stdout,/NATIVE_INSTALL_FILESYSTEM_PASS 10/);
+ assert.equal(r.status,0,r.stdout+r.stderr);assert.match(r.stdout,/NATIVE_INSTALL_FILESYSTEM_PASS 11/);
 });

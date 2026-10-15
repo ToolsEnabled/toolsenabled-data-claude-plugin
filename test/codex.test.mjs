@@ -5,8 +5,15 @@ import {mkdtemp, mkdir, writeFile, readFile} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join, resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {absoluteProject} from '../server/tedata-codex-path.mjs';
 const root = fileURLToPath(new URL('../', import.meta.url));
 const manifest = JSON.parse(await readFile(join(root, '.codex-plugin/plugin.json'), 'utf8'));
+
+test('explicit Codex project paths select a real drive on Windows before any filesystem lookup',()=>{
+ for(const value of ['C:\\Work\\Project',"D:/owner's résumé/project"])assert(absoluteProject(value,'win32'));
+ for(const value of ['C:relative','\\root-relative','/root-relative','\\\\server\\share','\\\\?\\C:\\Work','C:\\file:stream','relative',''])assert.equal(absoluteProject(value,'win32'),false,value);
+ assert(absoluteProject('/owned/project','linux'));assert(!absoluteProject('relative','linux'));
+});
 
 test('Codex manifest launches real MCP without Claude context; local sources work and secrets refuse', {timeout: 30000}, async () => {
  const market = JSON.parse(await readFile(join(root, '.agents/plugins/marketplace.json'), 'utf8'));
@@ -50,7 +57,7 @@ test('Codex manifest launches real MCP without Claude context; local sources wor
 
 test('Codex entry refuses missing and overlapping project selection before serving', async () => {
  const config=JSON.parse(await readFile(resolve(root,manifest.mcpServers),'utf8'));const entry=Object.values(config.mcpServers)[0];
- for(const value of ['', 'relative-project', root]) {
+ for(const value of ['', 'relative-project', root,...(process.platform==='win32'?['\\root-relative','C:relative','\\\\server\\share']:[])]) {
   const env=Object.fromEntries(Object.entries(process.env).filter(([key])=>!key.startsWith('TEDATA_'))); if(value)env.TEDATA_WORKSPACE=value;
   const r=spawnSync(entry.command,entry.args,{cwd:resolve(root,entry.cwd),env,encoding:'utf8',timeout:10000});
   assert.notEqual(r.status,0);assert.match(r.stderr,/TEDATA_WORKSPACE/);
