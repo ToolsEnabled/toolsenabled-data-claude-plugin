@@ -35,6 +35,8 @@ In Claude Code, use the README marketplace install commands, then `/toolsenabled
 
 Python lives at `<data folder>\python\Scripts\python.exe`; no venv activation is required. Use `TEDATA_BASE_PYTHON` to select a base interpreter or `TEDATA_PYTHON` for an existing interpreter with DuckDB1.5.6. A long-run tool result identifies its Monitor command's shell; Windows commands use encoded PowerShell arguments and can contain paths with apostrophes or Unicode.
 
+Query requests and results use strict UTF-8 JSON bytes even when Windows redirects Python streams with a legacy code page. No global locale or Python encoding environment setting is required. Invalid UTF-8 requests are refused.
+
 Files with `[` or `]` in their names need a literal alias because DuckDB treats those characters as patterns. TE Data tries a symbolic link then an identity-checked hard link. The hard-link route works without special symlink privileges on the same NTFS volume. A source on a different volume can be refused when neither link can be made: the error names the characters and asks you to rename the file/folder without them and reconnect. TE Data does not enable Developer Mode or fall back to reading a different matching file.
 
 Junction/symlink state folders are refused. Case aliases, sharing violations, paths and encoding are checked by the native test packet; source files remain unchanged. PNG plots use installed Windows system fonts (Segoe UI or Arial), and exports need no LibreOffice or browser renderer. Interactive panel display depends on the host; an SSH stdio check does not prove GUI behavior.
@@ -47,7 +49,7 @@ $env:TEDATA_PYTHON = 'C:\absolute\Data Runtime\python\Scripts\python.exe'
 & 'C:\Program Files\nodejs\node.exe' --test --test-concurrency=1 'C:\absolute\TE Data\test\duckdb.test.mjs'
 ```
 
-For the full test suite, expand the `test\*.test.mjs` paths with PowerShell (`Get-ChildItem`) and pass those full paths to `node --test --test-concurrency=1`; Node22.14 does not expand that Windows wildcard itself. The two DuckDB tests must run rather than skip. Unit tests create their own temporary homes and workspaces and never start a Claude agent. File-symlink fixture tests require Windows symlink privilege; ordinary-user product proof uses the hard-link fallback and separate junction fixtures instead of changing machine policy.
+For the full test suite, expand the `test\*.test.mjs` paths with PowerShell (`Get-ChildItem`) and pass those full paths to `node --test --test-concurrency=1`; Node22.14 does not expand that Windows wildcard itself. The two DuckDB tests and three worker-protocol tests must run rather than skip. The protocol tests select a legacy redirected code page only for their own child processes. Unit tests create their own temporary homes and workspaces and never start a Claude agent. File-symlink fixture tests require Windows symlink privilege; ordinary-user product proof uses the hard-link fallback and separate junction fixtures instead of changing machine policy.
 
 Installer path hardening follow-up: raw spelling is checked before normalization; dot/dotdot components, streams, reserved devices and trailing dots/spaces refuse. Native volume probing requires a fixed local NTFS hard-disk volume and rejects mapped/SUBST drive aliases. This new guard still needs exact-candidate Windows acceptance; local raw-string cases do not prove the native volume API.
 

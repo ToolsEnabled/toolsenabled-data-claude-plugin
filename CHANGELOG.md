@@ -1,5 +1,7 @@
 ## Unreleased — Codex local plugin
 
+- Read and write the query worker's JSON protocol as strict UTF-8 bytes in both CLI modes, preserving Unicode paths under legacy Windows redirected-stream code pages without changing the process locale.
+
 - Forward Windows Monitor stdout and stderr through concurrent raw byte streams, close its unused stdin, and preserve its exit status and retained Job lifetime.
 
 - Resolve Monitor guardians by literal file identity and launch Node directly inside their retained job, preserving bracket paths, Unicode, quotes and backslashes without PowerShell command-name wildcard matching.

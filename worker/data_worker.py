@@ -482,10 +482,17 @@ def run(request):
         message=str(exc) if isinstance(exc,ValueError) else ('This operation exceeded the in-memory data limit. No disk spill was used.' if isinstance(exc,duckdb.OutOfMemoryException) else 'Data query failed. Check reader settings and typed values.')
         return json.dumps({'error':message,'errorType':type(exc).__name__})
 
+def write_protocol(result):
+    # Redirected Windows text streams use a legacy code page by default.
+    # The Node<->worker wire is always strict UTF-8, independently of locale.
+    sys.stdout.buffer.write(result.encode('utf-8',errors='strict')+b'\n')
+    sys.stdout.buffer.flush()
+
 if __name__=='__main__':
     if '--serve' in sys.argv:
-        for line in sys.stdin:
-            try:print(run(json.loads(line)),flush=True)
-            except Exception:print(json.dumps({'error':'Invalid data request.'}),flush=True)
+        for line in sys.stdin.buffer:
+            try:write_protocol(run(json.loads(line.decode('utf-8',errors='strict'))))
+            except Exception:write_protocol(json.dumps({'error':'Invalid data request.'}))
     else:
-        result=run(json.load(sys.stdin));print(result);sys.exit(1 if 'error' in json.loads(result) else 0)
+        result=run(json.loads(sys.stdin.buffer.read().decode('utf-8',errors='strict')))
+        write_protocol(result);sys.exit(1 if 'error' in json.loads(result) else 0)
