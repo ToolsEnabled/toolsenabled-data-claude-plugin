@@ -1,7 +1,7 @@
 {
   "plugin": "toolsenabled-data",
   "version": "0.8.9",
-  "sourceCommit": "226db6ef5b325fd5dd0cca915a9143e78cc81892",
+  "sourceCommit": "d85b0b9ede3400e5c66417b7e12e8cecb3e399a8",
   "sourceKind": "public-payload",
   "payloadBaseCommit": "15cb61398ad83a90bf7b6c7f37b494e7a3444277",
   "bundledSourceCommit": "4f61abcf3eeb9b7532e7bfe84a49a46ab6bf928a",
@@ -44,8 +44,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 22354,
-      "sha256": "6efb238a7e0921c8bb572d09c15aeb7b99e1c350579a3d23eebe94135851c022"
+      "bytes": 22747,
+      "sha256": "69d3b0265ebd2f6e5cfe72ea37e48378c0d9d845e8a67dd508dc417e7b39a0a0"
     },
     {
       "path": "SECURITY.md",
@@ -158,6 +158,16 @@
       "sha256": "c89596d0d64dfc3b485a9b237f25461d211d613d055db2f3e3e0847aae38ac5f"
     },
     {
+      "path": "test/zip-worker.py",
+      "bytes": 8447,
+      "sha256": "e33bd4030ace9fef15ff7ce01abf456a46c86819feb4f697ec2a6734bc258615"
+    },
+    {
+      "path": "test/zip-worker.test.mjs",
+      "bytes": 987,
+      "sha256": "ef0b2602179936f233a127da20a24362ff2b5ce8b44458f47f84986b32c1df77"
+    },
+    {
       "path": "tools/build-release.mjs",
       "bytes": 1155,
       "sha256": "d9ab403a625aef50a600779ffbd8a1ff3e2d14496444a1073fac0b639781d84c"
@@ -169,8 +179,8 @@
     },
     {
       "path": "worker/data_worker.py",
-      "bytes": 33539,
-      "sha256": "de6baacaa34df94dddff284816ca851467c5812dcbccdfaa2d276cf434319ee0"
+      "bytes": 34860,
+      "sha256": "00f5a4f9e509c1dbf549781068908d7769ed7d8eebcc1f91a85cf49fa7dea364"
     },
     {
       "path": "worker/derivation_worker.py",
